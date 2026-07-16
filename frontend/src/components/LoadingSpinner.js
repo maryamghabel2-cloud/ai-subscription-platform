@@ -1,0 +1,17 @@
+export default function LoadingSpinner({ size = 'md', className = '' }) {
+  const sizes = {
+    sm: 'w-6 h-6 border-2',
+    md: 'w-10 h-10 border-4',
+    lg: 'w-16 h-16 border-4'
+  };
+
+  return (
+    <div 
+      className={`animate-spin rounded-full border-primary border-t-transparent ${sizes[size]} ${className}`}
+      role="status"
+      aria-label="loading"
+    >
+      <span className="sr-only">در حال بارگذاری...</span>
+    </div>
+  );
+}

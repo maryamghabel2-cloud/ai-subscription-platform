@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Sitemap: https://yoursite.com/sitemap.xml
+
+# Disallow crawling of admin pages
+Disallow: /admin/
+Disallow: /admin
+
+# Crawl delay
+Crawl-delay: 5
