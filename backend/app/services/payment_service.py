@@ -1,156 +1,225 @@
-"""
-Payment Service
-- Handles payment processing
-- Manages crypto payments
-"""
-
-import logging
-from typing import Optional, Dict, Any
-from datetime import datetime
-from sqlalchemy.orm import Session
-
-from app.database import get_db
-from app.models.models import Order
-from app.utils.crypto_utils import crypto_utils
-from app.utils.exchange_rate import exchange_rate_fetcher
+from fastapi import HTTPException, Depends
+from typing import Dict, Any, Optional
+from app.services.zarinpal_service import ZarinpalService
+from app.services.crypto_service import CryptoService
 from app.config import settings
-
-logger = logging.getLogger(__name__)
 
 
 class PaymentService:
     """
-    Service for handling payments
+    Main payment service that coordinates all payment methods
     """
     
     def __init__(self):
-        self.crypto_utils = crypto_utils
-        self.exchange_rate_fetcher = exchange_rate_fetcher
+        self.zarinpal = ZarinpalService()
+        self.crypto = CryptoService()
     
-    def generate_payment_address(self, order_id: int) -> str:
+    async def create_payment(self, payment_data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Generate a unique payment address for an order
-        :param order_id: Order ID
-        :return: Payment address
+        Create payment based on payment method
+        
+        Args:
+            payment_data: Dictionary containing payment details
+                - amount: Amount in Tomans
+                - product_name: Name of the product
+                - payment_method: 'zarinpal' or 'crypto'
+                - callback_url: URL for payment callback
+                - email: User email (optional)
+                - mobile: User mobile (optional)
+                - order_id: Order ID for tracking (optional)
+                
+        Returns:
+            dict: Payment details for redirecting user
         """
-        try:
-            return self.crypto_utils.generate_payment_address(order_id)
-        except Exception as e:
-            logger.error(f"Error generating payment address for order {order_id}: {e}")
-            return ""
-    
-    def calculate_crypto_amount(
-        self,
-        amount_tomans: int,
-        crypto_currency: str = "USDT"
-    ) -> float:
-        """
-        Calculate crypto amount from tomans
-        :param amount_tomans: Amount in tomans
-        :param crypto_currency: Crypto currency (USDT, BTC, ETH)
-        :return: Amount in crypto
-        """
-        try:
-            exchange_rate = self.exchange_rate_fetcher.get_usdt_rate()
-            return self.crypto_utils.convert_to_crypto(
-                amount_tomans,
-                exchange_rate,
-                crypto_currency
+        method = payment_data.get("payment_method", "crypto")
+        amount = payment_data["amount"]
+        product_name = payment_data["product_name"]
+        
+        if method == "zarinpal":
+            # Convert tomans to rials (1 toman = 10 rials)
+            amount_rials = amount * 10
+            
+            try:
+                payment = self.zarinpal.create_payment(
+                    amount=amount_rials,
+                    description=f"خرید {product_name}",
+                    callback_url=payment_data["callback_url"],
+                    email=payment_data.get("email"),
+                    mobile=payment_data.get("mobile")
+                )
+                return {
+                    **payment,
+                    "payment_method": "zarinpal",
+                    "amount": amount,
+                    "currency": "IRR",
+                    "product_name": product_name
+                }
+            except HTTPException as e:
+                raise e
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error creating Zarinpal payment: {str(e)}"
+                )
+        
+        elif method == "crypto":
+            try:
+                payment = await self.crypto.create_crypto_payment(
+                    amount_toman=amount,
+                    product_name=product_name,
+                    order_id=payment_data.get("order_id")
+                )
+                return {
+                    **payment,
+                    "payment_method": "crypto",
+                    "currency": "USDT",
+                    "product_name": product_name
+                }
+            except HTTPException as e:
+                raise e
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error creating crypto payment: {str(e)}"
+                )
+        
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid payment method: {method}. Supported methods: zarinpal, crypto"
             )
-        except Exception as e:
-            logger.error(f"Error calculating crypto amount: {e}")
-            return 0.0
     
-    def verify_payment(
-        self,
-        order_id: int,
-        tx_hash: str,
-        db: Session
-    ) -> bool:
+    async def verify_payment(self, payment_method: str, **kwargs) -> Dict[str, Any]:
         """
-        Verify crypto payment
-        :param order_id: Order ID
-        :param tx_hash: Transaction hash
-        :return: True if payment is valid
+        Verify payment based on method
+        
+        Args:
+            payment_method: 'zarinpal' or 'crypto'
+            **kwargs: Additional parameters based on method
+                - For zarinpal: authority, amount
+                - For crypto: payment_id, tx_hash, amount
+                
+        Returns:
+            dict: Verification result
         """
-        try:
-            order = db.query(Order).filter(Order.id == order_id).first()
-            if not order:
-                logger.error(f"Order {order_id} not found")
-                return False
-            
-            if not order.payment_amount_crypto or not order.payment_crypto_currency:
-                logger.error(f"Order {order_id} has no payment info")
-                return False
-            
-            # Verify payment (in production, use blockchain API)
-            is_valid = self.crypto_utils.verify_crypto_payment(
-                tx_hash,
-                order.payment_amount_crypto,
-                order.payment_crypto_currency
+        if payment_method == "zarinpal":
+            try:
+                authority = kwargs["authority"]
+                amount = kwargs["amount"]
+                
+                result = self.zarinpal.verify_payment(
+                    authority=authority,
+                    amount=amount * 10  # Convert to rials
+                )
+                
+                if result.get("success"):
+                    return {
+                        **result,
+                        "payment_method": "zarinpal",
+                        "verified": True,
+                        "message": "Payment verified successfully"
+                    }
+                else:
+                    return {
+                        **result,
+                        "payment_method": "zarinpal",
+                        "verified": False,
+                        "message": result.get("message", "Payment verification failed")
+                    }
+            except HTTPException as e:
+                raise e
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error verifying Zarinpal payment: {str(e)}"
+                )
+        
+        elif payment_method == "crypto":
+            try:
+                payment_id = kwargs["payment_id"]
+                tx_hash = kwargs["tx_hash"]
+                amount = kwargs.get("amount")
+                
+                result = await self.crypto.verify_crypto_payment(
+                    payment_id=payment_id,
+                    tx_hash=tx_hash,
+                    amount=amount
+                )
+                
+                return {
+                    **result,
+                    "payment_method": "crypto",
+                    "verified": result.get("verified", False),
+                    "message": "Payment verified" if result.get("verified") else "Payment verification pending"
+                }
+            except HTTPException as e:
+                raise e
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error verifying crypto payment: {str(e)}"
+                )
+        
+        else:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid payment method: {payment_method}"
             )
-            
-            return is_valid
-            
-        except Exception as e:
-            logger.error(f"Error verifying payment for order {order_id}: {e}")
-            return False
     
-    def get_payment_info(self, order_id: int, db: Session) -> Optional[Dict[str, Any]]:
+    async def get_payment_status(self, payment_id: str, payment_method: str) -> Dict[str, Any]:
         """
-        Get payment information for an order
-        :param order_id: Order ID
-        :return: Payment info dictionary
-        """
-        try:
-            order = db.query(Order).filter(Order.id == order_id).first()
-            if not order:
-                return None
+        Get current status of a payment
+        
+        Args:
+            payment_id: Payment identifier
+            payment_method: Payment method used
             
+        Returns:
+            dict: Payment status
+        """
+        if payment_method == "crypto":
+            return self.crypto.get_payment_status(payment_id)
+        else:
+            # For Zarinpal, we need to check with authority
+            # This would need to be stored in database
             return {
-                "method": order.payment_method,
-                "address": order.payment_address,
-                "amount_crypto": order.payment_amount_crypto,
-                "currency": order.payment_crypto_currency,
-                "amount_tomans": order.total_price_tomans,
-                "tx_hash": order.payment_tx_hash,
-                "status": order.status
+                "payment_id": payment_id,
+                "payment_method": payment_method,
+                "status": "unknown",
+                "message": "Payment status tracking not implemented for this method"
             }
-        except Exception as e:
-            logger.error(f"Error getting payment info for order {order_id}: {e}")
-            return None
     
-    def get_network_fee(self, network: str = "TRC20") -> float:
+    def get_supported_methods(self) -> Dict[str, Any]:
         """
-        Get network fee for crypto payment
-        :param network: Network name (TRC20, BTC, ETH)
-        :return: Network fee
+        Get list of supported payment methods
+        
+        Returns:
+            dict: Supported payment methods with details
         """
-        try:
-            return self.crypto_utils.get_crypto_network_fee(network)
-        except Exception as e:
-            logger.error(f"Error getting network fee: {e}")
-            return 1.0  # Default fee
-    
-    def create_payment_link(self, order_id: int, db: Session) -> Optional[str]:
-        """
-        Create a payment link for an order
-        (For future integration with payment gateways)
-        :param order_id: Order ID
-        :return: Payment link
-        """
-        try:
-            order = db.query(Order).filter(Order.id == order_id).first()
-            if not order:
-                return None
-            
-            # For now, just return a placeholder
-            # In production, integrate with a payment gateway
-            return f"/payment/{order_id}/"
-            
-        except Exception as e:
-            logger.error(f"Error creating payment link for order {order_id}: {e}")
-            return None
-
-
-payment_service = PaymentService()
+        return {
+            "methods": [
+                {
+                    "id": "crypto",
+                    "name": "پرداخت با تتر (USDT)",
+                    "description": "پرداخت با ارز دیجیتال تتر (شبکه TRC20)",
+                    "currency": "USDT",
+                    "is_active": True,
+                    "delivery_time": "فوری",
+                    "fee": "۰%",
+                    "min_amount": 100000,  # 100,000 Tomans
+                    "max_amount": None
+                },
+                {
+                    "id": "zarinpal",
+                    "name": "زرین‌پال",
+                    "description": "پرداخت با کارت بانکی از طریق درگاه زرین‌پال",
+                    "currency": "IRR",
+                    "is_active": True,
+                    "delivery_time": "پس از تایید",
+                    "fee": "۰.۹% + ۲۰۰ تومان",
+                    "min_amount": 10000,  # 10,000 Tomans
+                    "max_amount": 50000000  # 50,000,000 Tomans
+                }
+            ],
+            "default": "crypto"
+        }
