@@ -1,0 +1,138 @@
+{
+  "audit_date": "2026-07-19",
+  "repository": "https://github.com/maryamghabel2-cloud/ai-subscription-platform",
+  "default_branch": "main",
+  "main_head_sha": "6a6a454ed4b71321fe6904046defded1eed7ad82",
+  "audit_branch": "audit/repo-rescue-2026-07-19",
+  "build_status": "FAILED",
+  "verified_blockers": [
+    "Missing backend/app/config.py",
+    "Missing backend/app/database.py",
+    "Missing backend/app/models/models.py",
+    "Missing backend/app/schemas/schemas.py",
+    "Missing backend/app/agents/pricing_agent.py",
+    "Missing backend/app/agents/procurement_agent.py",
+    "Missing backend/app/agents/delivery_agent.py",
+    "Missing backend/app/utils/exchange_rate.py",
+    "Missing backend/app/utils/crypto_utils.py",
+    "Missing backend/app/utils/external_apis.py",
+    "SyntaxError ndef in backend/app/tasks.py",
+    "Missing backend/requirements.txt",
+    "Missing frontend/package.json"
+  ],
+  "commands_executed": [
+    {"command": "git status", "wd": "/home/user", "exit": 0, "result": "clean"},
+    {"command": "git ls-files", "wd": "/home/user", "exit": 0, "result": "52 files"},
+    {"command": "python --version", "wd": "/home/user", "exit": 0, "result": "3.13.13"},
+    {"command": "python3 --version", "wd": "/home/user", "exit": 0, "result": "3.13.13"},
+    {"command": "node --version", "wd": "/home/user", "exit": 0, "result": "v20.20.2"},
+    {"command": "npm --version", "wd": "/home/user", "exit": 0, "result": "10.8.2"},
+    {"command": "docker --version", "wd": "/home/user", "exit": 127, "result": "not found"},
+    {"command": "docker compose version", "wd": "/home/user", "exit": 127, "result": "not found"},
+    {"command": "python -m compileall backend", "wd": "/home/user", "exit": 1, "result": "SyntaxError tasks.py ndef"}
+  ],
+  "missing_files_claimed": [
+    "backend/app/config.py",
+    "backend/app/database.py",
+    "backend/app/models/models.py",
+    "backend/app/schemas/schemas.py",
+    "backend/app/agents/pricing_agent.py",
+    "backend/app/agents/procurement_agent.py",
+    "backend/app/agents/delivery_agent.py",
+    "backend/app/utils/exchange_rate.py",
+    "backend/app/utils/crypto_utils.py",
+    "backend/app/utils/external_apis.py",
+    "backend/requirements.txt",
+    "frontend/package.json",
+    "backend/app/templates/*.html",
+    "docker/docker-compose.yml (location mismatch)"
+  ],
+  "broken_imports": [
+    "app.config",
+    "app.database",
+    "app.models.models",
+    "app.schemas.schemas",
+    "app.agents.pricing_agent",
+    "app.agents.procurement_agent",
+    "app.agents.delivery_agent",
+    "app.utils.exchange_rate",
+    "app.utils.crypto_utils",
+    "app.utils.external_apis"
+  ],
+  "placeholder_implementations": [
+    "backend/app/models/__init__.py - 3 lines comment placeholder",
+    "backend/app/schemas/__init__.py - placeholder",
+    "backend/app/services/__init__.py - placeholder",
+    "backend/app/agents/__init__.py - placeholder",
+    "backend/app/utils/__init__.py - placeholder",
+    "backend/app/services/crypto_service.py - mock verification always True",
+    "backend/app/agents/seo_agent.py - 1911 lines mock returning hard-coded Persian content",
+    "frontend/src/pages/login.js - mock setTimeout",
+    "frontend/src/pages/register.js - mock setTimeout"
+  ],
+  "security_findings": {
+    "P0": 8,
+    "P1": 10,
+    "P2": 12,
+    "P3": 7,
+    "critical_ids": ["PAY-001","PAY-002","PAY-003","AUTH-001","IDOR-001","CORS-001","CRED-001","PAY-004"]
+  },
+  "payment_audit": {
+    "verifies_blockchain_network": false,
+    "verifies_token_contract": false,
+    "verifies_transaction_existence": false,
+    "verifies_recipient_address": false,
+    "verifies_exact_amount": false,
+    "verifies_decimal_precision": false,
+    "verifies_transaction_status": false,
+    "verifies_confirmation_count": false,
+    "verifies_invoice_expiration": false,
+    "verifies_unique_tx_hash": false,
+    "replay_prevention": false,
+    "atomic_db_update": false,
+    "idempotency": false,
+    "payment_order_state_separation": false,
+    "result": "UNSAFE - all checks missing, mock verification returns true"
+  },
+  "business_risk_flags": [
+    "shared consumer accounts",
+    "credential sharing",
+    "API-key resale",
+    "automated purchasing from marketplaces GGSel, FunPay, Oyunfor",
+    "supplier scraping via Selenium",
+    "bypassing geographic restrictions Netflix Turkey Pakistan",
+    "potential KYC/sanctions bypass via crypto",
+    "unsupported product guarantees (guarantee until end of subscription, 50-99% discount)"
+  ],
+  "frontend_backend_mismatches": [
+    "POST /api/orders/ query vs body",
+    "POST /api/orders/{id}/confirm-payment query vs body",
+    "POST /api/payments/create does not exist but frontend calls it",
+    "POST /api/payments/verify does not exist",
+    "POST /api/auth/login, register, profile does not exist",
+    "GET /api/products/prices depends on missing pricing_agent"
+  ],
+  "recommended_direction": {
+    "keep": [".gitignore","LICENSE","docker/nginx/nginx.conf","frontend/public/*","frontend/src/components/ui/*","frontend/src/utils/helpers.js","frontend/src/styles/globals.css","backend/app/data/products_data.py as seed"],
+    "repair": ["backend/app/tasks.py syntax","docker-compose.yml","docker/nginx/conf.d/default.conf","frontend/next.config.js","frontend/src/utils/api.js","frontend/src/pages/order.js","backend/app/agents/monitoring_agent.py","backend/Dockerfile","frontend/Dockerfile"],
+    "rewrite": ["backend/app/config.py","backend/app/database.py","backend/app/models/models.py","backend/app/schemas/schemas.py","backend/app/agents/pricing_agent.py","backend/app/services/crypto_service.py","backend/app/utils/exchange_rate.py","backend/app/main.py split routers","frontend/src/pages/payment.js","auth flow"],
+    "remove": ["frontend/src/pages/api/hello.js","backend/app/agents/seo_agent.py","backend/app/agents/seo_agents_config.py","docker-compose certbot service","Chrome/Selenium from Dockerfile"],
+    "defer": ["procurement_agent","delivery_agent","external_apis scraping","shared accounts","auto procurement","SEO agents"]
+  },
+  "files_added": [
+    "docs/TECHNICAL_AUDIT_2026-07-19.md",
+    "docs/SECURITY_AUDIT_2026-07-19.md",
+    "docs/REPOSITORY_INVENTORY_2026-07-19.md",
+    "docs/MVP_RECOVERY_PLAN.md",
+    "docs/KNOWN_RISKS.md",
+    "audit-report.json"
+  ],
+  "safety_confirmation": {
+    "main_unchanged": true,
+    "pr_merged": false,
+    "real_payment_activated": false,
+    "production_deployment": false,
+    "secrets_committed": false,
+    "application_source_modified": false
+  }
+}
