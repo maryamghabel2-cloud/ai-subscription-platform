@@ -1,406 +1,152 @@
-# AI Subscription Platform 🚀
+# Persian AI Workspace - Platform Roadmap (Phase 0)
 
-> **پلتفرم فروش اشتراک‌ها و APIهای هوش مصنوعی با قیمت‌های تخفیف‌دار**
-> **Fully Automated with AI Agents | On-Demand Purchasing | Real-time Pricing**
+> **New Direction:** This repository is no longer an AI subscription account reseller. The legacy shared-account model is **deprecated** and archived.
 
----
+> **Legacy Code:** Original backend/frontend incomplete code has been archived to branch `archive/legacy-code-2026-07-19` at `archive/legacy_2026-07-19/` for reference without deletion of history.
 
-## 📌 ویژگی‌های کلیدی
+We are now building a **phased Persian-first AI platform** for creators, businesses, developers, and everyday users.
 
-✅ **خرید به سفارش (On-Demand)** - فقط وقتی مشتری سفارش داد، خرید انجام می‌شود
-✅ **محاسبه لحظه‌ای قیمت‌ها** - قیمت‌ها بر اساس نرخ واقعی تتر (USDT) به‌روزرسانی می‌شوند
-✅ **AI Agents هوشمند** - اتوماسیون کامل خرید، تحویل و محاسبه قیمت‌ها
-✅ **اکانت‌های اشتراکی** - گزینه‌های ارزان برای کاربران معمولی
-✅ **پشتیبانی از سایت‌های خارجی** - تامین از GGSel, FunPay, Oyunfor, Kie.ai, ShareTool
-✅ **پرداخت با کریپتو** - پشتیبانی از USDT, BTC, ETH (شبکه TRC20 پیش‌فرض)
-✅ **حاشیه سود پویا** - قیمت‌گذاری هوشمند برای رقابت‌پذیری
+## What the Platform Will Include (Phased)
 
----
+**User-facing:**
+- General Persian chat
+- Prompt enhancement
+- Specialist personas (evidence-based, not authoritative)
+- Image generation
+- Product Photography Studio
+- Video generation
+- AI character/influencer tools
+- Telegram integration
+- Wallet and credit billing
+- Developer APIs
+- Business agents
+- Research and RAG
+- Future Agent Marketplace (idea)
 
-## 🏗️ معماری پروژه
+**How it will be built:**
+- Solo founder + **external project-building agents** (coding agents, research agents, design agents, marketing agents, SEO agents) now
+- Some of these may become **internal automated agents** later, connected to APIs with strict approval gates
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        AI Subscription Platform                   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────┐    ┌─────────────┐    ┌───────────────────┐  │
-│  │   Frontend   │    │   Backend    │    │    AI Agents      │  │
-│  │  (Next.js)   │───▶│ (FastAPI)    │───▶│  (Pricing, Proc., │  │
-│  └─────────────┘    └─────────────┘    │    Delivery, etc.) │  │
-│                                          └──────────┬─────────┘  │
-│                                                     │              │
-│  ┌─────────────┐    ┌─────────────┐    ┌───────────▼───────┐  │
-│  │   User       │───▶│   Order      │───▶│ External APIs    │  │
-│  └─────────────┘    └─────────────┘    │ (GGSel, Oyunfor,  │  │
-│                                          │  Kie.ai, etc.)     │  │
-│                                          └───────────────────┘  │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+## Project Structure Now (Phase 0)
 
----
+This branch `docs/phase-0-agent-operating-system` contains **documentation + GitHub planning only** - no production code, no secrets, no deploy.
 
-## 📦 ساختار پروژه
+### Key Docs
 
-```
-ai-subscription-platform/
-├── backend/                          # Backend (FastAPI)
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                   # FastAPI Application
-│   │   ├── config.py                 # تنظیمات
-│   │   ├── database.py               # تنظیمات دیتابیس
-│   │   │
-│   │   ├── agents/                   # 🤖 AI Agents
-│   │   │   ├── pricing_agent.py      # محاسبه قیمت‌ها
-│   │   │   ├── procurement_agent.py # خرید خودکار
-│   │   │   ├── delivery_agent.py     # تحویل خودکار
-│   │   │   └── monitoring_agent.py   # مانیتورینگ
-│   │   │
-│   │   ├── models/                   # 🗃️ مدل‌های دیتابیس
-│   │   │   └── models.py
-│   │   │
-│   │   ├── schemas/                  # 📜 Pydantic Schemas
-│   │   │   └── schemas.py
-│   │   │
-│   │   ├── services/                 # 🔧 سرویس‌ها
-│   │   │   ├── product_service.py
-│   │   │   ├── order_service.py
-│   │   │   └── payment_service.py
-│   │   │
-│   │   ├── utils/                    # 🔨 ابزارها
-│   │   │   ├── exchange_rate.py      # نرخ لحظه‌ای تتر
-│   │   │   ├── crypto_utils.py       # ابزارهای کریپتو
-│   │   │   └── external_apis.py      # API سایت‌های خارجی
-│   │   │
-│   │   └── tasks.py                  # Celery Tasks
-│   │
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
-│
-├── frontend/                         # Frontend (Next.js)
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── styles/
-│   │   └── utils/
-│   ├── package.json
-│   └── Dockerfile
-│
-├── docker/                          # Docker Configs
-│   ├── nginx/
-│   │   ├── nginx.conf
-│   │   └── conf.d/
-│   │       └── default.conf
-│   └── docker-compose.yml
-│
-├── .gitignore
-├── README.md
-└── LICENSE
-```
+- **Roadmap:** [`docs/roadmap/MASTER_ROADMAP.md`](docs/roadmap/MASTER_ROADMAP.md)
+- **Agent Operating System:** [`docs/agents/AGENT_OPERATING_SYSTEM.md`](docs/agents/AGENT_OPERATING_SYSTEM.md)
+- **Human Approval Gates:** [`docs/agents/HUMAN_APPROVAL_GATES.md`](docs/agents/HUMAN_APPROVAL_GATES.md)
+- **Product Vision:** [`docs/vision/PRODUCT_VISION.md`](docs/vision/PRODUCT_VISION.md)
+- **Persona Framework:** [`docs/personas/PERSONA_FRAMEWORK.md`](docs/personas/PERSONA_FRAMEWORK.md)
 
----
+### Roadmap Phases
 
-## 🚀 شروع سریع
+See `docs/roadmap/MASTER_ROADMAP.md`:
 
-### ✅ پیش‌نیازها
+- Phase 0: Foundation (current) - docs, Agent OS, GitHub structure, safety gates
+- Phase 1: Core MVP - auth, wallet mock, general chat, prompt enhancer, landing
+- Phase 2: Specialist Personas - evidence-based assistants
+- Phase 3: Image Studio & Product Photography
+- Phase 4: API Platform - API keys, usage logs
+- Phase 5: Video & Character Tools
+- Phase 6: Telegram & Business Agents
+- Phase 7: Research & RAG with citations
+- Phase 8: Agent Marketplace (future idea)
 
-- Python 3.11+
-- Node.js 18+
-- Docker & Docker Compose
-- Redis (برای Celery)
-- Git
+Each phase doc includes: objective, in/out scope, dependencies, technical/UX/business deliverables, required agents, test requirements, risk controls, exit criteria.
 
-### 📥 نصب و راه‌اندازی
+### Agent System Summary
 
-#### ۱. کلون کردن ریپازیتوری
+**Three categories:**
+
+1. **Project-building agents** (20): Orchestrator, Product Manager, Fullstack Builder, Website Builder, DevOps, QA/Security, Research, Prompt Engineer, RAG Knowledge, SEO Content, Growth Marketing, Social Media, Analytics, Customer Success, Sales/Partnership, Compliance/Risk, Finance/Unit Economics, Supplier Scout, App Store/ASO, Execution Coach - all L2 external now, PR/report output, human approval required.
+
+2. **Runtime product agents** (for customers): General Persian Chat, Prompt Enhancer, Specialist Personas, Image Studio, Product Photography Studio, Video Gen, Character Tools, Telegram Agent, Business Agents, Research/RAG, Developer API.
+
+3. **Internal operations agents** (future): SEO tech crawler, content draft, growth reporter, support draft, research scout - all draft-only initially, publish requires approval.
+
+**Maturity Levels:**
+- L0 Manual
+- L1 Prompt-driven external agent
+- L2 Semi-automated external agent with PR/report output (current primary)
+- L3 Internal API-connected agent (future, draft-only + approval)
+- L4 Autonomous with strict human approval gates (future idea, never for money/publishing/customer contact/pricing/config/merge/deploy/API keys/persona sensitive changes)
+
+**Approval Gates - Must Require Human Approval:**
+- publishing public content, spending money, contacting customers, bulk messages, changing prices, changing production config, merging PRs, deploying to production, creating/deleting API keys, modifying legal/medical/psychological personas, launching paid campaigns, issuing refunds/credits above threshold.
+
+See `docs/agents/HUMAN_APPROVAL_GATES.md`.
+
+### Documentation Map
+
+- Vision: `docs/vision/`
+- Roadmap: `docs/roadmap/` (9 phases)
+- Agents: `docs/agents/` (OS, registry, maturity, permission, control tower, workflow, approval gates, project/ 20 specs, runtime/ 5 architectures)
+- Personas: `docs/personas/` (framework, template, registry schema, backlog of 14 personas, pipeline, QA/red teaming)
+- Growth: `docs/growth/` (growth system, SEO strategy, content engine, launch plan, experiment backlog, referral ideas, social media, landing strategy)
+- Website: `docs/website/` (IA + 5 page requirements + SEO technical)
+- Ops: `docs/ops/` (GitHub workflow, branching, labels, milestones, DoD, release, runbook, reporting cadence)
+- Backlog: `docs/backlog/` (epics + 7 issue lists)
+- GitHub Templates: `.github/ISSUE_TEMPLATE/` (7 templates) + `pull_request_template.md`
+
+### Legacy Deprecation Notice
+
+- **Shared consumer accounts:** Deprecated, violates provider ToS, archived.
+- **Automated procurement from GGSel/FunPay/Oyunfor/Kie.ai/ShareTool:** Deprecated, no scraping, no bypassing geographic/KYC restrictions.
+- **API-key resale, supplier scraping, crypto payment for MVP:** Not in Phase 0/1. Credit-based wallet planned, no mock payment verification.
+- Old code archived, not deleted: `archive/legacy_2026-07-19/` on branch `archive/legacy-code-2026-07-19`.
+
+### Quick Start (Phase 0 Docs Only)
 
 ```bash
-git clone https://github.com/maryamghabel3-debug/ai-subscription-platform.git
+git clone https://github.com/maryamghabel2-cloud/ai-subscription-platform.git
 cd ai-subscription-platform
+git checkout docs/phase-0-agent-operating-system
+
+# Read roadmap
+cat docs/roadmap/MASTER_ROADMAP.md
+cat docs/agents/AGENT_OPERATING_SYSTEM.md
+
+# No production build yet - docs only branch
 ```
 
-#### ۲. تنظیم متغیرهای محیطی
+For future MVP skeleton (Phase 1), see branch `mvp/v1-core-foundation` (separate docs/code) which will have docker compose.
 
-```bash
-# کپی فایل نمونه
-cp backend/.env.example backend/.env
+### Growth & Safety
 
-# ویرایش فایل .env و وارد کردن اطلاعات خود
-nano backend/.env
-```
+- No auto-publishing without review
+- Growth loops: SEO → landing → signup → activation → referral
+- Metrics: visits, signup conversion, activation, credit purchase, retention, CAC, LTV
+- Persona safety: Evidence-based assistants, not certified professionals. For high-risk domains (psychologist, physician, legal, vet, plant with chemicals), require deep research, compliance review, disclaimer, escalation to professional, red teaming.
+- No medical, legal, psychological authority claims.
 
-**متغیرهای مهم:**
-- `GGSEL_USERNAME`, `GGSEL_PASSWORD` - اطلاعات ورود به GGSel
-- `FUNPAY_USERNAME`, `FUNPAY_PASSWORD` - اطلاعات ورود به FunPay
-- `OYUNFOR_USERNAME`, `OYUNFOR_PASSWORD` - اطلاعات ورود به Oyunfor
-- `KIE_AI_API_KEY` - API Key سایت Kie.ai
-- `CRYPTO_PAYMENT_ADDRESS` - آدرس کیف پول برای دریافت پرداخت‌ها
-- `SMTP_*` - تنظیمات ایمیل برای ارسال اطلاعیه‌ها
+### Contributing
 
-#### ۳. نصب وابستگی‌ها
+This is documentation + planning phase. Use issue templates:
 
-```bash
-# Backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # در ویندوز: venv\Scripts\activate
-pip install -r requirements.txt
-cd ..
+- Feature Request
+- Persona Design
+- Research Task
+- Agent Task
+- Growth Experiment
+- SEO Content Task
+- Bug Report
 
-# Frontend (اختیاری - اگر می‌خواهید Frontend را هم اجرا کنید)
-cd frontend
-npm install
-cd ..
-```
+PRs require checklist from `pull_request_template.md`, no direct main commit, no secrets, human approval required for all publishing/spending/pricing/config/merge/deploy/API keys/persona changes.
 
-#### ۴. ایجاد دیتابیس
+### Links
 
-```bash
-cd backend
-python -c "from app.database import Base, engine; Base.metadata.create_all(bind=engine)"
-cd ..
-```
+- Master Roadmap: [docs/roadmap/MASTER_ROADMAP.md](docs/roadmap/MASTER_ROADMAP.md)
+- Agent OS: [docs/agents/AGENT_OPERATING_SYSTEM.md](docs/agents/AGENT_OPERATING_SYSTEM.md)
+- Approval Gates: [docs/agents/HUMAN_APPROVAL_GATES.md](docs/agents/HUMAN_APPROVAL_GATES.md)
+- Product Vision: [docs/vision/PRODUCT_VISION.md](docs/vision/PRODUCT_VISION.md)
+- Persona Framework: [docs/personas/PERSONA_FRAMEWORK.md](docs/personas/PERSONA_FRAMEWORK.md)
+- Growth System: [docs/growth/GROWTH_SYSTEM.md](docs/growth/GROWTH_SYSTEM.md)
 
-#### ۵. اجرا با Docker (پیشنهادی)
+### License
 
-```bash
-# ساخت و اجرا
-sudo docker-compose up -d --build
-
-# مشاهده لاگ‌ها
-sudo docker-compose logs -f backend
-```
-
-سایت در آدرس **http://localhost** در دسترس خواهد بود.
-
-#### ۶. اجرا بدون Docker (برای توسعه)
-
-```bash
-# Backend
-cd backend
-source venv/bin/activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Frontend (در ترمینال دیگری)
-cd frontend
-npm run dev
-```
-
-- Backend: **http://localhost:8000**
-- Frontend: **http://localhost:3000**
+MIT - See LICENSE file. This is planning documentation, not production code.
 
 ---
 
-## 🤖 AI Agents
-
-### 1. **Pricing Agent** (`backend/app/agents/pricing_agent.py`)
-- **وظیفه:** محاسبه هوشمند قیمت‌ها
-- **ویژگی‌ها:**
-  - دریافت قیمت پایه از سایت‌های خارجی
-  - محاسبه قیمت‌ها بر اساس نرخ لحظه‌ای تتر
-  - اعمال حاشیه سود پویا (بر اساس قیمت‌های رقبا)
-  - بهینه‌سازی قیمت‌ها برای رقابت‌پذیری
-
-### 2. **Procurement Agent** (`backend/app/agents/procurement_agent.py`)
-- **وظیفه:** خرید خودکار از سایت‌های خارجی
-- **ویژگی‌ها:**
-  - خرید اکانت/API از GGSel, FunPay, Oyunfor, Kie.ai, ShareTool
-  - مدیریت سفارش‌ها
-  - ثبت لاگ خریدها
-  - پشتیبانی از خرید عمده (در آینده)
-
-### 3. **Delivery Agent** (`backend/app/agents/delivery_agent.py`)
-- **وظیفه:** تحویل خودکار اکانت‌ها به مشتریان
-- **ویژگی‌ها:**
-  - ارسال ایمیل با اطلاعات اکانت
-  - ارسال SMS (در آینده)
-  - ذخیره اطلاعات در پروفایل کاربر
-
-### 4. **Monitoring Agent** (`backend/app/agents/monitoring_agent.py`)
-- **وظیفه:** مانیتورینگ سیستم
-- **ویژگی‌ها:**
-  - بررسی سلامت سیستم
-  - رصد خطاهای خرید
-  - بررسی موجودی اکانت‌های اشتراکی
-  - ارسال هشدارها
-
----
-
-## 🔌 API Endpoints
-
-### 📊 Exchange Rate
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/exchange-rate` | دریافت نرخ لحظه‌ای تتر |
-| GET | `/api/exchange-rates` | دریافت تمام نرخ‌های ارز |
-
-### 📦 Products
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | دریافت تمام محصولات |
-| GET | `/api/products/{id}` | دریافت یک محصول خاص |
-| GET | `/api/products/prices` | دریافت قیمت‌های محاسبه شده تمام محصولات |
-| POST | `/api/products/calculate-price` | محاسبه قیمت برای یک محصول |
-
-### 🛒 Orders
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/orders/` | ایجاد سفارش جدید |
-| GET | `/api/orders/{id}` | دریافت جزئیات سفارش |
-| POST | `/api/orders/{id}/confirm-payment` | تایید پرداخت کریپتو |
-| GET | `/api/orders/{id}/status` | دریافت وضعیت سفارش |
-
-### 👥 Shared Accounts
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/shared-accounts/` | ایجاد اکانت‌های اشتراکی جدید |
-| GET | `/api/shared-accounts/{id}` | دریافت اطلاعات اکانت اشتراکی |
-
-### 🔐 Admin (نیاز به احراز هویت)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/admin/products/` | ایجاد محصول جدید |
-| POST | `/api/admin/competitor-prices/` | اضافه کردن قیمت رقیب |
-
----
-
-## 💰 قیمت‌گذاری هوشمند
-
-سیستم قیمت‌گذاری این پلتفرم **به صورت کاملا خودکار** و **هوشمند** عمل می‌کند:
-
-1. **دریافت نرخ لحظه‌ای تتر** از سایت‌های ایرانی (بیت‌پین، نوبیتکس، والکس)
-2. **محاسبه قیمت پایه تومانی** بر اساس قیمت دلاری محصول
-3. **اعمال حاشیه سود پویا** بر اساس:
-   - قیمت‌های رقبا (سایت‌های ایرانی)
-   - دسته‌بندی محصول
-   - نوع محصول
-4. **اضافه کردن کارمزد پرداخت** (۱% پیش‌فرض)
-5. **بهینه‌سازی قیمت نهایی** برای:
-   - تضمین سودآوری
-   - رقابت‌پذیری
-
-### مثال محاسبه قیمت:
-
-```
-محصول: ChatGPT Plus
-قیمت پایه دلاری: $7
-نرخ تتر: ۱۹۰،۰۰۰ تومان
-قیمت پایه تومانی: ۷ × ۱۹۰،۰۰۰ = ۱،۳۳۰،۰۰۰ تومان
-
-قیمت رقبا (میانگین): ۱،۹۷۵،۰۰۰ تومان
-حاشیه سود پویا: ۴۳.۵% (برای رقابت‌پذیری)
-قیمت قبل از کارمزد: ۱،۳۳۰،۰۰۰ × ۱.۴۳۵ = ۱،۹۰۷،۵۵۰ تومان
-کارمزد پرداخت (۱%): ۱۹،۰۷۵ تومان
-
-قیمت نهایی: ۱،۹۰۷،۵۵۰ + ۱۹،۰۷۵ = ۱،۹۲۶،۶۲۵ تومان ≈ ۱،۹۲۷،۰۰۰ تومان
-```
-
----
-
-## 🌍 سایت‌های تامین کننده
-
-پلتفرم از سایت‌های خارجی زیر برای تامین اکانت‌ها و APIها استفاده می‌کند:
-
-| سایت | لینک | محصولات | تخفیف |
-|------|------|----------|--------|
-| GGSel | [ggsel.net](https://ggsel.net) | اکانت‌های هوش مصنوعی | ۶۰-۹۰% |
-| FunPay | [funpay.com](https://funpay.com) | اکانت‌های هوش مصنوعی | ۵۰-۸۰% |
-| Oyunfor | [oyunfor.com](https://www.oyunfor.com) | گیفت کارت ترکیه | ۹۰%+ |
-| Kie.ai | [kie.ai](https://kie.ai) | اعتبار API | ۲۰-۸۶% |
-| ShareTool | [sharetool.net](https://sharetool.net) | اکانت‌های اشتراکی | ۹۵-۹۹% |
-
----
-
-## 📊 محصولات پشتیبانی شده
-
-### 💬 چت و متن (Chat & Text AI)
-- ChatGPT Plus
-- Claude Pro/Max
-- Grok (xAI)
-- Gemini Advanced
-- Mistral AI
-
-### 🎨 ساخت عکس (Image Generation AI)
-- Midjourney (Basic/Standard/Pro)
-- DALL-E 3
-- Stable Diffusion
-- Leonardo.AI
-- Ideogram
-
-### 🎬 ساخت ویدیو (Video Generation AI)
-- Runway ML
-- Pika Labs
-- Sora
-- Kling AI
-- Veo
-
-### 💻 کد نویسی (Coding AI)
-- GitHub Copilot
-- Cursor AI
-- Tabnine
-
-### 🎵 موسیقی (Audio AI)
-- Suno AI
-- Udio
-- ElevenLabs
-
-### 🌐 همه در یک جا (All-in-One)
-- Unified AI Hub
-- Cabina.AI
-- Krater.ai
-
----
-
-## 🛡️ امنیت
-
-- **حفظ اطلاعات کاربر** - اطلاعات کاربران به صورت ایمن ذخیره می‌شوند
-- **پرداخت‌های ایمن** - استفاده از شبکه TRC20 برای کارمزد پایین
-- **اکانت‌های معتبر** - خرید از سایت‌های معتبر خارجی
-- **گارانتی** - گارانتی تا پایان دوره اشتراک
-
----
-
-## 📈 مقیاس‌پذیری
-
-پلتفرم برای **مقیاس‌پذیری بالا** طراحی شده است:
-
-- **Docker Containerization** - اجرا در هر محیطی
-- **Celery Tasks** - پردازش پس‌زمینه سفارش‌ها
-- **Redis Cache** - ذخیره موقت اطلاعات
-- **Load Balancing** - آماده برای ترافیک بالا
-
----
-
-## 🤝 همکاری
-
-برای همکاری در توسعه این پروژه:
-
-1. ریپازیتوری را Fork کنید
-2. یک Branch جدید ایجاد کنید (`git checkout -b feature/your-feature`)
-3. تغییرات خود را Commit کنید (`git commit -m 'Add some feature'`)
-4. به Branch اصلی Push کنید (`git push origin feature/your-feature`)
-5. Pull Request ایجاد کنید
-
----
-
-## 📜 مجوز
-
-این پروژه تحت **مجوز MIT** منتشر شده است. برای اطلاعات بیشتر، فایل [LICENSE](LICENSE) را مشاهده کنید.
-
----
-
-## 💬 تماس
-
-برای سوالات و پیشنهادات:
-- ایمیل: support@yoursite.com
-- تلگرام: @yoursite
-
----
-
-**✨ با استفاده از این پلتفرم، می‌توانید تمام ابزارهای هوش مصنوعی را با تخفیف ۵۰% تا ۹۹% خریداری کنید!**
-
-**🚀 اولین خرید خود را امروز انجام دهید!**
+**Status:** Phase 0 - Foundation docs in PR, not merged to main yet. See PR: `docs: define phase 0 roadmap and agent operating system`
