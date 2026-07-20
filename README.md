@@ -1,406 +1,205 @@
-# AI Subscription Platform 🚀
+# Persian AI Workspace - Platform Roadmap (Phase 0)
 
-> **پلتفرم فروش اشتراک‌ها و APIهای هوش مصنوعی با قیمت‌های تخفیف‌دار**
-> **Fully Automated with AI Agents | On-Demand Purchasing | Real-time Pricing**
+> **New Direction:** This repository is no longer an AI subscription account reseller. The legacy shared-account model is **deprecated** and archived.
 
----
+> **Legacy Code:** Original backend/frontend incomplete code has been archived to branch `archive/legacy-code-2026-07-19` at `archive/legacy_2026-07-19/` for reference without deletion of history.
 
-## 📌 ویژگی‌های کلیدی
+We are now building a **phased Persian-first AI platform** for creators, businesses, developers, and everyday users.
 
-✅ **خرید به سفارش (On-Demand)** - فقط وقتی مشتری سفارش داد، خرید انجام می‌شود
-✅ **محاسبه لحظه‌ای قیمت‌ها** - قیمت‌ها بر اساس نرخ واقعی تتر (USDT) به‌روزرسانی می‌شوند
-✅ **AI Agents هوشمند** - اتوماسیون کامل خرید، تحویل و محاسبه قیمت‌ها
-✅ **اکانت‌های اشتراکی** - گزینه‌های ارزان برای کاربران معمولی
-✅ **پشتیبانی از سایت‌های خارجی** - تامین از GGSel, FunPay, Oyunfor, Kie.ai, ShareTool
-✅ **پرداخت با کریپتو** - پشتیبانی از USDT, BTC, ETH (شبکه TRC20 پیش‌فرض)
-✅ **حاشیه سود پویا** - قیمت‌گذاری هوشمند برای رقابت‌پذیری
+## What the Platform Will Include (Phased)
 
----
+**User-facing:**
+- General Persian chat
+- Prompt enhancement
+- Specialist personas (evidence-based, not authoritative)
+- Image generation
+- Product Photography Studio
+- Video generation
+- AI character/influencer tools
+- Telegram integration
+- Wallet and credit billing
+- Developer APIs
+- Business agents
+- Research and RAG
+- Future Agent Marketplace (idea)
 
-## 🏗️ معماری پروژه
+**How it will be built:**
+- Solo founder + **external project-building agents** (coding agents, research agents, design agents, marketing agents, SEO agents) now
+- Some of these may become **internal automated agents** later, connected to APIs with strict approval gates
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        AI Subscription Platform                   │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────┐    ┌─────────────┐    ┌───────────────────┐  │
-│  │   Frontend   │    │   Backend    │    │    AI Agents      │  │
-│  │  (Next.js)   │───▶│ (FastAPI)    │───▶│  (Pricing, Proc., │  │
-│  └─────────────┘    └─────────────┘    │    Delivery, etc.) │  │
-│                                          └──────────┬─────────┘  │
-│                                                     │              │
-│  ┌─────────────┐    ┌─────────────┐    ┌───────────▼───────┐  │
-│  │   User       │───▶│   Order      │───▶│ External APIs    │  │
-│  └─────────────┘    └─────────────┘    │ (GGSel, Oyunfor,  │  │
-│                                          │  Kie.ai, etc.)     │  │
-│                                          └───────────────────┘  │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-```
+## Project Structure Now (Phase 0)
 
----
+This Pull Request changes documentation and GitHub planning files only. The inherited repository still contains legacy application code (backend/ and frontend/ placeholders from earlier phase). This PR does not modify production application code, does not add secrets, and does not deploy.
 
-## 📦 ساختار پروژه
+### Key Docs
 
-```
-ai-subscription-platform/
-├── backend/                          # Backend (FastAPI)
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py                   # FastAPI Application
-│   │   ├── config.py                 # تنظیمات
-│   │   ├── database.py               # تنظیمات دیتابیس
-│   │   │
-│   │   ├── agents/                   # 🤖 AI Agents
-│   │   │   ├── pricing_agent.py      # محاسبه قیمت‌ها
-│   │   │   ├── procurement_agent.py # خرید خودکار
-│   │   │   ├── delivery_agent.py     # تحویل خودکار
-│   │   │   └── monitoring_agent.py   # مانیتورینگ
-│   │   │
-│   │   ├── models/                   # 🗃️ مدل‌های دیتابیس
-│   │   │   └── models.py
-│   │   │
-│   │   ├── schemas/                  # 📜 Pydantic Schemas
-│   │   │   └── schemas.py
-│   │   │
-│   │   ├── services/                 # 🔧 سرویس‌ها
-│   │   │   ├── product_service.py
-│   │   │   ├── order_service.py
-│   │   │   └── payment_service.py
-│   │   │
-│   │   ├── utils/                    # 🔨 ابزارها
-│   │   │   ├── exchange_rate.py      # نرخ لحظه‌ای تتر
-│   │   │   ├── crypto_utils.py       # ابزارهای کریپتو
-│   │   │   └── external_apis.py      # API سایت‌های خارجی
-│   │   │
-│   │   └── tasks.py                  # Celery Tasks
-│   │
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .env.example
-│
-├── frontend/                         # Frontend (Next.js)
-│   ├── public/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   ├── styles/
-│   │   └── utils/
-│   ├── package.json
-│   └── Dockerfile
-│
-├── docker/                          # Docker Configs
-│   ├── nginx/
-│   │   ├── nginx.conf
-│   │   └── conf.d/
-│   │       └── default.conf
-│   └── docker-compose.yml
-│
-├── .gitignore
-├── README.md
-└── LICENSE
-```
+- **Roadmap:** [`docs/roadmap/MASTER_ROADMAP.md`](docs/roadmap/MASTER_ROADMAP.md)
+- **Agent Operating System:** [`docs/agents/AGENT_OPERATING_SYSTEM.md`](docs/agents/AGENT_OPERATING_SYSTEM.md)
+- **Human Approval Gates:** [`docs/agents/HUMAN_APPROVAL_GATES.md`](docs/agents/HUMAN_APPROVAL_GATES.md)
+- **Product Vision:** [`docs/vision/PRODUCT_VISION.md`](docs/vision/PRODUCT_VISION.md)
+- **Persona Framework:** [`docs/personas/PERSONA_FRAMEWORK.md`](docs/personas/PERSONA_FRAMEWORK.md)
 
----
+### Roadmap Phases
 
-## 🚀 شروع سریع
+See `docs/roadmap/MASTER_ROADMAP.md`:
 
-### ✅ پیش‌نیازها
+- Phase 0: Foundation (current) - docs, Agent OS, GitHub structure, safety gates
+- Phase 1: Core MVP - auth, wallet mock, general chat, prompt enhancer, landing
+- Phase 2: Specialist Personas - evidence-based assistants
+- Phase 3: Image Studio & Product Photography
+- Phase 4: API Platform - API keys, usage logs
+- Phase 5: Video & Character Tools
+- Phase 6: Telegram & Business Agents
+- Phase 7: Research & RAG with citations
+- Phase 8: Agent Marketplace (future idea)
 
-- Python 3.11+
-- Node.js 18+
-- Docker & Docker Compose
-- Redis (برای Celery)
-- Git
+Each phase doc includes: objective, in/out scope, dependencies, technical/UX/business deliverables, required agents, test requirements, risk controls, exit criteria.
 
-### 📥 نصب و راه‌اندازی
+### Agent System Summary
 
-#### ۱. کلون کردن ریپازیتوری
+**Three categories (Updated 2026-07-20 - 28 project-building agents, mix L1/L2):**
+
+1. **Project-building agents** (28 total: 19 L1 report/draft + 9 L2 branch+PR): Orchestrator (L2 docs/planning PRs only, does NOT write product code), Product Manager (L1), Fullstack Builder (L2), Website Builder (L2), DevOps (L2), QA/Security (L2), Research (L1), Prompt Engineer (L2), RAG Knowledge (L1), SEO Content (L1 draft-only), Growth Marketing (L1), Social Media (L1), Analytics (L1), Customer Success (L1), Sales/Partnership (L1), Compliance/Risk (L1), Finance/Unit Economics (L1), Supplier Scout (L1), App Store/ASO (L1), Execution Coach (L1), plus new per review: UX/Product Design (L2), Brand Visual Identity (L1), ML Inference Engineer (L2), Model Evaluation (L1), Trust & Safety (L1), Data Privacy Governance (L1), Localization & Accessibility (L2), SRE/Incident Response (L1) - **Authoritative: Total 28 = 19 L1 + 9 L2** - L1 = prompt-driven that returns report/draft NO branch/PR, L2 = may create scoped branch + PR, Orchestrator = L2 but docs/planning PRs only. Human approval required for merge/publish/spending.
+
+
+## Authoritative Count (Extracted From Files - 2026-07-20 Verification)
+
+**Total project-building agents: 28**
+- **L1: 19** - Prompt-driven external agent that returns a report or draft, NO branch/PR
+- **L2: 9** - May create scoped branch + PR (Orchestrator = L2 but docs/planning PRs only)
+
+**Breakdown:**
+- L1 (19): ANALYTICS, APP_STORE_ASO, BRAND_VISUAL_IDENTITY, COMPLIANCE_RISK, CUSTOMER_SUCCESS, DATA_PRIVACY_GOVERNANCE, EXECUTION_COACH, FINANCE_UNIT_ECONOMICS, GROWTH_MARKETING, MODEL_EVALUATION, PRODUCT_MANAGER, RAG_KNOWLEDGE, RESEARCH, SALES_PARTNERSHIP, SEO_CONTENT, SOCIAL_MEDIA, SRE_INCIDENT_RESPONSE, SUPPLIER_SCOUT, TRUST_SAFETY
+- L2 (9): DEVOPS, FULLSTACK_BUILDER, LOCALIZATION_ACCESSIBILITY, ML_INFERENCE_ENGINEER, ORCHESTRATOR (docs/planning only), PROMPT_ENGINEER, QA_SECURITY, UX_PRODUCT_DESIGN, WEBSITE_BUILDER
+
+| Agent Name | File | Maturity |
+|---|---|---|
+| Analytics Agent | ANALYTICS_AGENT.md | L1 |
+| App Store/ASO Agent | APP_STORE_ASO_AGENT.md | L1 |
+| Brand Visual Identity Agent | BRAND_VISUAL_IDENTITY_AGENT.md | L1 |
+| Compliance/Risk Agent | COMPLIANCE_RISK_AGENT.md | L1 |
+| Customer Success Agent | CUSTOMER_SUCCESS_AGENT.md | L1 |
+| Data Privacy Governance Agent | DATA_PRIVACY_GOVERNANCE_AGENT.md | L1 |
+| DevOps Agent | DEVOPS_AGENT.md | L2 |
+| Execution Coach Agent | EXECUTION_COACH_AGENT.md | L1 |
+| Finance/Unit Economics Agent | FINANCE_UNIT_ECONOMICS_AGENT.md | L1 |
+| Fullstack Builder Agent | FULLSTACK_BUILDER_AGENT.md | L2 |
+| Growth Marketing Agent | GROWTH_MARKETING_AGENT.md | L1 |
+| Localization & Accessibility Agent | LOCALIZATION_ACCESSIBILITY_AGENT.md | L2 |
+| ML Inference Engineer Agent | ML_INFERENCE_ENGINEER_AGENT.md | L2 |
+| Model Evaluation Agent | MODEL_EVALUATION_AGENT.md | L1 |
+| Orchestrator Agent | ORCHESTRATOR_AGENT.md | L2 (docs/planning PRs only) |
+| Product Manager Agent | PRODUCT_MANAGER_AGENT.md | L1 |
+| Prompt Engineer Agent | PROMPT_ENGINEER_AGENT.md | L2 |
+| QA/Security Agent | QA_SECURITY_AGENT.md | L2 |
+| RAG Knowledge Agent | RAG_KNOWLEDGE_AGENT.md | L1 |
+| Research Agent | RESEARCH_AGENT.md | L1 |
+| Sales/Partnership Agent | SALES_PARTNERSHIP_AGENT.md | L1 |
+| SEO Content Agent | SEO_CONTENT_AGENT.md | L1 |
+| Social Media Agent | SOCIAL_MEDIA_AGENT.md | L1 |
+| SRE/Incident Response Agent | SRE_INCIDENT_RESPONSE_AGENT.md | L1 |
+| Supplier Scout Agent | SUPPLIER_SCOUT_AGENT.md | L1 |
+| Trust & Safety Agent | TRUST_SAFETY_AGENT.md | L1 |
+| UX/Product Design Agent | UX_PRODUCT_DESIGN_AGENT.md | L2 |
+| Website Builder Agent | WEBSITE_BUILDER_AGENT.md | L2 |
+
+
+
+2. **Runtime product agents** (for customers, 11): General Persian Chat, Prompt Enhancer, Specialist Personas (evidence-based, structured, direct where appropriate, citation-aware), Image Studio, Product Photography Studio, Video Gen, Character Tools (consent gate), Telegram Agent (encrypted token), Business Agents (FAQ/lead/content draft), Research/RAG (citations), Developer API (hashed keys).
+
+3. **Internal operations agents** (future, 5): SEO tech crawler, content draft, growth reporter, support draft, research scout - all draft-only initially, publish requires approval, future L3.
+
+**Maturity Levels (Corrected per review):**
+- L0 Manual: Human does task, no agent.
+- L1 Prompt-driven external agent that returns a report or draft (no branch/PR itself)
+- L2 External agent that may create a scoped branch and Pull Request (docs or code per separation of duties)
+- L3 Internal API-connected agent (future, scoped key, read + draft-create, not publish)
+- L4 Controlled automation with mandatory human approval gates (future idea, never for absolutely forbidden actions)
+
+**Approval Gates - Must Require Human Approval (14 actions):**
+- publishing public content, spending money, contacting customers, bulk messages, changing prices, changing production config, merging PRs, deploying to production, creating/deleting API keys, modifying legal/medical/psychological personas, launching paid campaigns, issuing refunds/credits above threshold, creating new agent type or escalating maturity, deleting data/banning users.
+
+**Absolutely Forbidden / NO-GO (No human approval may authorize):**
+- bypassing provider Terms of Service, bypassing geographic restrictions, bypassing sanctions, bypassing KYC, using fake identities, hiding prohibited end-user locations, sharing/reselling unauthorized credentials or raw supplier keys, CSAM, non-consensual intimate imagery, deepfake without consent, claiming professional authority (medical/legal/psych diagnosis/verdict/therapy).
+
+See `docs/agents/HUMAN_APPROVAL_GATES.md` and `docs/agents/AGENT_PERMISSION_MODEL.md`.
+
+### Documentation Map (Updated Phase 0 - 90 files → now 105+ files)
+
+- Vision: `docs/vision/` (3 files)
+- Roadmap: `docs/roadmap/` (10 files: MASTER + 9 phases 0-8, each with objective, in/out scope, dependencies, deliverables, agents, tests, risk controls including absolutely forbidden, exit criteria)
+- Agents: `docs/agents/` (7 OS docs + project/ 28 specs (was 20, added 8 new: UX/Product Design, Brand Visual Identity, ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility, SRE Incident Response) with L1/L2 mix per registry + runtime/ 5 architectures) + 7 new governance docs in architecture/evaluation/safety/research
+- Architecture: `docs/architecture/` (SYSTEM_CONTEXT, PROVIDER_ABSTRACTION_STRATEGY, DATA_CLASSIFICATION_AND_RETENTION)
+- Evaluation: `docs/evaluation/` (MODEL_EVALUATION_STRATEGY, PERSONA_EVALUATION_STRATEGY with mandatory evidence fields)
+- Safety: `docs/safety/` (TRUST_AND_SAFETY_FRAMEWORK)
+- Research: `docs/research/` (SOURCE_QUALITY_POLICY with source hierarchy, publisher, dates, evidence grade, geographic scope, etc.)
+- Personas: `docs/personas/` (6 files: framework with mandatory fields source hierarchy, evidence grade, publisher, publication/update/access dates, geographic scope, last review, conflicting handling, min primary sources, expert reviewer, citation requirements, benchmark, accuracy/hallucination metrics, knowledge-pack version, expiry; template, registry schema, backlog 14 personas with mandatory fields, pipeline, QA/red teaming)
+- Growth: `docs/growth/` (8 files growth system, SEO strategy, content engine, launch plan, experiment backlog, referral ideas, social, landing strategy - no auto-publish rule)
+- Website: `docs/website/` (6 files IA 15 pages + landing, pricing, agent directory, blog, SEO technical)
+- Ops: `docs/ops/` (8 files workflow, branching, labels, milestones, DoD with HttpOnly cookies Secure SameSite, release, runbook, reporting cadence)
+- Backlog: `docs/backlog/` (8 files epics + PHASE_0_ISSUES now includes 13 issues including repository metadata update task, PHASE_1_ISSUES, PHASE_2_ISSUES, AGENT_SYSTEM_ISSUES now 7 issues for 28 agents + governance docs, GROWTH, WEBSITE, PERSONA - each with title/purpose/owner/dependencies/AC/priority/phase/risk)
+- GitHub Templates: `.github/ISSUE_TEMPLATE/` (7 templates: feature, persona, research, agent_task, growth_experiment, seo_content, bug) + `pull_request_template.md` with checklist, approval gates, absolutely forbidden, rollback
+
+### Legacy Deprecation Notice
+
+- **Shared consumer accounts:** Deprecated, violates provider ToS, archived.
+- **Automated procurement from GGSel/FunPay/Oyunfor/Kie.ai/ShareTool:** Deprecated, no scraping, no bypassing geographic/KYC restrictions.
+- **API-key resale, supplier scraping, crypto payment for MVP:** Not in Phase 0/1. Credit-based wallet planned, no mock payment verification.
+- Old code archived, not deleted: `archive/legacy_2026-07-19/` on branch `archive/legacy-code-2026-07-19`.
+
+### Quick Start (Phase 0 Docs Only)
 
 ```bash
-git clone https://github.com/maryamghabel3-debug/ai-subscription-platform.git
+git clone https://github.com/maryamghabel2-cloud/ai-subscription-platform.git
 cd ai-subscription-platform
+git checkout docs/phase-0-agent-operating-system
+
+# Read roadmap
+cat docs/roadmap/MASTER_ROADMAP.md
+cat docs/agents/AGENT_OPERATING_SYSTEM.md
+
+# No production build yet - docs only branch
 ```
 
-#### ۲. تنظیم متغیرهای محیطی
+For future MVP skeleton (Phase 1), a separate branch may be created later (for example `mvp/v1-core-foundation` if founder decides) with a clean implementation. No MVP branch is required to exist for this Phase 0 documentation PR. Always verify current remote branches with `git ls-remote --heads origin` before referencing any branch as existing.
 
-```bash
-# کپی فایل نمونه
-cp backend/.env.example backend/.env
+When a future MVP branch is created, it would contain docker compose and a working skeleton per `docs/roadmap/PHASE_1_CORE_MVP.md`.
 
-# ویرایش فایل .env و وارد کردن اطلاعات خود
-nano backend/.env
-```
+### Growth & Safety
 
-**متغیرهای مهم:**
-- `GGSEL_USERNAME`, `GGSEL_PASSWORD` - اطلاعات ورود به GGSel
-- `FUNPAY_USERNAME`, `FUNPAY_PASSWORD` - اطلاعات ورود به FunPay
-- `OYUNFOR_USERNAME`, `OYUNFOR_PASSWORD` - اطلاعات ورود به Oyunfor
-- `KIE_AI_API_KEY` - API Key سایت Kie.ai
-- `CRYPTO_PAYMENT_ADDRESS` - آدرس کیف پول برای دریافت پرداخت‌ها
-- `SMTP_*` - تنظیمات ایمیل برای ارسال اطلاعیه‌ها
+- No auto-publishing without review
+- Growth loops: SEO → landing → signup → activation → referral
+- Metrics: visits, signup conversion, activation, credit purchase, retention, CAC, LTV
+- Persona safety: Evidence-based assistants, not certified professionals. For high-risk domains (psychologist, physician, legal, vet, plant with chemicals), require deep research, compliance review, disclaimer, escalation to professional, red teaming.
+- No medical, legal, psychological authority claims.
 
-#### ۳. نصب وابستگی‌ها
+### Contributing
 
-```bash
-# Backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # در ویندوز: venv\Scripts\activate
-pip install -r requirements.txt
-cd ..
+This is documentation + planning phase. Use issue templates:
 
-# Frontend (اختیاری - اگر می‌خواهید Frontend را هم اجرا کنید)
-cd frontend
-npm install
-cd ..
-```
+- Feature Request
+- Persona Design
+- Research Task
+- Agent Task
+- Growth Experiment
+- SEO Content Task
+- Bug Report
 
-#### ۴. ایجاد دیتابیس
+PRs require checklist from `pull_request_template.md`, no direct main commit, no secrets, human approval required for all publishing/spending/pricing/config/merge/deploy/API keys/persona changes.
 
-```bash
-cd backend
-python -c "from app.database import Base, engine; Base.metadata.create_all(bind=engine)"
-cd ..
-```
+### Links
 
-#### ۵. اجرا با Docker (پیشنهادی)
+- Master Roadmap: [docs/roadmap/MASTER_ROADMAP.md](docs/roadmap/MASTER_ROADMAP.md)
+- Agent OS: [docs/agents/AGENT_OPERATING_SYSTEM.md](docs/agents/AGENT_OPERATING_SYSTEM.md)
+- Approval Gates: [docs/agents/HUMAN_APPROVAL_GATES.md](docs/agents/HUMAN_APPROVAL_GATES.md)
+- Product Vision: [docs/vision/PRODUCT_VISION.md](docs/vision/PRODUCT_VISION.md)
+- Persona Framework: [docs/personas/PERSONA_FRAMEWORK.md](docs/personas/PERSONA_FRAMEWORK.md)
+- Growth System: [docs/growth/GROWTH_SYSTEM.md](docs/growth/GROWTH_SYSTEM.md)
 
-```bash
-# ساخت و اجرا
-sudo docker-compose up -d --build
+### License
 
-# مشاهده لاگ‌ها
-sudo docker-compose logs -f backend
-```
-
-سایت در آدرس **http://localhost** در دسترس خواهد بود.
-
-#### ۶. اجرا بدون Docker (برای توسعه)
-
-```bash
-# Backend
-cd backend
-source venv/bin/activate
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-
-# Frontend (در ترمینال دیگری)
-cd frontend
-npm run dev
-```
-
-- Backend: **http://localhost:8000**
-- Frontend: **http://localhost:3000**
+MIT - See LICENSE file. This is planning documentation, not production code.
 
 ---
 
-## 🤖 AI Agents
-
-### 1. **Pricing Agent** (`backend/app/agents/pricing_agent.py`)
-- **وظیفه:** محاسبه هوشمند قیمت‌ها
-- **ویژگی‌ها:**
-  - دریافت قیمت پایه از سایت‌های خارجی
-  - محاسبه قیمت‌ها بر اساس نرخ لحظه‌ای تتر
-  - اعمال حاشیه سود پویا (بر اساس قیمت‌های رقبا)
-  - بهینه‌سازی قیمت‌ها برای رقابت‌پذیری
-
-### 2. **Procurement Agent** (`backend/app/agents/procurement_agent.py`)
-- **وظیفه:** خرید خودکار از سایت‌های خارجی
-- **ویژگی‌ها:**
-  - خرید اکانت/API از GGSel, FunPay, Oyunfor, Kie.ai, ShareTool
-  - مدیریت سفارش‌ها
-  - ثبت لاگ خریدها
-  - پشتیبانی از خرید عمده (در آینده)
-
-### 3. **Delivery Agent** (`backend/app/agents/delivery_agent.py`)
-- **وظیفه:** تحویل خودکار اکانت‌ها به مشتریان
-- **ویژگی‌ها:**
-  - ارسال ایمیل با اطلاعات اکانت
-  - ارسال SMS (در آینده)
-  - ذخیره اطلاعات در پروفایل کاربر
-
-### 4. **Monitoring Agent** (`backend/app/agents/monitoring_agent.py`)
-- **وظیفه:** مانیتورینگ سیستم
-- **ویژگی‌ها:**
-  - بررسی سلامت سیستم
-  - رصد خطاهای خرید
-  - بررسی موجودی اکانت‌های اشتراکی
-  - ارسال هشدارها
-
----
-
-## 🔌 API Endpoints
-
-### 📊 Exchange Rate
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/exchange-rate` | دریافت نرخ لحظه‌ای تتر |
-| GET | `/api/exchange-rates` | دریافت تمام نرخ‌های ارز |
-
-### 📦 Products
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/products` | دریافت تمام محصولات |
-| GET | `/api/products/{id}` | دریافت یک محصول خاص |
-| GET | `/api/products/prices` | دریافت قیمت‌های محاسبه شده تمام محصولات |
-| POST | `/api/products/calculate-price` | محاسبه قیمت برای یک محصول |
-
-### 🛒 Orders
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/orders/` | ایجاد سفارش جدید |
-| GET | `/api/orders/{id}` | دریافت جزئیات سفارش |
-| POST | `/api/orders/{id}/confirm-payment` | تایید پرداخت کریپتو |
-| GET | `/api/orders/{id}/status` | دریافت وضعیت سفارش |
-
-### 👥 Shared Accounts
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/shared-accounts/` | ایجاد اکانت‌های اشتراکی جدید |
-| GET | `/api/shared-accounts/{id}` | دریافت اطلاعات اکانت اشتراکی |
-
-### 🔐 Admin (نیاز به احراز هویت)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/admin/products/` | ایجاد محصول جدید |
-| POST | `/api/admin/competitor-prices/` | اضافه کردن قیمت رقیب |
-
----
-
-## 💰 قیمت‌گذاری هوشمند
-
-سیستم قیمت‌گذاری این پلتفرم **به صورت کاملا خودکار** و **هوشمند** عمل می‌کند:
-
-1. **دریافت نرخ لحظه‌ای تتر** از سایت‌های ایرانی (بیت‌پین، نوبیتکس، والکس)
-2. **محاسبه قیمت پایه تومانی** بر اساس قیمت دلاری محصول
-3. **اعمال حاشیه سود پویا** بر اساس:
-   - قیمت‌های رقبا (سایت‌های ایرانی)
-   - دسته‌بندی محصول
-   - نوع محصول
-4. **اضافه کردن کارمزد پرداخت** (۱% پیش‌فرض)
-5. **بهینه‌سازی قیمت نهایی** برای:
-   - تضمین سودآوری
-   - رقابت‌پذیری
-
-### مثال محاسبه قیمت:
-
-```
-محصول: ChatGPT Plus
-قیمت پایه دلاری: $7
-نرخ تتر: ۱۹۰،۰۰۰ تومان
-قیمت پایه تومانی: ۷ × ۱۹۰،۰۰۰ = ۱،۳۳۰،۰۰۰ تومان
-
-قیمت رقبا (میانگین): ۱،۹۷۵،۰۰۰ تومان
-حاشیه سود پویا: ۴۳.۵% (برای رقابت‌پذیری)
-قیمت قبل از کارمزد: ۱،۳۳۰،۰۰۰ × ۱.۴۳۵ = ۱،۹۰۷،۵۵۰ تومان
-کارمزد پرداخت (۱%): ۱۹،۰۷۵ تومان
-
-قیمت نهایی: ۱،۹۰۷،۵۵۰ + ۱۹،۰۷۵ = ۱،۹۲۶،۶۲۵ تومان ≈ ۱،۹۲۷،۰۰۰ تومان
-```
-
----
-
-## 🌍 سایت‌های تامین کننده
-
-پلتفرم از سایت‌های خارجی زیر برای تامین اکانت‌ها و APIها استفاده می‌کند:
-
-| سایت | لینک | محصولات | تخفیف |
-|------|------|----------|--------|
-| GGSel | [ggsel.net](https://ggsel.net) | اکانت‌های هوش مصنوعی | ۶۰-۹۰% |
-| FunPay | [funpay.com](https://funpay.com) | اکانت‌های هوش مصنوعی | ۵۰-۸۰% |
-| Oyunfor | [oyunfor.com](https://www.oyunfor.com) | گیفت کارت ترکیه | ۹۰%+ |
-| Kie.ai | [kie.ai](https://kie.ai) | اعتبار API | ۲۰-۸۶% |
-| ShareTool | [sharetool.net](https://sharetool.net) | اکانت‌های اشتراکی | ۹۵-۹۹% |
-
----
-
-## 📊 محصولات پشتیبانی شده
-
-### 💬 چت و متن (Chat & Text AI)
-- ChatGPT Plus
-- Claude Pro/Max
-- Grok (xAI)
-- Gemini Advanced
-- Mistral AI
-
-### 🎨 ساخت عکس (Image Generation AI)
-- Midjourney (Basic/Standard/Pro)
-- DALL-E 3
-- Stable Diffusion
-- Leonardo.AI
-- Ideogram
-
-### 🎬 ساخت ویدیو (Video Generation AI)
-- Runway ML
-- Pika Labs
-- Sora
-- Kling AI
-- Veo
-
-### 💻 کد نویسی (Coding AI)
-- GitHub Copilot
-- Cursor AI
-- Tabnine
-
-### 🎵 موسیقی (Audio AI)
-- Suno AI
-- Udio
-- ElevenLabs
-
-### 🌐 همه در یک جا (All-in-One)
-- Unified AI Hub
-- Cabina.AI
-- Krater.ai
-
----
-
-## 🛡️ امنیت
-
-- **حفظ اطلاعات کاربر** - اطلاعات کاربران به صورت ایمن ذخیره می‌شوند
-- **پرداخت‌های ایمن** - استفاده از شبکه TRC20 برای کارمزد پایین
-- **اکانت‌های معتبر** - خرید از سایت‌های معتبر خارجی
-- **گارانتی** - گارانتی تا پایان دوره اشتراک
-
----
-
-## 📈 مقیاس‌پذیری
-
-پلتفرم برای **مقیاس‌پذیری بالا** طراحی شده است:
-
-- **Docker Containerization** - اجرا در هر محیطی
-- **Celery Tasks** - پردازش پس‌زمینه سفارش‌ها
-- **Redis Cache** - ذخیره موقت اطلاعات
-- **Load Balancing** - آماده برای ترافیک بالا
-
----
-
-## 🤝 همکاری
-
-برای همکاری در توسعه این پروژه:
-
-1. ریپازیتوری را Fork کنید
-2. یک Branch جدید ایجاد کنید (`git checkout -b feature/your-feature`)
-3. تغییرات خود را Commit کنید (`git commit -m 'Add some feature'`)
-4. به Branch اصلی Push کنید (`git push origin feature/your-feature`)
-5. Pull Request ایجاد کنید
-
----
-
-## 📜 مجوز
-
-این پروژه تحت **مجوز MIT** منتشر شده است. برای اطلاعات بیشتر، فایل [LICENSE](LICENSE) را مشاهده کنید.
-
----
-
-## 💬 تماس
-
-برای سوالات و پیشنهادات:
-- ایمیل: support@yoursite.com
-- تلگرام: @yoursite
-
----
-
-**✨ با استفاده از این پلتفرم، می‌توانید تمام ابزارهای هوش مصنوعی را با تخفیف ۵۰% تا ۹۹% خریداری کنید!**
-
-**🚀 اولین خرید خود را امروز انجام دهید!**
+**Status:** Phase 0 - Foundation docs in PR, not merged to main yet. See PR: `docs: define phase 0 roadmap and agent operating system`
