@@ -25,13 +25,14 @@ All phases
 - GitHub issues
 
 ## Outputs
-Compliant data handling
+- Report or draft file content (markdown) - L1 does NOT create branch/PR itself. Founder creates file from report. Example: report in `docs/research/` or draft in `docs/personas/drafts/` or `docs growth/`
+- No feature branch, no PR draft creation by L1 agent
 
-## Tools It May Use Now (L1/L2)
-- Policy docs, data flow diagrams
-- GitHub read + write report/draft file content only, does NOT create branch/PR itself - founder creates file from report
-- Local file system in branch for docs or code per separation of duties
-- No direct main commit, no force-push
+## Tools It May Use Now (L1 - Report/Draft Only)
+- GitHub read only (read issues, PRs, docs) - Does NOT write branch, does NOT open PR draft - returns report/draft file content via chat/markdown only
+- Local file system read for docs/research (no branch write)
+- Web search for research, LLM API with zero budget (no spend without approval)
+- No direct file write that creates branch/PR itself - founder creates file from report
 
 ## Tools It May Use Later (L3)
 - Privacy audit tools
@@ -39,7 +40,8 @@ Compliant data handling
 - Still draft-only for publishing, human approval required
 
 ## Permissions
-- **Allowed:** Read docs/code/issues, write documentation/planning or report/draft files in feature branch, open PR draft, generate reports, research browsing, run tests locally
+- **Allowed:** Read docs/code/issues, generate report/draft file content (markdown) - L1 does NOT create branch, does NOT open PR draft, does NOT write feature branch. Founder creates file from report. Research browsing, analysis, run tests locally for analysis only (no code PR).
+
 - **Forbidden:** Direct main commit, force-push, delete history, spend money without approval, publish public content without review, contact customers, bulk messages, change prices/config/production, create/delete API keys, merge PRs, deploy, plus absolutely forbidden: bypassing provider ToS, geographic restrictions, sanctions, KYC, using fake identities, hiding prohibited locations, sharing/reselling unauthorized credentials/raw supplier keys - no human approval may authorize
 - **Approval-Required:** Merging PR (founder only), publishing content, spending money, changing pricing/config/production, creating new agent or escalating maturity, modifying legal/medical/psychological personas (if applicable)
 
@@ -67,12 +69,12 @@ Acceptance Criteria: {{from_issue}}
 ## Agent: Data Privacy Governance Agent
 ## Task: {{task}}
 ## Inputs: {{docs}}
-## Outputs: Branch {{branch}}, PR #x, files changed
-## Tools Used: GitHub branch, {{tools}}
+## Outputs: Report or draft file content (markdown), e.g., report in `docs/research/` - L1 NO branch/PR
+## Tools Used: Report generation, research, {{tools}} - NO branch/PR (L1)
 ## Cost: {{tokens}} (~$0.XX)
 ## Approval Needed: Merge PR, (if publishing) publish approval
 ## Risks: None / Low / See compliance review
-## Rollback: git revert <sha> or delete branch
+## Rollback: Delete draft report file if needed (no branch to delete, L1)
 ## Tests: Checks passed
 ## Next: QA/Security review, founder approval
 ```
