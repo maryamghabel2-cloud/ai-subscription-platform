@@ -1,7 +1,8 @@
 # AGENT OPERATING SYSTEM
 
 **Version:** Phase 0  
-**Date:** 2026-07-19
+**Date:** 2026-07-19  
+**Updated:** 2026-07-20 - Added 8 new agents, fixed L1/L2 consistency, added absolutely forbidden
 
 ## Purpose
 Define how founder uses agents to build and run a Persian AI platform safely, with clear separation between project-building agents (now) and runtime product agents (for customers) and future internal ops agents.
@@ -9,40 +10,43 @@ Define how founder uses agents to build and run a Persian AI platform safely, wi
 ## Three Types of Agents
 
 ### 1. Project-Building Agents (Used by Founder to Build Product) - PRIMARY for Phase 0
+- **Count:** 28 agents (was 20, added 8 new per review)
 - **Who they serve:** Founder
-- **Examples:** Orchestrator, Product Manager, Fullstack Builder, Website Builder, DevOps, QA/Security, Research, Prompt Engineer, RAG Knowledge, SEO/Content, Growth Marketing, Social Media, Analytics, Customer Success, Sales/Partnership, Compliance/Risk, Finance/Unit Economics, Supplier Scout, App Store/ASO, Execution Coach
-- **Current form:** L1/L2 external agents (ChatGPT, Claude, coding agents, research agents) that produce PRs, reports, research docs
-- **Future form:** L2→L3 API-connected with approval gates
+- **Examples:** Orchestrator (L2 docs/planning PRs only), Product Manager (L1 report), Fullstack Builder (L2 code PRs), Website Builder (L2), DevOps (L2), QA/Security (L2), Research (L1 report), Prompt Engineer (L2), RAG Knowledge (L1), SEO/Content (L1 draft), Growth Marketing (L1 report), Social Media (L1 draft), Analytics (L1), Customer Success (L1 draft), Sales/Partnership (L1), Compliance/Risk (L1 report), Finance/Unit Economics (L1), Supplier Scout (L1 report, does NOT automate purchasing), App Store/ASO (L1), Execution Coach (L1), plus new: UX/Product Design (L2), Brand Visual Identity (L1), ML Inference Engineer (L2), Model Evaluation (L1), Trust & Safety (L1), Data Privacy Governance (L1), Localization & Accessibility (L2), SRE/Incident Response (L1)
+- **Current form:** Mix L1 (prompt-driven that returns report/draft) and L2 (external that may create scoped branch and PR). Not all are L2 - see registry for exact mapping. Orchestrator is L2 but only documentation/planning PRs, not application-code PRs.
+- **Future form:** Some L1/L2 → L3 internal API-connected draft-only with approval gates
 - **Billing:** Founder pays external tool directly, not via platform wallet
-- **Safety:** All publishing, spending, merging, deploying, pricing changes require human approval
+- **Safety:** All publishing, spending, merging, deploying, pricing changes require human approval. Absolutely forbidden actions (ToS bypass, geographic/sanctions/KYC bypass, fake identities, hiding prohibited locations, credential sharing) have no approval path - NO-GO.
 
 ### 2. Runtime Product Agents (Used by Customers Inside Platform)
 - **Who they serve:** End-users of platform
 - **Examples:** General Persian Chat, Prompt Enhancer, Specialist Personas (Career Advisor, SEO Advisor, etc.), Product Photography Studio agent, Video gen agent, Telegram business agent, Developer API agent
 - **Current form:** Not built yet, defined in `docs/agents/runtime/`
 - **Future form:** L3/L4 internal, API-connected, credit-billed, with guardrails
-- **Safety:** Evidence-based framing, risk classification, escalation to human professional, audit logs, wallet credit checks
+- **Safety:** Evidence-based framing, risk classification, escalation to human professional, audit logs, wallet credit checks, no absolute forbidden actions
 
 ### 3. Internal Operations Agents (Future, Inside Company/Product)
 - **Who they serve:** Internal growth, support, research, SEO, marketing
 - **Examples:** SEO technical crawler, content writer (draft only), growth experiment reporter, customer support draft responder, research scouter
-- **Current form:** Project-building external agents with human review (L1/L2)
+- **Current form:** Project-building external agents with human review (L1/L2 mix)
 - **Future form:** L3/L4 internal, read-only or draft-only initially, publish requires approval
-- **Safety:** Draft → human review → publish. No autonomous bulk messaging or spending.
+- **Safety:** Draft → human review → publish. No autonomous bulk messaging or spending. No absolute forbidden.
 
 ## Lifecycle
-Project-building (Phase 0-2) → Some become Internal Ops L2/L3 (Phase 3-5) → Runtime product agents become L3 with gates → Marketplace (Phase 8) idea with strict review.
+Project-building (Phase 0-2) L1/L2 mix → Some become Internal Ops L3 draft-only (Phase 3-5) → Runtime product agents become L3 with gates → Marketplace (Phase 8) idea with strict review.
 
 ## Documentation Map
 - Operating System: this file
-- Registry: AGENT_REGISTRY.md (all agents list)
-- Maturity: AGENT_MATURITY_MODEL.md (L0-L4)
-- Permissions: AGENT_PERMISSION_MODEL.md
+- Registry: AGENT_REGISTRY.md (28 project-building + 11 runtime + 5 internal)
+- Maturity: AGENT_MATURITY_MODEL.md (L0 Manual, L1 Report/Draft, L2 Branch+PR, L3 Internal API-connected, L4 Controlled automation)
+- Permissions: AGENT_PERMISSION_MODEL.md (allow/forbid/approval + absolutely forbidden NO-GO)
 - Control Tower: AGENT_CONTROL_TOWER.md (observability)
 - External Workflow: EXTERNAL_AGENT_WORKFLOW.md
-- Approval Gates: HUMAN_APPROVAL_GATES.md
+- Approval Gates: HUMAN_APPROVAL_GATES.md (15 approval-required + 9 absolutely forbidden)
 
 ## Key Rules
 - No agent can spend money, publish content, contact customers, change pricing/config, merge PRs, deploy prod, create/delete API keys, modify legal/medical/psych personas, launch campaigns, issue refunds above threshold without human approval.
-- All actions logged.
+- **Absolutely forbidden - No human approval may authorize:** bypassing provider Terms of Service, bypassing geographic restrictions, bypassing sanctions, bypassing KYC, using fake identities, hiding prohibited end-user locations, sharing/reselling unauthorized credentials/raw supplier keys, CSAM, non-consensual intimate imagery, deepfake without consent, claiming professional authority.
+- All actions logged, including blocked forbidden attempts.
 - Rollback plan required for state-changing actions.
+- Orchestrator does NOT write product code - only docs/planning PRs, issue breakdowns, task briefs, agent assignments, dependency maps, weekly reports, blocker reports, PR review summaries. Code implementation by specialist agents (Fullstack, Website, DevOps, etc.).

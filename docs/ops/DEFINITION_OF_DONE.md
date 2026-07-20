@@ -13,17 +13,18 @@
 
 ## For Code (Phase 1+ Future, Not Now)
 
-- Feature branch from main
+- Feature branch from main, no direct main commit, no force-push, no history rewrite
 - Code in `backend/` or `frontend/` with tests
 - Tests pass locally (pytest, npm build)
-- No secrets, no P0 vulnerabilities
-- PR template checklist filled
-- PR description includes: what, why, tools, approval needed, risks, rollback
-- If persona: QA and red teaming report attached
+- No secrets, no P0 vulnerabilities, gitleaks check pass
+- **Auth security:** No JWT in localStorage. Must use HttpOnly cookies with Secure flag in production, SameSite=Lax or Strict, short-lived access sessions (e.g., 30min), CSRF protection via SameSite + CSRF token where applicable. No token in URL, no token in JS. Passwords bcrypt, rate limiting login.
+- **Persian-first MVP baseline:** RTL layout dir=rtl, Persian primary navigation, Persian forms and user-facing error messages, Persian-compatible typography, mobile-first layout tested 360/768/1024. Full polish may be deferred but baseline not out of scope.
+- PR template checklist filled, PR description includes tools used, cost, approval needed, risks, rollback, tests
+- If persona: QA and red teaming report attached with 10 functional +5 red team tests, evaluation metrics, evidence standard, source hierarchy, no authority claims, disclaimer, escalation behavior, human approval for high-risk prompt changes
 - If publishing/spending/pricing/config/API keys/persona high-risk: label `needs-human-approval` and founder comment Approved
-- No direct main commit, no force-push
 - Docker compose up works if relevant
-- Docs updated if needed (README, relevant docs/roadmap phase doc exit criteria)
+- Docs updated if needed (README, relevant docs/roadmap phase doc exit criteria, no broken relative links)
+- Absolutely forbidden actions never allowed: ToS bypass, geographic/sanctions/KYC bypass, fake identities, hiding prohibited locations, credential sharing/reselling unauthorized - no approval may authorize
 
 ## For Issues
 

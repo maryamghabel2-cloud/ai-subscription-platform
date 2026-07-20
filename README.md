@@ -29,7 +29,7 @@ We are now building a **phased Persian-first AI platform** for creators, busines
 
 ## Project Structure Now (Phase 0)
 
-This branch `docs/phase-0-agent-operating-system` contains **documentation + GitHub planning only** - no production code, no secrets, no deploy.
+This Pull Request changes documentation and GitHub planning files only. The inherited repository still contains legacy application code (backend/ and frontend/ placeholders from earlier phase). This PR does not modify production application code, does not add secrets, and does not deploy.
 
 ### Key Docs
 
@@ -57,37 +57,44 @@ Each phase doc includes: objective, in/out scope, dependencies, technical/UX/bus
 
 ### Agent System Summary
 
-**Three categories:**
+**Three categories (Updated 2026-07-20 - 28 project-building agents, mix L1/L2):**
 
-1. **Project-building agents** (20): Orchestrator, Product Manager, Fullstack Builder, Website Builder, DevOps, QA/Security, Research, Prompt Engineer, RAG Knowledge, SEO Content, Growth Marketing, Social Media, Analytics, Customer Success, Sales/Partnership, Compliance/Risk, Finance/Unit Economics, Supplier Scout, App Store/ASO, Execution Coach - all L2 external now, PR/report output, human approval required.
+1. **Project-building agents** (28 total, was 20): Orchestrator (L2 docs/planning PRs only, does NOT write product code), Product Manager (L1 report), Fullstack Builder (L2 code PRs), Website Builder (L2), DevOps (L2), QA/Security (L2), Research (L1), Prompt Engineer (L2), RAG Knowledge (L1), SEO Content (L1 draft-only), Growth Marketing (L1), Social Media (L1), Analytics (L1), Customer Success (L1), Sales/Partnership (L1), Compliance/Risk (L1), Finance/Unit Economics (L1), Supplier Scout (L1), App Store/ASO (L1), Execution Coach (L1), plus new per review: UX/Product Design (L2), Brand Visual Identity (L1), ML Inference Engineer (L2), Model Evaluation (L1), Trust & Safety (L1), Data Privacy Governance (L1), Localization & Accessibility (L2), SRE/Incident Response (L1) - mix L1 (prompt-driven that returns report/draft, no branch/PR) and L2 (external that may create scoped branch and PR), not all L2. Human approval required for merge/publish/spending.
 
-2. **Runtime product agents** (for customers): General Persian Chat, Prompt Enhancer, Specialist Personas, Image Studio, Product Photography Studio, Video Gen, Character Tools, Telegram Agent, Business Agents, Research/RAG, Developer API.
+2. **Runtime product agents** (for customers, 11): General Persian Chat, Prompt Enhancer, Specialist Personas (evidence-based, structured, direct where appropriate, citation-aware), Image Studio, Product Photography Studio, Video Gen, Character Tools (consent gate), Telegram Agent (encrypted token), Business Agents (FAQ/lead/content draft), Research/RAG (citations), Developer API (hashed keys).
 
-3. **Internal operations agents** (future): SEO tech crawler, content draft, growth reporter, support draft, research scout - all draft-only initially, publish requires approval.
+3. **Internal operations agents** (future, 5): SEO tech crawler, content draft, growth reporter, support draft, research scout - all draft-only initially, publish requires approval, future L3.
 
-**Maturity Levels:**
-- L0 Manual
-- L1 Prompt-driven external agent
-- L2 Semi-automated external agent with PR/report output (current primary)
-- L3 Internal API-connected agent (future, draft-only + approval)
-- L4 Autonomous with strict human approval gates (future idea, never for money/publishing/customer contact/pricing/config/merge/deploy/API keys/persona sensitive changes)
+**Maturity Levels (Corrected per review):**
+- L0 Manual: Human does task, no agent.
+- L1 Prompt-driven external agent that returns a report or draft (no branch/PR itself)
+- L2 External agent that may create a scoped branch and Pull Request (docs or code per separation of duties)
+- L3 Internal API-connected agent (future, scoped key, read + draft-create, not publish)
+- L4 Controlled automation with mandatory human approval gates (future idea, never for absolutely forbidden actions)
 
-**Approval Gates - Must Require Human Approval:**
-- publishing public content, spending money, contacting customers, bulk messages, changing prices, changing production config, merging PRs, deploying to production, creating/deleting API keys, modifying legal/medical/psychological personas, launching paid campaigns, issuing refunds/credits above threshold.
+**Approval Gates - Must Require Human Approval (14 actions):**
+- publishing public content, spending money, contacting customers, bulk messages, changing prices, changing production config, merging PRs, deploying to production, creating/deleting API keys, modifying legal/medical/psychological personas, launching paid campaigns, issuing refunds/credits above threshold, creating new agent type or escalating maturity, deleting data/banning users.
 
-See `docs/agents/HUMAN_APPROVAL_GATES.md`.
+**Absolutely Forbidden / NO-GO (No human approval may authorize):**
+- bypassing provider Terms of Service, bypassing geographic restrictions, bypassing sanctions, bypassing KYC, using fake identities, hiding prohibited end-user locations, sharing/reselling unauthorized credentials or raw supplier keys, CSAM, non-consensual intimate imagery, deepfake without consent, claiming professional authority (medical/legal/psych diagnosis/verdict/therapy).
 
-### Documentation Map
+See `docs/agents/HUMAN_APPROVAL_GATES.md` and `docs/agents/AGENT_PERMISSION_MODEL.md`.
 
-- Vision: `docs/vision/`
-- Roadmap: `docs/roadmap/` (9 phases)
-- Agents: `docs/agents/` (OS, registry, maturity, permission, control tower, workflow, approval gates, project/ 20 specs, runtime/ 5 architectures)
-- Personas: `docs/personas/` (framework, template, registry schema, backlog of 14 personas, pipeline, QA/red teaming)
-- Growth: `docs/growth/` (growth system, SEO strategy, content engine, launch plan, experiment backlog, referral ideas, social media, landing strategy)
-- Website: `docs/website/` (IA + 5 page requirements + SEO technical)
-- Ops: `docs/ops/` (GitHub workflow, branching, labels, milestones, DoD, release, runbook, reporting cadence)
-- Backlog: `docs/backlog/` (epics + 7 issue lists)
-- GitHub Templates: `.github/ISSUE_TEMPLATE/` (7 templates) + `pull_request_template.md`
+### Documentation Map (Updated Phase 0 - 90 files → now 105+ files)
+
+- Vision: `docs/vision/` (3 files)
+- Roadmap: `docs/roadmap/` (10 files: MASTER + 9 phases 0-8, each with objective, in/out scope, dependencies, deliverables, agents, tests, risk controls including absolutely forbidden, exit criteria)
+- Agents: `docs/agents/` (7 OS docs + project/ 28 specs (was 20, added 8 new: UX/Product Design, Brand Visual Identity, ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility, SRE Incident Response) with L1/L2 mix per registry + runtime/ 5 architectures) + 7 new governance docs in architecture/evaluation/safety/research
+- Architecture: `docs/architecture/` (SYSTEM_CONTEXT, PROVIDER_ABSTRACTION_STRATEGY, DATA_CLASSIFICATION_AND_RETENTION)
+- Evaluation: `docs/evaluation/` (MODEL_EVALUATION_STRATEGY, PERSONA_EVALUATION_STRATEGY with mandatory evidence fields)
+- Safety: `docs/safety/` (TRUST_AND_SAFETY_FRAMEWORK)
+- Research: `docs/research/` (SOURCE_QUALITY_POLICY with source hierarchy, publisher, dates, evidence grade, geographic scope, etc.)
+- Personas: `docs/personas/` (6 files: framework with mandatory fields source hierarchy, evidence grade, publisher, publication/update/access dates, geographic scope, last review, conflicting handling, min primary sources, expert reviewer, citation requirements, benchmark, accuracy/hallucination metrics, knowledge-pack version, expiry; template, registry schema, backlog 14 personas with mandatory fields, pipeline, QA/red teaming)
+- Growth: `docs/growth/` (8 files growth system, SEO strategy, content engine, launch plan, experiment backlog, referral ideas, social, landing strategy - no auto-publish rule)
+- Website: `docs/website/` (6 files IA 15 pages + landing, pricing, agent directory, blog, SEO technical)
+- Ops: `docs/ops/` (8 files workflow, branching, labels, milestones, DoD with HttpOnly cookies Secure SameSite, release, runbook, reporting cadence)
+- Backlog: `docs/backlog/` (8 files epics + PHASE_0_ISSUES now includes 13 issues including repository metadata update task, PHASE_1_ISSUES, PHASE_2_ISSUES, AGENT_SYSTEM_ISSUES now 7 issues for 28 agents + governance docs, GROWTH, WEBSITE, PERSONA - each with title/purpose/owner/dependencies/AC/priority/phase/risk)
+- GitHub Templates: `.github/ISSUE_TEMPLATE/` (7 templates: feature, persona, research, agent_task, growth_experiment, seo_content, bug) + `pull_request_template.md` with checklist, approval gates, absolutely forbidden, rollback
 
 ### Legacy Deprecation Notice
 
@@ -110,7 +117,9 @@ cat docs/agents/AGENT_OPERATING_SYSTEM.md
 # No production build yet - docs only branch
 ```
 
-For future MVP skeleton (Phase 1), see branch `mvp/v1-core-foundation` (separate docs/code) which will have docker compose.
+For future MVP skeleton (Phase 1), a separate branch may be created later (for example `mvp/v1-core-foundation` if founder decides) with a clean implementation. No MVP branch is required to exist for this Phase 0 documentation PR. Always verify current remote branches with `git ls-remote --heads origin` before referencing any branch as existing.
+
+When a future MVP branch is created, it would contain docker compose and a working skeleton per `docs/roadmap/PHASE_1_CORE_MVP.md`.
 
 ### Growth & Safety
 

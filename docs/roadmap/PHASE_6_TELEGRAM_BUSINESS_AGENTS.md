@@ -32,7 +32,11 @@ Phase 2 personas pattern, Phase 4 API key system for business agent auth
 - Business agent subscription future
 
 ## Required Agents
+UX Product Design, Trust & Safety (spam, consent), Data Privacy Governance (bot token encryption), Localization & Accessibility, SRE Incident Response + existing
 Fullstack Builder, DevOps, Customer Success, Compliance Risk, Growth Marketing
+
+
+**Additional per review (new 8 agents):** UX Product Design, Trust & Safety (spam, consent), Data Privacy Governance (bot token encryption), Localization & Accessibility, SRE Incident Response
 
 ## Test Requirements
 - Connect test bot, send /start → echo

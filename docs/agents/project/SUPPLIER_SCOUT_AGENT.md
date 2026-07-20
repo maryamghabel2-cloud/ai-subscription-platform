@@ -2,7 +2,7 @@
 
 **Agent ID:** supplier_scout
 **Type:** Project-Building (Founder to Build Product)
-**Maturity Now:** L2 Semi-automated external agent with PR/report output
+**Maturity Now:** L1 - Prompt-driven external agent that returns a report or draft
 **Maturity Later:** L2
 **Phase Relevance:** Phase 0, Phase 3 image, Phase 5 video
 
@@ -83,3 +83,10 @@ Acceptance Criteria: {from_issue}
 ## Tests: pytest / npm test results
 ## Next: QA/Security agent review, founder approval
 ```
+
+
+## Absolutely Forbidden (No Approval May Authorize)
+- Bypassing provider ToS, geographic restrictions, sanctions, KYC
+- Using fake identities, hiding prohibited locations
+- Sharing/reselling unauthorized credentials or raw supplier keys
+- See HUMAN_APPROVAL_GATES.md

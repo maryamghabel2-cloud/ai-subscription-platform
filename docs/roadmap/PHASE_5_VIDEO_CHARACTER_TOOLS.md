@@ -31,7 +31,11 @@ Phase 3 image studio pattern, wallet
 - Higher credit cost for video
 
 ## Required Agents
+UX Product Design, ML Inference Engineer, Model Evaluation, Trust & Safety (deepfake consent), Data Privacy Governance, SRE Incident Response + existing
 Fullstack Builder, Research, Prompt Engineer, Compliance Risk (deepfake policy)
+
+
+**Additional per review (new 8 agents):** UX Product Design, ML Inference Engineer, Model Evaluation, Trust & Safety (deepfake consent), Data Privacy Governance, SRE Incident Response
 
 ## Test Requirements
 - Video job: submit → polling → result

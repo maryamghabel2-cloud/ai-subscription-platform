@@ -27,7 +27,11 @@ All previous phases + strong moderation + compliance
 - Idea: rev-share 70/30, review + human approval for marketplace listing
 
 ## Required Agents
+Trust & Safety, Data Privacy Governance, Model Evaluation, SRE Incident Response, Brand Visual Identity, UX Product Design + existing
 Product Manager, Compliance Risk, Finance Unit Economics, Orchestrator
+
+
+**Additional per review (new 8 agents):** Trust & Safety, Data Privacy Governance, Model Evaluation, SRE Incident Response, Brand Visual Identity, UX Product Design
 
 ## Test Requirements
 No tests - concept only

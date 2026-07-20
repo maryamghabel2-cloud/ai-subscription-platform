@@ -33,7 +33,11 @@ Phase 1 auth, wallet, Phase 3 image infra
 - API credit pricing, team seats future
 
 ## Required Agents
+ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, SRE Incident Response, Localization & Accessibility + existing
 Fullstack Builder, DevOps, QA Security, Compliance Risk, Growth Marketing (dev marketing)
+
+
+**Additional per review (new 8 agents):** ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, SRE Incident Response, Localization & Accessibility
 
 ## Test Requirements
 - Key create → use → revoke → 401

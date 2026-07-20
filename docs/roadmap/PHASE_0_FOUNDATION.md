@@ -43,7 +43,11 @@ None - this is first
 - Unit economics tracking plan
 
 ## Required Agents
+UX/Product Design, Brand Visual Identity, Trust & Safety, Data Privacy Governance, Model Evaluation, Localization & Accessibility + existing
 Orchestrator, Product Manager, Research, Compliance/Risk, Growth Marketing, SEO Content
+
+
+**Additional per review (new 8 agents):** UX/Product Design, Brand Visual Identity, Trust & Safety, Data Privacy Governance, Model Evaluation, Localization & Accessibility
 
 ## Test Requirements
 - Documentation coherence check

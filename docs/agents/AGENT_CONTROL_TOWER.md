@@ -10,7 +10,9 @@ Future: Dashboard.
 
 ### Registry
 - Single source: AGENT_REGISTRY.md
-- Each agent has ID, status, maturity, owner, permissions
+- Each agent has ID, status, maturity (L1 report/draft vs L2 branch+PR mix, not all L2), owner, permissions
+- Count updated: 28 project-building agents (was 20) + 11 runtime + 5 internal = 44 total agents tracked
+- New agents: UX/Product Design (L2), Brand Visual Identity (L1), ML Inference Engineer (L2), Model Evaluation (L1), Trust & Safety (L1), Data Privacy Governance (L1), Localization & Accessibility (L2), SRE/Incident Response (L1)
 
 ### Logs
 - Project-building external agents: Log via PR description + report footer: agent ID, tools used, inputs, outputs, tokens/cost, approval needed, risk flags

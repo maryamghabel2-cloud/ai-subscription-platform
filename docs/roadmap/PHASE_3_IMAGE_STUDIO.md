@@ -34,7 +34,11 @@ Phase 1 wallet, Phase 2 persona pattern reusable for Product Photography Advisor
 - Referral: share result
 
 ## Required Agents
+UX Product Design, Brand Visual Identity, ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility, SRE Incident Response + existing
 Fullstack Builder, Prompt Engineer, Research (product photo best practices), Growth Marketing (SEO for studio)
+
+
+**Additional per review (new 8 agents):** UX Product Design, Brand Visual Identity, ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility, SRE Incident Response
 
 ## Test Requirements
 - Upload 2MB image, generate, download

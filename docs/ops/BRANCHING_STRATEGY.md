@@ -12,12 +12,12 @@
 ## Feature Branches
 
 - Format: `type/short-description`
-  - `feat/auth` - feature
-  - `fix/login-bug` - fix
-  - `docs/phase-0-agent-operating-system` - docs (current)
-  - `chore/archive-legacy` - chore
-  - `mvp/v1-core-foundation` - MVP foundation (previous)
-  - `archive/legacy-code-2026-07-19` - archive
+  - `feat/auth` - feature (example, not necessarily present)
+  - `fix/login-bug` - fix (example)
+  - `docs/phase-0-agent-operating-system` - docs (current, exists remotely)
+  - `chore/archive-legacy` - chore (example)
+  - `archive/legacy-code-2026-07-19` - archive (exists remotely, legacy code preservation)
+  - For MVP, a future branch like `mvp/v1-core-foundation` could be created later - verify existence with `git ls-remote --heads origin` before claiming it exists
 - From main, short-lived
 - Delete after merge (optional)
 

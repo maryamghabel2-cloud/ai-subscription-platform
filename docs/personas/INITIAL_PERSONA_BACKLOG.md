@@ -1,6 +1,26 @@
 # INITIAL PERSONA BACKLOG
 
-**Date:** 2026-07-19  
+**Date:** 2026-07-19
+**Updated:** 2026-07-20 - Added mandatory evidence fields per review
+
+**Mandatory Fields for Each Persona (Per PERSONA_FRAMEWORK):**
+- source hierarchy (Primary > Secondary > Tertiary)
+- primary vs secondary distinction
+- evidence grade (A/B/C/D)
+- source publisher, publication/update date, access date
+- geographic/jurisdiction scope
+- last knowledge review date
+- conflicting-evidence handling policy
+- minimum number of primary sources (Low 3+, Medium 5+, High 7+)
+- domain-expert reviewer requirement (name, credentials, date for High)
+- citation requirements (publisher+date+source ID, no hallucination)
+- benchmark dataset (scenario prompts)
+- accuracy and hallucination metrics (factual accuracy %, hallucinated citations 0%, proper escalation 100%)
+- knowledge-pack version
+- expiry/review schedule (Low 6 months, Medium 3 months, High 1 month)
+
+Specialist personas must be structured, direct where appropriate, domain-specific, evidence-based, citation-aware, non-generic.
+  
 **Total:** 14 initial ideas - all start as idea/planned/research-needed, not ready yet.
 
 ## Low Risk - Can Be First (Phase 2)
@@ -88,14 +108,29 @@
 
 ## High Risk - Requires Deep Research, Compliance Review, Not Phase 2
 
-### 10. Psychologist - Evidence-based, Structured, Direct Tone
-- **Purpose:** Provide evidence-based mental health information, coping strategies general info, NOT therapy
-- **Target:** Users seeking general wellness info
+### 10. Psychologist - Evidence-based, Structured, Direct Mental-Health Information and Guided-Assessment Assistant (Future)
+- **Purpose:** Provide evidence-based mental health information, psychoeducation, general coping strategies (e.g., grounding, behavioral activation general info) based on reputable sources, and guided self-reflection questions with clear disclaimer that formal assessment requires professional. NOT therapy, NOT diagnosis, NOT treatment plan, NOT emergency replacement. Must be structured, direct, evidence-based, NOT merely generic compassionate companion.
+- **Target:** Users seeking general mental wellness information, psychoeducation - not crisis, not seeking diagnosis
 - **Maturity:** idea
 - **Risk:** High
-- **Research depth:** Very High - needs psychologist consultant, DSM-5 general info only, no diagnosis
-- **Knowledge sources:** Need licensed psychologist to review, reputable mental health orgs (APA general info), coping strategies evidence-based
-- **Notes:** MUST include: "I am not a psychologist, not therapy, information only, if crisis contact professional/crisis line, escalation to human professional" - must have red teaming, compliance review, human approval gate for any prompt change. Not in Phase 2, future after research pipeline.
+- **Research depth:** Very High - needs licensed psychologist consultant, DSM-5-TR general info only (not diagnostic criteria applied to user), APA general info, WHO mental health general info, peer-reviewed coping RCTs
+- **Knowledge sources (Mandatory fields):**
+  - Source 1: Title, Publisher APA, Publication Date 2023-11, Access Date 2026-07-20, Primary, Evidence Grade A, Geographic Scope Global general info, URL real
+  - Plus 6+ more primary sources (minimum 7 for High risk)
+- **Source Hierarchy:** Primary (peer-reviewed RCTs, official APA/WHO general info) > Secondary (reputable summaries) > Tertiary not acceptable alone
+- **Evidence Grade:** Grade A/B only
+- **Geographic Scope:** Global general info, note Iran local resources for crisis need local validation
+- **Last Knowledge Review Date:** To be set when research done
+- **Conflicting-Evidence Handling:** Present both views, note conflict, prioritize higher grade + newer, disclose uncertainty
+- **Minimum Primary Sources:** 7+
+- **Domain-Expert Reviewer Requirement:** Licensed psychologist name, credentials (e.g., PhD, license #), review date required, comments
+- **Citation Requirements:** Every coping strategy claim must cite publisher + date + source ID, no hallucination
+- **Benchmark Dataset:** 15 psychology safety eval prompts (crisis, diagnosis attempt, therapy request, guarantee, disallowed content)
+- **Accuracy Metrics:** Proper escalation for crisis/diagnosis 100%, no diagnosis 100%, disclaimer present 100%, hallucinated citations 0%
+- **Knowledge-Pack Version:** v0.1 idea
+- **Expiry/Review Schedule:** 1 month or when APA guideline updates
+- **Notes:** MUST include disclaimer: "I am an evidence-based mental health information assistant, not a psychologist, not therapy, not diagnosis, not emergency service. Information only based on [Publisher, Date], for general info only, consult qualified mental health professional for your situation. If you are in crisis or thinking about self-harm, contact local crisis line or emergency services immediately and reach out to trusted person." Must have structured direct tone, not generic companion. Must have guided self-reflection questions with disclaimer that formal assessment requires professional. Must have red teaming, compliance review, Trust & Safety review, human approval gate for any prompt change. Not in Phase 2, future after research pipeline. Absolutely forbidden to claim authority, give diagnosis, create treatment plan, replace emergency.
+
 
 ### 11. Physician Assistant
 - **Purpose:** General health information, not diagnosis, not treatment

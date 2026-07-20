@@ -35,7 +35,11 @@ Phase 1 chat infrastructure
 - Content to explain each persona is assistant, not authority
 
 ## Required Agents
+UX Product Design, Brand Visual Identity, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility + existing
 Prompt Engineer, RAG Knowledge, Research, Compliance Risk, QA Security
+
+
+**Additional per review (new 8 agents):** UX Product Design, Brand Visual Identity, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility
 
 ## Test Requirements
 - Persona QA and red teaming per PERSONA_QA_AND_RED_TEAMING.md

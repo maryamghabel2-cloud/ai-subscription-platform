@@ -33,7 +33,11 @@ Phase 2 persona framework, Phase 4 API embeddings
 - RAG as premium credit cost
 
 ## Required Agents
+ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility + existing
 RAG Knowledge, Research, Prompt Engineer, Fullstack Builder
+
+
+**Additional per review (new 8 agents):** ML Inference Engineer, Model Evaluation, Trust & Safety, Data Privacy Governance, Localization & Accessibility
 
 ## Test Requirements
 - Upload PDF, query → returns cited chunks

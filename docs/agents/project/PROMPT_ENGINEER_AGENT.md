@@ -2,7 +2,7 @@
 
 **Agent ID:** prompt_engineer
 **Type:** Project-Building (Founder to Build Product)
-**Maturity Now:** L2 Semi-automated external agent with PR/report output
+**Maturity Now:** L2 - External agent that may create a scoped branch and Pull Request
 **Maturity Later:** L3
 **Phase Relevance:** Phase 1 prompt enhancer, Phase 2 personas
 
@@ -83,3 +83,10 @@ Acceptance Criteria: {from_issue}
 ## Tests: pytest / npm test results
 ## Next: QA/Security agent review, founder approval
 ```
+
+
+## Absolutely Forbidden (No Approval May Authorize)
+- Bypassing provider ToS, geographic restrictions, sanctions, KYC
+- Using fake identities, hiding prohibited locations
+- Sharing/reselling unauthorized credentials or raw supplier keys
+- See HUMAN_APPROVAL_GATES.md

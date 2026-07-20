@@ -136,7 +136,26 @@
 - **Purpose:** Public-facing clarity
 - **Owner:** Product Manager
 - **Dependencies:** 0-02, 0-03
-- **Acceptance:** README updated, mentions platform not reseller, phases, agent operating system, links, no hype, no secrets
+- **Acceptance:** README updated, mentions platform not reseller, phases, agent operating system, links, no hype, no secrets, wording "This Pull Request changes documentation and GitHub planning files only" not "This branch contains documentation only", and does not claim any branch exists unless verified via `git ls-remote --heads origin` (e.g., no reference to branches that are not present remotely)
 - **Priority:** P0
 - **Phase:** phase-0
 - **Risk:** Low
+
+### ISSUE-0-13: GitHub Repository Metadata Update (Owner Task)
+
+- **Title:** Update GitHub repository About/Description and topics after brand selection
+- **Purpose:** Remove legacy subscription-reseller wording from GitHub About, update description to Persian AI Workspace, update topics
+- **Owner Agent Type:** Product Manager + Orchestrator (L1 report, owner executes manually)
+- **Dependencies:** Brand selection (UX/Product Design + Brand Visual Identity agents reports)
+- **Acceptance Criteria:**
+  - [ ] Owner manually updates GitHub repo About/Description: remove "Comprehensive Iranian website for selling foreign subscriptions and AI APIs at discounted prices with AI automation" legacy wording, replace with new platform description: "Persian AI Workspace - phased platform for chat, personas, image studio, video, Telegram business agents, API platform, RAG - built with agent operating system"
+  - [ ] Remove legacy topics if any related to reseller, add new topics: persian-ai, ai-workspace, nextjs, fastapi, product-photography, telegram-bot, rag, ai-personas, etc. after brand selection
+  - [ ] Do NOT change repository metadata automatically via API without owner approval - this is manual owner task
+  - [ ] Document new description and topics in docs/ops/RELEASE_STRATEGY.md or separate docs/website/BRAND_SELECTION.md future
+  - [ ] PR that updates README About reference only, not auto metadata change
+- **Priority:** P2 (after brand selection)
+- **Phase Label:** phase-0
+- **Risk Level:** Low (but requires owner approval, no auto without approval)
+- **Approval Required:** Yes - owner must approve new description and topics via issue comment before any manual update
+- **RollBack:** Revert description to previous via GitHub UI edit
+- **Notes:** Do not change repository metadata automatically without owner approval. This is documented owner task, not automated by any agent.
