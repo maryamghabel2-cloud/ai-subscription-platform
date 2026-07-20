@@ -159,3 +159,23 @@
 - **Approval Required:** Yes - owner must approve new description and topics via issue comment before any manual update
 - **RollBack:** Revert description to previous via GitHub UI edit
 - **Notes:** Do not change repository metadata automatically without owner approval. This is documented owner task, not automated by any agent.
+
+### ISSUE-0-14: Update repository About/Description after brand selection (Post-Merge Cleanup)
+
+- **Title:** Update repository About/Description after brand selection
+- **Purpose:** Current GitHub About text still references legacy subscription-selling model ("Comprehensive Iranian website for selling foreign subscriptions and AI APIs at discounted prices with AI automation") - must be updated manually after brand research concludes. This is a documentation-only cleanup task.
+- **Owner Agent Type:** Product Manager + Brand Visual Identity Agent (L1 report, owner executes manually)
+- **Dependencies:** Brand selection research from UX Product Design + Brand Visual Identity agents, completion of Phase 0 docs merge (e4ad2f1)
+- **Acceptance Criteria:**
+  - [ ] Verify current GitHub About/Description still contains legacy wording referencing subscription reselling
+  - [ ] Owner manually updates About/Description to new platform description, e.g., "Persian AI Workspace - phased AI platform for Persian creators, businesses, developers - chat, personas, image studio, video, Telegram agents, API, RAG - built with Agent Operating System"
+  - [ ] Remove legacy topics related to reseller, add new topics after brand selection (persian-ai, ai-workspace, nextjs, fastapi, product-photography, telegram-bot, rag, etc.)
+  - [ ] Do NOT change repository About/Description automatically via GitHub API without owner approval - manual task only
+  - [ ] Document decision in docs/CHANGELOG.md and docs/roadmap/PHASE_0_COMPLETION_REPORT.md
+  - [ ] No application code changes, no secrets
+- **Priority:** P2 (after brand selection, owner manual)
+- **Phase Label:** phase-0
+- **Risk Level:** Low
+- **Approval Required:** Yes - owner must approve new description/topics via comment
+- **Rollback:** Revert description via GitHub UI
+- **Notes:** Current About text still references legacy subscription-selling and must be updated manually by the owner once brand research concludes. Do NOT change About automatically - requires owner approval and depends on brand research still in progress. This issue is added as part of post-merge cleanup PR docs/cleanup-post-merge.

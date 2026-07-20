@@ -147,23 +147,24 @@ See `docs/agents/HUMAN_APPROVAL_GATES.md` and `docs/agents/AGENT_PERMISSION_MODE
 - **API-key resale, supplier scraping, crypto payment for MVP:** Not in Phase 0/1. Credit-based wallet planned, no mock payment verification.
 - Old code archived, not deleted: `archive/legacy_2026-07-19/` on branch `archive/legacy-code-2026-07-19`.
 
-### Quick Start (Phase 0 Docs Only)
+### Quick Start (Phase 0 Merged - Docs on Main)
 
 ```bash
 git clone https://github.com/maryamghabel2-cloud/ai-subscription-platform.git
 cd ai-subscription-platform
-git checkout docs/phase-0-agent-operating-system
 
-# Read roadmap
+# Docs are now on main (Phase 0 merged on 2026-07-19)
 cat docs/roadmap/MASTER_ROADMAP.md
 cat docs/agents/AGENT_OPERATING_SYSTEM.md
+cat docs/CHANGELOG.md
 
-# No production build yet - docs only branch
+# Verify branch exists before checkout - old docs branch was merged and may be deleted
+git ls-remote --heads origin
 ```
 
-For future MVP skeleton (Phase 1), a separate branch may be created later (for example `mvp/v1-core-foundation` if founder decides) with a clean implementation. No MVP branch is required to exist for this Phase 0 documentation PR. Always verify current remote branches with `git ls-remote --heads origin` before referencing any branch as existing.
+Documentation for Phase 0 is now on `main`. No production build yet for Phase 0. The previous branch `docs/phase-0-agent-operating-system` was merged in PR #2 (merge commit e4ad2f1) and is no longer the source of truth.
 
-When a future MVP branch is created, it would contain docker compose and a working skeleton per `docs/roadmap/PHASE_1_CORE_MVP.md`.
+For future MVP skeleton (Phase 1), see `docs/roadmap/PHASE_1_CORE_MVP.md` and upcoming branches for Phase 1 Part 1 (Database Schema). Always verify current remote branches with `git ls-remote --heads origin` before referencing.
 
 ### Growth & Safety
 
@@ -202,4 +203,4 @@ MIT - See LICENSE file. This is planning documentation, not production code.
 
 ---
 
-**Status:** Phase 0 - Foundation docs in PR, not merged to main yet. See PR: `docs: define phase 0 roadmap and agent operating system`
+**Status:** Phase 0 - Foundation documentation merged to main on 2026-07-19. Currently preparing Phase 1 Part 1 (Database Schema).
