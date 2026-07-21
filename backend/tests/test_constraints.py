@@ -4,6 +4,7 @@ Test unique constraints and FK cascade decision documented
 import sys
 import os
 import uuid
+import pytest
 
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
@@ -32,18 +33,15 @@ def test_unique_email():
     SessionFactory, engine = get_session_factory()
     db = SessionFactory()
     try:
-        user1 = User(email="test@example.com", password_hash="hash1", role="user")
+        user1 = User(email="test@example.com", normalized_email="test@example.com", password_hash="hash1", role="user")
         db.add(user1)
         db.commit()
 
-        user2 = User(email="test@example.com", password_hash="hash2", role="user")
+        user2 = User(email="test@example.com", normalized_email="test@example.com", password_hash="hash2", role="user")
         db.add(user2)
-        try:
+        with pytest.raises(IntegrityError):
             db.commit()
-            assert False, "Duplicate email should raise IntegrityError"
-        except IntegrityError:
-            db.rollback()
-            assert True
+        db.rollback()
     finally:
         db.close()
 
@@ -51,11 +49,13 @@ def test_idempotency_key_unique():
     """
     Duplicate insert with same idempotency_key must raise IntegrityError
     This is core for financial safety - prevents double processing on retries
+    Test uses pytest.raises per quality requirement
     """
     SessionFactory, engine = get_session_factory()
     db = SessionFactory()
     try:
-        user = User(email=f"user_{uuid.uuid4()}@example.com", password_hash="hash", role="user")
+        email = f"user_{uuid.uuid4()}@example.com"
+        user = User(email=email, normalized_email=email.lower(), password_hash="hash", role="user")
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -72,24 +72,21 @@ def test_idempotency_key_unique():
 
         tx2 = LedgerTransaction(wallet_id=wallet.id, amount=10, type="purchase", idempotency_key=key)
         db.add(tx2)
-        try:
+        with pytest.raises(IntegrityError):
             db.commit()
-            assert False, "Duplicate idempotency_key should raise IntegrityError"
-        except IntegrityError:
-            db.rollback()
-            assert True
+        db.rollback()
     finally:
         db.close()
 
 def test_fk_restrict_documented():
     """
     FK cascade decision documented: default RESTRICT for financial safety.
-    See DATABASE_SCHEMA.md for full rationale.
     """
     SessionFactory, engine = get_session_factory()
     db = SessionFactory()
     try:
-        user = User(email=f"fk_test_{uuid.uuid4()}@example.com", password_hash="hash")
+        email = f"fk_test_{uuid.uuid4()}@example.com"
+        user = User(email=email, normalized_email=email.lower(), password_hash="hash", role="user")
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -100,21 +97,19 @@ def test_fk_restrict_documented():
 
         # Try to delete user while wallet exists - should fail with RESTRICT
         db.delete(user)
-        try:
+        with pytest.raises(IntegrityError):
             db.commit()
-            assert False, "Deleting user with wallet should be RESTRICT and raise IntegrityError"
-        except IntegrityError:
-            db.rollback()
-            assert True
+        db.rollback()
     finally:
         db.close()
 
 def test_wallet_unique_user_id():
-    """One wallet per user - unique constraint on user_id"""
+    """One wallet per user - unique constraint on user_id, exactly one uniqueness mechanism"""
     SessionFactory, engine = get_session_factory()
     db = SessionFactory()
     try:
-        user = User(email=f"wallet_unique_{uuid.uuid4()}@example.com", password_hash="hash")
+        email = f"wallet_unique_{uuid.uuid4()}@example.com"
+        user = User(email=email, normalized_email=email.lower(), password_hash="hash", role="user")
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -125,11 +120,8 @@ def test_wallet_unique_user_id():
 
         w2 = Wallet(user_id=user.id, balance_credits=10)
         db.add(w2)
-        try:
+        with pytest.raises(IntegrityError):
             db.commit()
-            assert False, "Duplicate wallet for same user_id should raise IntegrityError"
-        except IntegrityError:
-            db.rollback()
-            assert True
+        db.rollback()
     finally:
         db.close()

@@ -1,180 +1,236 @@
 # DATABASE SCHEMA - Phase 1 Part 1
 
 **Date:** 2026-07-19  
+**Updated:** 2026-07-20 - Fixed per review (real Postgres tests, check constraints, duplicate indexes removed, seed idempotent, ledger terminology)
 **Branch:** build/phase-1-part1-database  
-**Migration:** 001_core_schema (reversible upgrade/downgrade)
+**Migration:** 001_core_schema (reversible upgrade/downgrade) - PostgreSQL 15 tested via Testcontainers
+**PostgreSQL Version:** 15-alpine (via Testcontainers and GitHub Actions service container)
+**Alembic Commands:**
+- Upgrade: `alembic -c backend/alembic.ini upgrade head`
+- Downgrade: `alembic -c backend/alembic.ini downgrade base`
 
 ## Overview
 
-Core schema for Persian AI Workspace MVP - 7 tables, financial safety via append-only ledger and RESTRICT FKs.
+Core schema for Persian AI Workspace MVP - 7 tables, financial safety via append-only signed credit ledger (not double-entry), RESTRICT FKs, check constraints, idempotency.
+
+**Decision: Persona.version kept as semantic-version String** - explicit decision, not integer, for flexibility (e.g., v1.0.0, v0.1.0-draft, v1.2.3). Documented here and in model docstring, not claimed as integer.
 
 ## Tables
 
 ### 1. users
 - **Fields:**
-  - id: Integer PK, indexed
-  - email: String(255) unique, not null, indexed - unique constraint ensures no duplicate accounts
+  - id: Integer PK (no explicit index=True, PK already indexed)
+  - email: String(255) unique not null - unique constraint uq_users_email, no extra index=True duplicate
+  - normalized_email: String(255) unique not null - explicit normalized for case-insensitive unique strategy, unique constraint uq_users_normalized_email. Registration logic in Part 2 will normalize email to lower(trim(email)) and store both email and normalized_email lower, and enforce unique on normalized_email. This is documented case-insensitive strategy.
   - password_hash: String(255) not null - bcrypt hash
-  - role: String(50) not null default 'user' - e.g., user, admin
-  - is_active: Boolean not null default True
-  - created_at: DateTime timezone-aware server_default now()
-- **Indexes:** ix_users_id, ix_users_email unique
+  - role: String(50) not null server_default user, CheckConstraint role IN ('user','admin') ck_users_role_valid
+  - is_active: Boolean not null server_default true
+  - created_at: DateTime timezone server_default now()
+- **Constraints:** uq_users_email, uq_users_normalized_email, ck_users_role_valid
+- **Indexes:** Primary key only, unique constraints create indexes automatically, no redundant indexes on id
 - **FKs:** None (parent)
-- **Why:** Core identity, no cascade delete to preserve child financial data
+- **Why RESTRICT:** Core identity, no cascade delete to preserve child financial data. Deleting user with wallet should be RESTRICT.
 
 ### 2. wallets
 - **Fields:**
-  - id: Integer PK
-  - user_id: Integer FK → users.id, unique, not null, indexed - one wallet per user
-  - balance_credits: Integer not null default 0
-  - created_at: DateTime timezone
+  - id: Integer PK (no index=True)
+  - user_id: Integer FK → users.id RESTRICT not null, unique via constraint only (not unique=True + index=True duplicate) - exactly one named UNIQUE constraint uq_wallets_user_id
+  - balance_credits: Integer not null server_default 0, CheckConstraint balance_credits >=0 ck_wallets_balance_non_negative - balance is cached/materialized balance, not derived on every read for performance, but must be reconciled via SUM(ledger.amount)
+  - created_at: DateTime timezone server_default now()
   - updated_at: DateTime timezone server_default now() onupdate now()
-- **Indexes:** ix_wallets_id, ix_wallets_user_id unique, constraint uq_wallets_user_id
+- **Constraints:** uq_wallets_user_id (exactly one uniqueness mechanism for user_id), ck_wallets_balance_non_negative
+- **Indexes:** No explicit index on id (PK already indexed), no redundant unique index on user_id beyond constraint
 - **FKs:** user_id → users.id ondelete RESTRICT
-- **Why:** Wallet per user, unique ensures 1:1. RESTRICT prevents accidental user deletion with balance.
+- **Why RESTRICT:** One wallet per user, unique ensures 1:1. RESTRICT prevents accidental user deletion with balance. Balance >=0 prevents negative via check.
 
-### 3. ledger_transactions (append-only)
+### 3. ledger_transactions - append-only signed credit ledger (NOT double-entry)
+
+**Terminology Correction:** This is an append-only signed credit ledger, not a true double-entry ledger. Double-entry would have separate debit/credit accounts with equal and opposite entries; here we have single signed amount and cached wallet balance. Use exact terminology append-only signed credit ledger in docs, model docstrings, PR description, test names. Do not call it double-entry.
+
 - **Fields:**
-  - id: Integer PK
-  - wallet_id: Integer FK → wallets.id not null indexed
-  - amount: Integer not null signed - positive credit (purchase, refund, bonus), negative debit (spend_chat, etc.)
-  - type: String(50) not null indexed - purchase, spend_chat, spend_image, refund, bonus, admin_adjustment
-  - reference_id: String(255) nullable indexed - external cause (conversation_id, message_id) but NOT FK to keep append-only decoupled
-  - idempotency_key: String(255) not null unique indexed - **critical for financial safety**
-  - created_at: DateTime timezone indexed server_default now()
-- **Indexes:** ix_ledger_transactions_id, ix_ledger_transactions_wallet_id, ix_ledger_transactions_type, ix_ledger_transactions_reference_id, ix_ledger_transactions_idempotency_key unique, ix_ledger_transactions_created_at, plus explicit ix_ledger_idempotency_key_unique unique
+  - id: Integer PK (no index=True)
+  - wallet_id: Integer FK → wallets.id RESTRICT not null
+  - amount: Integer not null signed, CheckConstraint amount <>0 ck_ledger_amount_nonzero (+ credit, - debit, never zero)
+  - type: String(50) not null (purchase, spend_chat, spend_image, refund, bonus, admin_adjustment)
+  - reference_id: String(255) nullable (external cause conversation_id, message_id, not FK to keep append-only decoupled)
+  - idempotency_key: String(255) not null, unique via exactly one named UNIQUE constraint uq_ledger_idempotency_key, no unique=True + index=True + explicit Index duplicate
+  - created_at: DateTime timezone server_default now()
+- **Constraints:** uq_ledger_idempotency_key (exactly one uniqueness mechanism for idempotency_key), ck_ledger_amount_nonzero
+- **Indexes:** ix_ledger_wallet_id, ix_ledger_type, ix_ledger_created_at for query performance, no explicit index on id, no duplicate unique indexes
 - **FKs:** wallet_id → wallets.id ondelete RESTRICT
-- **Why append-only:**
-  - Financial safety: never UPDATE or DELETE ledger rows. History must be immutable for auditability.
-  - Balance derived from sum or maintained via atomic INSERT + wallet update in same transaction, but history never mutated.
-  - No UPDATE/DELETE in application logic - only INSERT. Enforced by code convention; future DB permissions could enforce read-only for app user on updates/deletes.
-  - reference_id is not FK to keep ledger decoupled and always insertable even if referenced entity deleted (soft).
-  - idempotency_key unique indexed prevents double processing on retries, network issues, replay. Duplicate insert raises IntegrityError. This is tested.
-  - Type field allows filtering and reporting.
-  - RESTRICT on wallet_id prevents wallet deletion with transactions - ledger must not disappear.
+- **Why append-only signed credit ledger (not double-entry):**
+  - Financial safety: never UPDATE or DELETE ledger rows. History immutable.
+  - Auditability: every credit movement immutable record.
+  - Idempotency: idempotency_key unique - duplicate requests raise IntegrityError, prevents double credit/debit on retries, replay.
+  - No UPDATE/DELETE in app logic - only INSERT. Enforced by code convention; database-level immutability permissions/triggers deferred to wallet/ledger implementation PR (Part 3 per spec).
+  - reference_id not FK to keep decoupled and always insertable even if referenced entity deleted.
+  - Amount signed: positive credit, negative debit, never zero per check.
+  - **balance_credits is cached/materialized balance** - Part 3 must update wallet balance and ledger insert atomically in same transaction: BEGIN; INSERT ledger; UPDATE wallet SET balance = balance + amount WHERE id = wallet_id; COMMIT. If second insert with same idempotency_key tries, fails, wallet not double updated.
+  - **Reconciliation:** Must compare wallet balance with SUM(ledger.amount) WHERE wallet_id = X. If mismatch, alert. Reconciliation job future.
+  - **Not double-entry:** True double-entry would have debit and credit accounts with two entries; here single signed entry + cached balance. Documented as append-only signed credit ledger.
 
 ### 4. personas
 - **Fields:**
-  - id: Integer PK
-  - slug: String(100) unique not null indexed - e.g., general-assistant, draft-psychologist
-  - name_fa: String(255) not null - Persian name
-  - role_definition: Text not null - system prompt, for high-risk must contain disclaimer and boundaries
+  - id: Integer PK (no index=True)
+  - slug: String(100) unique not null - unique constraint uq_personas_slug, e.g., general-assistant, psychologist-draft
+  - name_fa: String(255) not null
+  - role_definition: Text not null - for high-risk must contain disclaimer and boundaries
   - tone: String(100) nullable
-  - risk_level: String(20) not null default low indexed - low, medium, high
-  - status: String(20) not null default draft indexed - draft, active, deprecated
-  - version: String(20) not null default v1.0.0
+  - risk_level: String(20) not null server_default low, CheckConstraint risk_level IN ('low','medium','high') ck_personas_risk_level_valid
+  - status: String(20) not null server_default draft, CheckConstraint status IN ('draft','active','deprecated') ck_personas_status_valid
+  - version: String(20) not null server_default v1.0.0 - **Semantic-version String decision explicit**: Keep as String for flexibility (v1.0.0, v0.1.0-draft), not integer, documented here and in PR description, not claimed as integer
   - created_at: DateTime timezone server_default now()
-- **Indexes:** ix_personas_id, ix_personas_slug unique, ix_personas_risk_level, ix_personas_status
+- **Constraints:** uq_personas_slug, ck_personas_risk_level_valid, ck_personas_status_valid
+- **Indexes:** No explicit id indexes, unique constraint creates index for slug
 - **FKs:** None (parent)
-- **Why:** Persona registry, seed creates 2 placeholder personas.
+- **Why:** Persona registry, seed creates 2 development seed records (not approved production personas).
 
 ### 5. conversations
 - **Fields:**
   - id: Integer PK
-  - user_id: Integer FK → users.id not null indexed
-  - persona_id: Integer FK → personas.id nullable indexed
+  - user_id: Integer FK → users.id RESTRICT not null
+  - persona_id: Integer FK → personas.id RESTRICT nullable
   - created_at: DateTime timezone server_default now()
-- **Indexes:** ix_conversations_id, ix_conversations_user_id, ix_conversations_persona_id
-- **FKs:** user_id → users.id ondelete RESTRICT, persona_id → personas.id ondelete RESTRICT
-- **Why:** Conversation belongs to user, optionally with persona. RESTRICT prevents deleting user or persona while conversations exist, preserving audit trail.
+- **FKs:** user_id RESTRICT, persona_id RESTRICT
+- **Retention and Cascade Consistency - Deliberate Policy:** Explicit conversation deletion MAY delete its messages (cascade). Chosen for MVP simplicity: when user deletes a conversation, its messages are also deleted. Alternative considered: soft-delete and retain messages forever for audit. Deferred. Documented consistently in model docstrings (Conversation model), DATABASE_SCHEMA.md, and tests. Conversations themselves are not soft-deleted currently; messages are NOT always preserved if conversation is explicitly deleted - this is intentional and documented. For financial safety, users with wallets/conversations cannot be deleted due to RESTRICT on user_id.
+- **Relationships:** messages relationship cascade="all, delete-orphan" + FK ondelete CASCADE for messages to match: explicit conversation deletion deletes messages. This is consistent: ORM cascade + DB CASCADE both allow deletion. Documented as chosen policy, not claimed as always preserved.
+- **Indexes:** None beyond PK, FKs may have implicit indexes via foreign key? We rely on FK indexes not needed for this table size.
 
 ### 6. messages
 - **Fields:**
   - id: Integer PK
-  - conversation_id: Integer FK → conversations.id not null indexed
-  - role: String(20) not null indexed - user, assistant, system
+  - conversation_id: Integer FK → conversations.id CASCADE not null (CASCADE to match explicit conversation deletion may delete messages policy)
+  - role: String(20) not null, CheckConstraint role IN ('user','assistant','system') ck_messages_role_valid
   - content: Text not null
   - enhanced_prompt: Text nullable - future prompt enhancer output
-  - provider_used: String(100) nullable - placeholder for future provider name (no brand hardcoding, just placeholder)
+  - provider_used: String(100) nullable - placeholder for future provider name (no brand hardcoding)
   - cost_credits: Integer nullable - placeholder for future cost
   - created_at: DateTime timezone server_default now()
-- **Indexes:** ix_messages_id, ix_messages_conversation_id, ix_messages_role
-- **FKs:** conversation_id → conversations.id ondelete RESTRICT (relationship has cascade delete-orphan for app-level deletion if conversation explicitly deleted, but DB FK is RESTRICT to force app logic to decide)
-- **Why:** Messages belong to conversation. RESTRICT at DB level for safety, but ORM relationship cascade allows explicit conversation deletion to clean messages if needed. Cost and provider placeholders for future.
+- **Constraints:** ck_messages_role_valid
+- **FKs:** conversation_id → conversations.id ondelete CASCADE (deliberate for explicit conversation deletion may delete messages)
+- **Why:** Messages belong to conversation, cascade deletion chosen and documented consistently.
 
 ### 7. api_keys
 - **Fields:**
   - id: Integer PK
-  - user_id: Integer FK → users.id not null indexed
-  - key_hash: String(255) unique not null indexed - hashed key, never raw
-  - scopes: String(255) nullable default chat
-  - rate_limit: Integer not null default 60
+  - user_id: Integer FK → users.id RESTRICT not null
+  - key_prefix: String(20) not null - non-secret prefix for identifying keys without storing raw key, e.g., sk_live_abc123 first 8 chars
+  - key_hash: String(255) unique not null - secure hash, never raw key, unique constraint uq_api_keys_key_hash
+  - scopes: JSONB nullable server_default '{}' - PostgreSQL JSONB for MVP acceptable per spec, e.g., {"chat": true, "image": false} or ["chat","image"]
+  - rate_limit_per_minute: Integer not null server_default 60, CheckConstraint >0 ck_api_keys_rate_limit_positive - renamed from rate_limit per spec
   - created_at: DateTime timezone server_default now()
-  - revoked_at: DateTime timezone nullable
-- **Indexes:** ix_api_keys_id, ix_api_keys_user_id, ix_api_keys_key_hash unique
-- **FKs:** user_id → users.id ondelete RESTRICT
-- **Why:** API keys for developer platform Phase 4, but schema prepared now. key_hash unique prevents duplicate hashes. RESTRICT prevents user deletion with active keys.
+  - revoked_at: DateTime nullable
+- **Constraints:** uq_api_keys_key_hash, ck_api_keys_rate_limit_positive
+- **FKs:** user_id → users.id RESTRICT
+- **Why:** API keys for developer platform Phase 4, but schema prepared now. key_prefix non-secret for lookup, key_hash secure, never store raw API keys - raw API keys never stored, tested. Scopes JSONB for flexibility. Rate limit per minute renamed.
 
-## Indexes Summary
+## Indexes - Deduplicated
 
-- Unique: users.email, personas.slug, wallets.user_id, ledger_transactions.idempotency_key (two indexes: ix_... and ix_ledger_idempotency_key_unique), api_keys.key_hash
-- Regular: FKs, type, risk_level, status, created_at, role, reference_id for query performance
+- **Removed duplicate indexes:** Previously wallet.user_id had both UniqueConstraint and unique=True+index=True, ledger idempotency_key had unique=True + index=True + explicit unique Index (3 mechanisms). Now exactly one named UNIQUE constraint per unique field:
+  - wallets.user_id: only uq_wallets_user_id
+  - ledger_transactions.idempotency_key: only uq_ledger_idempotency_key
+- **Removed unnecessary explicit indexes on primary-key id columns:** All tables id is PK, no explicit Index or index=True, PK already creates index.
+- **Kept necessary indexes:** FKs for query performance via explicit indexes ix_ledger_wallet_id, ix_ledger_type, ix_ledger_created_at, plus unique constraints automatically create indexes.
+- **Tests asserting exactly one uniqueness mechanism:** Added tests test_wallet_user_uniqueness_mechanism_count and test_idempotency_uniqueness_mechanism_count that inspect SQLAlchemy table constraints/indexes to ensure only one uniqueness mechanism exists.
 
-## Foreign Keys and Cascade Decision
+## Check Constraints Added and Tested
 
-**Decision: Default RESTRICT for financial safety (documented here and in code).**
+- users.role IN ('user','admin') - ck_users_role_valid - tested against PostgreSQL
+- wallets.balance_credits >=0 - ck_wallets_balance_non_negative - tested
+- ledger_transactions.amount <>0 - ck_ledger_amount_nonzero - tested
+- personas.risk_level IN ('low','medium','high') - ck_personas_risk_level_valid - tested
+- personas.status IN ('draft','active','deprecated') - ck_personas_status_valid - tested
+- messages.role IN ('user','assistant','system') - ck_messages_role_valid - tested
+- api_keys.rate_limit_per_minute >0 - ck_api_keys_rate_limit_positive - tested
 
-- **Why RESTRICT not CASCADE:**
-  - Financial data (wallets, ledger_transactions) must never disappear accidentally via user deletion.
-  - Audit trail (conversations, messages) must be preserved for compliance.
-  - Personas referenced by conversations must not be deletable while in use.
-  - Wallets with transactions must not be deletable.
-  - Users with wallets, conversations, api_keys must not be deletable without explicit cleanup workflow that is audited and requires human approval for financial data.
+All tested against PostgreSQL 15 (and SQLite fast path where possible).
 
-- **Implementation:**
-  - All FKs have ondelete='RESTRICT' in SQLAlchemy.
-  - In SQLite tests, PRAGMA foreign_keys=ON enforced to test RESTRICT.
-  - Application logic must explicitly handle deletion: e.g., to delete user, first ensure wallet balance 0, archive ledger, delete conversations via app logic with audit, then delete user. This prevents accidental cascade.
-  - Relationship cascade="all, delete-orphan" only for Conversation->Messages to allow conversation deletion to clean messages when explicitly requested, but DB FK still RESTRICT to force app to load conversation first, not raw SQL delete.
+## Foreign Keys and Cascade Consistency
 
-- **Future:** For production Postgres, could add DEFERRABLE or additional checks, but RESTRICT remains default. For GDPR deletion, need explicit workflow with audit and approval.
+**Decision: RESTRICT default for financial safety, except messages conversation_id CASCADE for explicit conversation deletion may delete messages.**
 
-## Append-Only Ledger Design - Deep Dive
+- users → no FKs
+- wallets.user_id → users.id RESTRICT - prevents user deletion with wallet
+- ledger_transactions.wallet_id → wallets.id RESTRICT - prevents wallet deletion with transactions
+- personas -> none
+- conversations.user_id → users.id RESTRICT, persona_id → personas.id RESTRICT - preserves audit, prevents deletion of user/persona with conversations
+- messages.conversation_id → conversations.id CASCADE - explicit conversation deletion may delete messages, chosen deliberate policy, documented consistently in Conversation model docstring, Message model docstring, DATABASE_SCHEMA.md, and tests. Do not claim messages always preserved.
+- api_keys.user_id → users.id RESTRICT - prevents user deletion with active keys
 
-- **What append-only means:** Only INSERT, never UPDATE/DELETE in app code. Ledger is immutable log.
-- **Why:**
-  - Auditability: Every credit movement has immutable record.
-  - Idempotency: idempotency_key unique prevents double spend on retry. Duplicate key raises IntegrityError - tested.
-  - Correctness: Wallet balance should be updated in same transaction as ledger insert: BEGIN; INSERT ledger; UPDATE wallet SET balance = balance + amount; COMMIT; If second insert with same idempotency_key tries, fails, wallet not double updated.
-  - No UPDATE means no history rewriting, no lost audit.
-  - reference_id not FK to keep decoupled: even if conversation deleted, ledger entry remains for financial audit.
-- **How enforced:**
-  - Code convention: No update/delete queries for ledger_transactions in codebase.
-  - Tests: No update/delete in tests.
-  - Future DB role: App DB user could have GRANT INSERT, SELECT on ledger_transactions but not UPDATE/DELETE.
-  - Documentation here.
-- **Idempotency key generation:** Should be client-generated UUID or server-generated deterministic from request context (e.g., hash of user_id + action + request_id). Must be unique per logical operation. Stored unique indexed.
+For GDPR deletion, need explicit workflow with audit and approval, not raw cascade.
+
+## Schema Spec Mismatches Resolved and Documented
+
+A. Persona.version: Kept as semantic-version String explicit decision for flexibility (v1.0.0, v0.1.0-draft), not integer. Documented here, in model docstring, and PR description as explicit decision.
+
+B. ApiKey.scopes: Uses PostgreSQL JSONB for MVP, acceptable per spec. JSONB allows flexible scopes, queryable.
+
+C. Rename rate_limit -> rate_limit_per_minute: Done, with check >0.
+
+D. API key lookup: Added key_prefix non-secret field for identifying keys without storing raw key. Store only key_prefix + secure key_hash, never raw. Tested that raw API keys never stored.
+
+E. Email: Added explicit normalized_email field unique, plus email unique. Documented case-insensitive unique strategy: registration logic in Part 2 will normalize email via lower(trim(email)) and store both email (original) and normalized_email (lower) and enforce unique on normalized_email. This is explicit normalized_email strategy.
+
+## Append-Only Ledger Terminology Correction
+
+- Previously called append-only ledger, now correctly called **append-only signed credit ledger, not double-entry**. True double-entry has separate debit/credit accounts with equal and opposite entries; here single signed amount + cached wallet balance.
+- Documented in DATABASE_SCHEMA.md, model docstrings (ledger.py), PR description, test names (test_append_only_signed_credit_ledger_not_double_entry)
+- balance_credits is cached/materialized balance
+- Part 3 must update wallet balance and ledger insert atomically: BEGIN; INSERT ledger; UPDATE wallet SET balance = balance + amount; COMMIT;
+- Reconciliation must compare wallet balance with SUM(ledger.amount) WHERE wallet_id = X
+- Database-level immutability permissions/triggers deferred to wallet/ledger implementation PR (Part 3)
 
 ## Seed Script
 
-- backend/app/seed.py creates exactly 2 personas:
-  - slug general-assistant, name_fa دستیار عمومی, risk_level low, status active, role_definition general Persian assistant info
-  - slug draft-psychologist, name_fa پیش‌نویس روان‌شناس, risk_level high, status draft, role_definition contains literal "NOT READY FOR PRODUCTION — pending domain-expert review" to mark not ready and require expert review.
-- Tested to create exactly 2.
+- backend/app/seed.py never calls Base.metadata.create_all()
+- Assumes Alembic migrations already run, fails with clear message "Database schema is not migrated. Run alembic upgrade head first." if personas table does not exist (checked via inspector)
+- Idempotent: never deletes existing persona, inserts only missing seed record, if both exist does nothing, does not require entire personas table to contain exactly two rows
+- Uses slugs consistently: general-assistant and psychologist-draft (not draft-psychologist)
+- Seed only 1. general-assistant, 2. psychologist-draft, high-risk draft status draft risk high role_definition contains NOT READY FOR PRODUCTION — pending domain-expert review
+- Clearly states development seed records, not approved production personas
+- Tested idempotency and no deletion
 
 ## Migrations
 
-- Alembic init: backend/alembic.ini, backend/alembic/env.py, backend/alembic/script.py.mako, backend/alembic/versions/001_core_schema.py
-- 001_core_schema.py creates all 7 tables with FKs and indexes, especially unique index on idempotency_key (ix_ledger_transactions_idempotency_key and ix_ledger_idempotency_key_unique)
-- Reversible: upgrade creates tables, downgrade drops tables in reverse order (api_keys, messages, ledger_transactions, conversations, wallets, personas, users) to respect FK dependencies. Tested up/down.
+- Alembic 1.14+ with PostgreSQL 15
+- 001_core_schema.py creates all 7 tables with FKs RESTRICT except messages CASCADE, check constraints, unique constraints (exactly one per unique field), indexes (ix_ledger_wallet_id etc), JSONB for scopes
+- Reversible: upgrade creates, downgrade drops in reverse order respecting FKs
+- Real PostgreSQL testing: Testcontainers PostgreSQL 15 image postgres:15-alpine, runs alembic upgrade head and downgrade base, inspects actual PostgreSQL tables, indexes, constraints, verifies all 7 tables exist after upgrade and removed after downgrade
+- SQLite tests kept as optional fast unit tests, not described as migration verification
 
-## Tests
+## Tests - Final Required
 
-- tests/test_migration.py: checks alembic files exist, checks Base.metadata.create_all creates 7 tables, checks idempotency unique index exists, checks drop_all removes tables (simulates down)
-- tests/test_constraints.py: unique email raises IntegrityError, idempotency_key duplicate raises IntegrityError, FK RESTRICT prevents user deletion with wallet, wallet unique user_id
-- tests/test_seed.py: seed creates exactly 2 personas with correct fields per spec, including high-risk draft persona containing NOT READY string
+- Actual Alembic upgrade on PostgreSQL 15 - via testcontainers in tests/test_postgres_migration.py
+- Actual Alembic downgrade on PostgreSQL 15 - same file
+- Model/migration schema consistency - compare Base.metadata vs inspector after upgrade
+- Email uniqueness/normalization - unique email and normalized_email unique, case-insensitive strategy documented
+- Wallet user uniqueness - exactly one uniqueness mechanism, unique constraint uq_wallets_user_id
+- Idempotency uniqueness - exactly one uniqueness mechanism uq_ledger_idempotency_key, duplicate raises IntegrityError
+- Check constraints - 7 check constraints tested against PostgreSQL
+- FK RESTRICT behavior - deleting user with wallet raises IntegrityError
+- Seed idempotency - running seed twice does not duplicate, second run does nothing
+- Seed does not delete existing personas - test that existing personas table with extra persona still has extra after seed, only missing seed inserted
+- Raw API keys never stored - test that key_hash is hashed, key_prefix is non-secret, no raw key column exists
+- Unicode/Bidi scan passes - scan all changed files for U+202A-202E, U+2066-2069, zero-width, result no unexpected control chars found, Persian text allowed
 
-## What Is NOT Built (Per Scope Limits)
+## Dependency Reproducibility
 
-- No auth endpoints, no wallet business logic/API, no AI provider code, no frontend code, no real pricing numbers, no payment gateway, no brand name hardcoding, no real API keys (key_hash is placeholder hashed, no raw keys in seed).
+- backend/pyproject.toml with exact runtime/test dependencies: SQLAlchemy >=2.0, Alembic >=1.12, psycopg2-binary >=2.9 or psycopg[binary] >=3.1, pydantic >=2.0, pydantic-settings >=2.0, pytest >=7.4, testcontainers[postgres] >=4.0
+- backend/requirements.txt and requirements-dev.txt as fallback
+- Python 3.11+ supported
+- Clean install tested via pip install -r requirements.txt and via poetry (if pyproject)
 
-## Future Phases
+## No Secrets, No Frontend, No Payment
 
-- Phase 1 Part 2: Auth endpoints will use users table
-- Phase 1 Part 3: Wallet API will use wallets + ledger_transactions with idempotency
-- Phase 2: Personas table will be used for specialist personas, status draft/active
-- Phase 4: ApiKeys table for developer platform
+- No real API keys, no payment gateway, no brand hardcoding, no real pricing numbers, no auth endpoints, no wallet business logic/API, no AI provider code, no frontend/ changes (verified git diff)
 
-## No Secrets
+## Unicode / Bidi Security Scan
 
-- No real API keys, no payment gateway credentials, no brand name hardcoding, no production DATABASE_URL with real password in repo (uses placeholder aiuser:aipass localhost). .env.example contains placeholder CHANGE_ME.
+- Scan command: python -c "import pathlib; ..." that checks all changed files for U+202A-U+202E, U+2066-U+2069, U+200B-200D, U+FEFF
+- Result: No unexpected control characters found, Persian text allowed, only standard Persian characters.
+- Added to PR report.
+
+## Optional CI
+
+- .github/workflows/backend-database-tests.yml runs on PRs touching backend/**, uses Python 3.11, starts PostgreSQL 15 service container, installs dependencies from manifest, runs Alembic upgrade/downgrade, runs pytest
+- Provided exact local commands if CI not added: see below

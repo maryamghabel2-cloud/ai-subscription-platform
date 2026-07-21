@@ -1,5 +1,7 @@
 """
 Test Alembic migration up/down for Phase 1 Part 1 core schema
+SQLite version is optional fast unit test, not migration verification.
+Real Postgres verification is in test_postgres_migration.py
 """
 import os
 import sys
@@ -22,12 +24,11 @@ def get_test_engine():
 
 def test_migration_up_down():
     """
-    Test that migration 001_core_schema creates all 7 tables and can be downgraded.
-    We test via Base.metadata creation as proxy, and check drop.
+    Optional fast SQLite test: create_all creates 7 tables, has unique constraint for idempotency, drop_all removes.
+    Real migration verification is in test_postgres_migration.py with PostgreSQL 15 and Alembic commands.
     """
     engine = get_test_engine()
     
-    # Simulate upgrade: create_all should create 7 tables
     Base.metadata.create_all(bind=engine)
     
     inspector = inspect(engine)
@@ -36,11 +37,18 @@ def test_migration_up_down():
     expected_tables = {"users", "wallets", "ledger_transactions", "personas", "conversations", "messages", "api_keys"}
     assert expected_tables.issubset(set(tables)), f"Missing tables. Found {tables}, expected {expected_tables}"
     
-    # Check unique index on idempotency_key exists
+    # Check unique constraint or unique index on idempotency_key exists (exactly one mechanism)
     indexes = inspector.get_indexes("ledger_transactions")
-    index_names = [idx['name'] for idx in indexes]
-    has_idempotency_unique = any('idempotency' in name for name in index_names)
-    assert has_idempotency_unique, f"idempotency_key unique index not found in {index_names}"
+    unique_constraints = inspector.get_unique_constraints("ledger_transactions")
+    # Look for idempotency in either indexes or constraints
+    has_idempotency = False
+    for idx in indexes:
+        if 'idempotency' in idx['name'].lower() and idx.get('unique'):
+            has_idempotency = True
+    for uc in unique_constraints:
+        if 'idempotency' in uc['name'].lower() or 'idempotency_key' in str(uc['column_names']):
+            has_idempotency = True
+    assert has_idempotency, f"idempotency_key unique constraint/index not found. Indexes={indexes}, unique_constraints={unique_constraints}"
     
     # Simulate downgrade: drop_all and re-inspect with new inspector
     Base.metadata.drop_all(bind=engine)

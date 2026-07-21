@@ -1,0 +1,103 @@
+name: Backend Database Tests
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: aiuser
+          POSTGRES_PASSWORD: aipass
+          POSTGRES_DB: aiplatform_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies from manifest
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run Alembic upgrade head (PostgreSQL 15)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          alembic -c alembic.ini upgrade head
+          echo "Upgrade result: success"
+
+      - name: Inspect PostgreSQL tables after upgrade
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+          PGPASSWORD: aipass
+        run: |
+          psql -h localhost -U aiuser -d aiplatform_test -c "\dt"
+          psql -h localhost -U aiuser -d aiplatform_test -c "\di"
+          psql -h localhost -U aiuser -d aiplatform_test -c "SELECT conname, contype FROM pg_constraint WHERE conrelid = 'users'::regclass;"
+
+      - name: Run Alembic downgrade base (PostgreSQL 15)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          alembic -c alembic.ini downgrade base
+          echo "Downgrade result: success"
+
+      - name: Run Alembic upgrade again for tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          alembic -c alembic.ini upgrade head
+
+      - name: Run pytest (including Postgres tests)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          pytest tests/ -v
+
+      - name: Unicode/Bidi security scan
+        run: |
+          python3 -c "
+          import pathlib
+          root = pathlib.Path('backend')
+          suspicious = []
+          for f in root.rglob('*.py'):
+              if '.git' in str(f) or '__pycache__' in str(f):
+                  continue
+              text = f.read_text(encoding='utf-8', errors='ignore')
+              for i,ch in enumerate(text):
+                  code=ord(ch)
+                  if 0x202A <= code <= 0x202E or 0x2066 <= code <= 0x2069:
+                      suspicious.append((str(f), i, hex(code)))
+                  if code in [0x200B, 0x200D, 0xFEFF, 0x00AD]:
+                      suspicious.append((str(f), i, hex(code)))
+          print(f'Scan complete, unexpected control chars: {suspicious}')
+          assert len(suspicious)==0, f'Found unexpected bidi/zero-width chars: {suspicious}'
+          "

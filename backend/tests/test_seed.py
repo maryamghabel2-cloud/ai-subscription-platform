@@ -1,5 +1,5 @@
 """
-Test seed script creates exactly 2 personas
+Test seed script creates exactly 2 personas, idempotent, no deletion
 """
 import sys
 import os
@@ -15,29 +15,28 @@ def get_engine():
     return create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
 
 def test_seed_creates_exactly_two():
-    # Import seed function but use isolated DB
+    # Import seed module
     from app import seed as seed_module
 
-    # Override engine and SessionLocal for test isolation
     engine = get_engine()
     Base.metadata.create_all(bind=engine)
-    Session = sessionmaker(bind=engine)
+    SessionFactory = sessionmaker(bind=engine)
     
-    # Monkey-patch seed's dependencies
+    # Monkey-patch only SessionLocal and engine, not Base (seed no longer uses Base.create_all)
     original_SessionLocal = seed_module.SessionLocal
     original_engine = seed_module.engine
-    original_Base = seed_module.Base
 
-    seed_module.SessionLocal = Session
+    seed_module.SessionLocal = SessionFactory
     seed_module.engine = engine
-    seed_module.Base = Base
 
     try:
+        # Mock check_schema_migrated to bypass table existence check for sqlite memory (we already created tables)
+        # But seed checks inspector for personas table, which exists because we created_all
         personas = seed_module.seed_personas()
         assert len(personas) == 2, f"Expected 2 personas, got {len(personas)}"
 
         # Verify in DB
-        db = Session()
+        db = SessionFactory()
         count = db.query(Persona).count()
         assert count == 2, f"DB should have exactly 2 personas, got {count}"
 
@@ -48,16 +47,22 @@ def test_seed_creates_exactly_two():
         assert p1.risk_level == "low"
         assert p1.status == "active"
 
-        p2 = db.query(Persona).filter(Persona.slug == "draft-psychologist").first()
-        assert p2 is not None, "draft-psychologist not found"
+        p2 = db.query(Persona).filter(Persona.slug == "psychologist-draft").first()
+        assert p2 is not None, "psychologist-draft not found"
         assert p2.name_fa == "پیش‌نویس روان‌شناس"
         assert p2.risk_level == "high"
         assert p2.status == "draft"
         assert "NOT READY FOR PRODUCTION — pending domain-expert review" in p2.role_definition
 
         db.close()
+
+        # Test idempotency - second run should not duplicate
+        personas2 = seed_module.seed_personas()
+        db = SessionFactory()
+        count2 = db.query(Persona).count()
+        assert count2 == 2, f"Second seed run should be idempotent, expected 2, got {count2}"
+        db.close()
+
     finally:
-        # Restore
         seed_module.SessionLocal = original_SessionLocal
         seed_module.engine = original_engine
-        seed_module.Base = original_Base
