@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "ai-subscription-platform-backend"
+version = "1.0.0"
+description = "Phase 1 Part 1 - core database schema and migrations"
+authors = ["AI Platform Team"]
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlalchemy = ">=2.0.0"
+alembic = ">=1.12.0"
+psycopg2-binary = ">=2.9.9"
+pydantic = ">=2.5.0"
+pydantic-settings = ">=2.0.0"
+python-dotenv = ">=1.0.0"
+passlib = {extras = ["bcrypt"], version = ">=1.7.4"}
+python-jose = {extras = ["cryptography"], version = ">=3.3.0"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.4.0"
+testcontainers = {extras = ["postgres"], version = ">=4.0.0"}
+psycopg = {extras = ["binary"], version = ">=3.1.0"}
+httpx = ">=0.25.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v"
