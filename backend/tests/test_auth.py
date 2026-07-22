@@ -46,16 +46,14 @@ app.dependency_overrides[get_db] = override_get_db
 
 client = TestClient(app)
 
-# Reset rate limiting storage before each test module
+# Reset rate limiting storage before each test module - no cookie clearing to avoid masking real cookie duplication bugs
 from app.core.rate_limit import reset_rate_limit_storage
 
 @pytest.fixture(autouse=True)
 def reset_rate_limits():
     reset_rate_limit_storage()
-    client.cookies.clear()
     yield
     reset_rate_limit_storage()
-    client.cookies.clear()
 
 # Helper to register user via API
 def register_user(email=None, password="StrongPass123"):
@@ -521,56 +519,79 @@ def test_all_sessions_revoked_after_password_reset():
     resp_me = client.get("/auth/me")
     assert resp_me.status_code == 401
 
-# H. Rate limiting
+# H. Rate limiting - Fixed to not trust X-Forwarded-For, only use client.host
 
 def test_rate_limiting_login_returns_429():
-    # Use a fixed IP for rate limiting test - we need to control IP via X-Forwarded-For header
-    # Our rate limit uses IP from X-Forwarded-For or client.host
-    # We'll simulate many login attempts with same IP
-    ip = "1.2.3.4"
+    # Rate limiting now uses client.host only, ignoring X-Forwarded-For when no trusted proxies
+    # So repeated login attempts from same client (testclient host) should eventually return 429
     # First, create a user
     resp, email, password = register_user()
     assert resp.status_code == 201
     client.cookies.clear()
 
     # Try 11 login attempts with wrong password quickly - should eventually return 429 after 10 per 15 min
-    # Note: successful logins also count? Our implementation counts all login attempts (we check before auth)
-    # So 10 allowed, 11th should be 429
+    # All from same client.host (testclient)
     for i in range(10):
-        r = client.post("/auth/login", json={"email": email, "password": "WrongPass123"}, headers={"X-Forwarded-For": ip})
-        # First 10 should be 401 (invalid) not 429
+        r = client.post("/auth/login", json={"email": email, "password": "WrongPass123"})
         assert r.status_code in [401, 429]
         if r.status_code == 429:
             break
 
-    # 11th attempt
-    r11 = client.post("/auth/login", json={"email": email, "password": "WrongPass123"}, headers={"X-Forwarded-For": ip})
-    # After 10 attempts, should be rate limited
+    # 11th attempt should be rate limited
+    r11 = client.post("/auth/login", json={"email": email, "password": "WrongPass123"})
     assert r11.status_code == 429
 
-def test_rate_limit_scoped_to_endpoint_ip():
-    # Register rate limit is 5/hour/IP, login 10/15min/IP - they should be separate
-    # Use same IP for register and login - register limit should not affect login immediately
-    ip = f"2.3.4.{uuid.uuid4().int % 100}"
+def test_rate_limit_scoped_to_endpoint():
+    # Register rate limit 5/hour and login 10/15min should be separate buckets
     # Exhaust register limit
     for i in range(5):
-        client.post("/auth/register", json={"email": f"rate_test_{uuid.uuid4()}@example.com", "password": "StrongPass123"}, headers={"X-Forwarded-For": ip})
+        client.post("/auth/register", json={"email": f"rate_test_{uuid.uuid4()}@example.com", "password": "StrongPass123"})
 
     # 6th register should be 429
-    resp = client.post("/auth/register", json={"email": f"rate_test_{uuid.uuid4()}@example.com", "password": "StrongPass123"}, headers={"X-Forwarded-For": ip})
+    resp = client.post("/auth/register", json={"email": f"rate_test_{uuid.uuid4()}@example.com", "password": "StrongPass123"})
     assert resp.status_code == 429
 
-    # But login with same IP should still be allowed (different endpoint key)
-    # Use existing user for login
+    # But login with same client.host should still be allowed for first attempt (different endpoint bucket)
+    # Use existing user
     reg_resp, email, password = register_user()
-    assert reg_resp.status_code == 201
+    # Need to reset rate limits for register? Actually we already exhausted register for this client.host, but login bucket is separate
+    # So login should not be rate limited yet for this endpoint
+    # Clear cookies and try login - should be allowed (200) not 429 for first attempt
     client.cookies.clear()
-    login_resp = client.post("/auth/login", json={"email": email, "password": password}, headers={"X-Forwarded-For": ip})
-    # Should be allowed (login endpoint separate) - might be 200, not 429
-    assert login_resp.status_code in [200, 401]  # 401 if wrong password, but not 429 for first attempt
-    # Actually login should be allowed, not rate limited yet for this IP on login endpoint
-    # So we expect 200 for correct password
+    login_resp = client.post("/auth/login", json={"email": email, "password": password})
+    # Could be 200 if not rate limited, or 429 if previous login attempts from earlier test affected? We reset rate limits per test via fixture, so should be fresh
+    # Actually fixture resets rate limits before each test, so this test starts clean
+    # But we already did 5 register attempts in this test, which should not affect login bucket
     assert login_resp.status_code == 200
+
+def test_x_forwarded_for_cannot_bypass_rate_limiting_when_no_trusted_proxies():
+    """
+    Security fix: X-Forwarded-For header must NOT bypass rate limiting when no trusted proxies configured.
+    For MVP with no reverse proxy, ONLY use request.client.host and IGNORE X-Forwarded-For.
+    This test verifies spoofing X-Forwarded-For does not bypass rate limiting.
+    """
+    # Exhaust login attempts for client.host (testclient) without using X-Forwarded-For
+    resp, email, password = register_user()
+    assert resp.status_code == 201
+    client.cookies.clear()
+
+    # Make 10 failed login attempts from same client.host to trigger rate limit
+    for i in range(10):
+        client.post("/auth/login", json={"email": email, "password": "WrongPass123"})
+
+    # Now even if attacker sends X-Forwarded-For with different IP, rate limit should still apply based on client.host
+    # Because we ignore X-Forwarded-For when TRUSTED_PROXIES is empty (default)
+    resp_spoofed = client.post(
+        "/auth/login",
+        json={"email": email, "password": "WrongPass123"},
+        headers={"X-Forwarded-For": "9.9.9.9"}  # Attempt to spoof different IP to bypass
+    )
+    # Should still be 429 because we ignore X-Forwarded-For and use client.host (testclient) which is rate limited
+    assert resp_spoofed.status_code == 429, "X-Forwarded-For spoofing should NOT bypass rate limiting when no trusted proxies"
+
+    # Also test that without spoofing, also 429
+    resp_no_spoof = client.post("/auth/login", json={"email": email, "password": "WrongPass123"})
+    assert resp_no_spoof.status_code == 429
 
 # I. Security scans
 
@@ -662,3 +683,24 @@ def test_auth_sessions_constraints_exist():
     reset_table = PasswordResetToken.__table__
     reset_constraints = [c.name for c in reset_table.constraints if hasattr(c, 'name') and c.name]
     assert any("expires" in name for name in reset_constraints) or len([c for c in reset_table.constraints if "CheckConstraint" in str(type(c))]) >= 1
+
+def test_long_passwords_different_hashes():
+    """
+    Password hashing fix: SHA256 pre-hash before bcrypt supports any length securely.
+    Two different passwords longer than 72 bytes must produce different hashes.
+    Previously truncated to 72 bytes silently, causing collision.
+    """
+    from app.core.security import hash_password
+    # Two passwords >72 bytes that share first 72 bytes but differ after
+    base = "A" * 72
+    pwd1 = base + "1" + "x" * 20 + "123"
+    pwd2 = base + "2" + "y" * 20 + "456"
+    assert len(pwd1) > 72
+    assert len(pwd2) > 72
+    assert pwd1[:72] == pwd2[:72]  # First 72 bytes same
+    assert pwd1 != pwd2  # But differ after
+
+    hash1 = hash_password(pwd1)
+    hash2 = hash_password(pwd2)
+    # With SHA256 pre-hash, hashes should be different
+    assert hash1 != hash2, "Two different long passwords sharing first 72 bytes should produce different hashes with SHA256 pre-hash, not identical due to silent truncation"

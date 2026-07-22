@@ -16,17 +16,21 @@ COMMON_WEAK_PASSWORDS = {
 }
 
 def hash_password(password: str) -> str:
-    """Hash password using bcrypt directly (avoid passlib compatibility issues), never log raw password"""
-    # bcrypt has 72 bytes limit, truncate to 72 bytes for safety per passlib recommendation
-    truncated = password[:72].encode('utf-8')
-    hashed = bcrypt.hashpw(truncated, bcrypt.gensalt())
+    """
+    Hash password using SHA256 pre-hash before bcrypt to support any length securely.
+    No silent truncation - SHA256 pre-hash ensures full password entropy is used even if >72 bytes.
+    """
+    sha256_hash = hashlib.sha256(password.encode("utf-8")).digest()
+    hashed = bcrypt.hashpw(sha256_hash, bcrypt.gensalt())
     return hashed.decode('utf-8')
 
 def verify_password(password: str, password_hash: str) -> bool:
-    """Verify password against hash, constant time - truncate to 72 bytes"""
-    truncated = password[:72].encode('utf-8')
+    """
+    Verify password against hash using SHA256 pre-hash + bcrypt
+    """
+    sha256_hash = hashlib.sha256(password.encode("utf-8")).digest()
     try:
-        return bcrypt.checkpw(truncated, password_hash.encode('utf-8'))
+        return bcrypt.checkpw(sha256_hash, password_hash.encode('utf-8'))
     except Exception:
         return False
 
