@@ -45,6 +45,11 @@ def register(request: Request, payload: RegisterRequest, response: Response, db:
     user_agent = request.headers.get("User-Agent", "")
     session, raw_session, raw_refresh, raw_csrf = auth_service.create_auth_session(db, user.id, user_agent, ip)
 
+    # Clear old cookies explicitly to avoid duplicate cookies
+    response.delete_cookie(key="nv_session", path="/")
+    response.delete_cookie(key="nv_refresh", path="/")
+    response.delete_cookie(key="nv_csrf", path="/")
+
     # Set cookies per spec
     response.set_cookie(
         key="nv_session",
@@ -91,6 +96,11 @@ def login(request: Request, payload: LoginRequest, response: Response, db: Sessi
 
     user_agent = request.headers.get("User-Agent", "")
     session, raw_session, raw_refresh, raw_csrf = auth_service.create_auth_session(db, user.id, user_agent, ip)
+
+    # Clear old cookies explicitly before setting new to avoid duplicates
+    response.delete_cookie(key="nv_session", path="/")
+    response.delete_cookie(key="nv_refresh", path="/")
+    response.delete_cookie(key="nv_csrf", path="/")
 
     response.set_cookie(key="nv_session", value=raw_session, httponly=True, secure=False, samesite="lax", max_age=30*60, path="/")
     response.set_cookie(key="nv_refresh", value=raw_refresh, httponly=True, secure=False, samesite="lax", max_age=30*24*3600, path="/")
