@@ -1,4 +1,4 @@
-# Database Models Package - Phase 1 Part 1 + Part 2
+# Database Models Package - Phase 1 Part 1 + Part 2 + Part 3A Wallet/Payment
 from ..database import Base
 from .user import User
 from .wallet import Wallet
@@ -9,6 +9,7 @@ from .message import Message
 from .api_key import ApiKey
 from .auth_session import AuthSession
 from .password_reset_token import PasswordResetToken
+from .payment_intent import PaymentIntent
 
 __all__ = [
     "Base",
@@ -21,4 +22,5 @@ __all__ = [
     "ApiKey",
     "AuthSession",
     "PasswordResetToken",
+    "PaymentIntent",
 ]

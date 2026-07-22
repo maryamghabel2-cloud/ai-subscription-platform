@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
-from .api import auth
+from .api import auth, wallet, payments, admin
 from .models.user import User
 from .models.wallet import Wallet
 from .models.ledger import LedgerTransaction
@@ -11,15 +11,11 @@ from .models.message import Message
 from .models.api_key import ApiKey
 from .models.auth_session import AuthSession
 from .models.password_reset_token import PasswordResetToken
-
-# Create tables if not exist via create_all for dev, but production uses alembic
-# For safety, we create all in this minimal app for local dev, but migration is preferred
-# Comment out in production and use alembic upgrade head
-# Base.metadata.create_all(bind=engine) - removed per seed fix, assume migrations run
+from .models.payment_intent import PaymentIntent
 
 app = FastAPI(
-    title="Persian AI Workspace - Auth MVP",
-    description="Phase 1 Part 2 secure cookie-based authentication - no AI providers yet",
+    title="Persian AI Workspace - Wallet & Payments MVP",
+    description="Phase 1 Part 3A wallet, ledger, payment intents - sandbox mock provider only, no real payment gateway",
     version="1.0.0",
 )
 
@@ -34,11 +30,14 @@ app.add_middleware(
 
 @app.get("/")
 def root():
-    return {"message": "Persian AI Workspace - Auth MVP Part 2", "phase": "Phase 1 Part 2 adds backend authentication; no AI providers yet."}
+    return {"message": "Persian AI Workspace - Wallet & Payments MVP Part 3A", "phase": "Phase 1 Part 3A adds wallet, ledger, payment intents - sandbox mock only, no real gateway"}
 
 @app.get("/health")
 def health():
     return {"status": "healthy"}
 
-# Include auth router
+# Include routers
 app.include_router(auth.router)
+app.include_router(wallet.router)
+app.include_router(payments.router)
+app.include_router(admin.router)

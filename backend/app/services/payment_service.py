@@ -1,225 +1,208 @@
-from fastapi import HTTPException, Depends
-from typing import Dict, Any, Optional
-from app.services.zarinpal_service import ZarinpalService
-from app.services.crypto_service import CryptoService
-from app.config import settings
+"""
+Payment Intent Service - handles PaymentIntent lifecycle and wallet crediting
 
+- This is the ONLY way to add credits from a payment (via complete_payment)
+- All operations atomic and idempotent
+- Exchange rate snapshot logic
+"""
 
-class PaymentService:
+from typing import List, Tuple, Optional
+from datetime import datetime, timezone, timedelta
+from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
+
+from ..models.payment_intent import PaymentIntent
+from ..models.user import User
+from .exchange_rate import get_exchange_rate_snapshot
+from .wallet_service import credit_wallet
+from ..providers.payment.registry import get_payment_provider
+
+class PaymentIntentAlreadyExistsError(Exception):
+    pass
+
+class PaymentExpiredError(Exception):
+    pass
+
+class PaymentAlreadyCompletedError(Exception):
+    pass
+
+def create_payment_intent(
+    db: Session,
+    user_id: int,
+    provider: str,
+    credits_to_add: int,
+    amount_toman: Optional[int] = None,
+    amount_usd: Optional[int] = None,
+    amount_crypto: Optional[str] = None,
+    crypto_currency: Optional[str] = None,
+    crypto_network: Optional[str] = None,
+    idempotency_key: str = None,
+) -> PaymentIntent:
     """
-    Main payment service that coordinates all payment methods
+    Create payment intent - validate at least one amount field must be set, credits_to_add >0,
+    snapshot current exchange rate, set expires_at = now +30 minutes, status pending
     """
-    
-    def __init__(self):
-        self.zarinpal = ZarinpalService()
-        self.crypto = CryptoService()
-    
-    async def create_payment(self, payment_data: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Create payment based on payment method
-        
-        Args:
-            payment_data: Dictionary containing payment details
-                - amount: Amount in Tomans
-                - product_name: Name of the product
-                - payment_method: 'zarinpal' or 'crypto'
-                - callback_url: URL for payment callback
-                - email: User email (optional)
-                - mobile: User mobile (optional)
-                - order_id: Order ID for tracking (optional)
-                
-        Returns:
-            dict: Payment details for redirecting user
-        """
-        method = payment_data.get("payment_method", "crypto")
-        amount = payment_data["amount"]
-        product_name = payment_data["product_name"]
-        
-        if method == "zarinpal":
-            # Convert tomans to rials (1 toman = 10 rials)
-            amount_rials = amount * 10
-            
-            try:
-                payment = self.zarinpal.create_payment(
-                    amount=amount_rials,
-                    description=f"خرید {product_name}",
-                    callback_url=payment_data["callback_url"],
-                    email=payment_data.get("email"),
-                    mobile=payment_data.get("mobile")
-                )
-                return {
-                    **payment,
-                    "payment_method": "zarinpal",
-                    "amount": amount,
-                    "currency": "IRR",
-                    "product_name": product_name
-                }
-            except HTTPException as e:
-                raise e
-            except Exception as e:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Error creating Zarinpal payment: {str(e)}"
-                )
-        
-        elif method == "crypto":
-            try:
-                payment = await self.crypto.create_crypto_payment(
-                    amount_toman=amount,
-                    product_name=product_name,
-                    order_id=payment_data.get("order_id")
-                )
-                return {
-                    **payment,
-                    "payment_method": "crypto",
-                    "currency": "USDT",
-                    "product_name": product_name
-                }
-            except HTTPException as e:
-                raise e
-            except Exception as e:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Error creating crypto payment: {str(e)}"
-                )
-        
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid payment method: {method}. Supported methods: zarinpal, crypto"
-            )
-    
-    async def verify_payment(self, payment_method: str, **kwargs) -> Dict[str, Any]:
-        """
-        Verify payment based on method
-        
-        Args:
-            payment_method: 'zarinpal' or 'crypto'
-            **kwargs: Additional parameters based on method
-                - For zarinpal: authority, amount
-                - For crypto: payment_id, tx_hash, amount
-                
-        Returns:
-            dict: Verification result
-        """
-        if payment_method == "zarinpal":
-            try:
-                authority = kwargs["authority"]
-                amount = kwargs["amount"]
-                
-                result = self.zarinpal.verify_payment(
-                    authority=authority,
-                    amount=amount * 10  # Convert to rials
-                )
-                
-                if result.get("success"):
-                    return {
-                        **result,
-                        "payment_method": "zarinpal",
-                        "verified": True,
-                        "message": "Payment verified successfully"
-                    }
-                else:
-                    return {
-                        **result,
-                        "payment_method": "zarinpal",
-                        "verified": False,
-                        "message": result.get("message", "Payment verification failed")
-                    }
-            except HTTPException as e:
-                raise e
-            except Exception as e:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Error verifying Zarinpal payment: {str(e)}"
-                )
-        
-        elif payment_method == "crypto":
-            try:
-                payment_id = kwargs["payment_id"]
-                tx_hash = kwargs["tx_hash"]
-                amount = kwargs.get("amount")
-                
-                result = await self.crypto.verify_crypto_payment(
-                    payment_id=payment_id,
-                    tx_hash=tx_hash,
-                    amount=amount
-                )
-                
-                return {
-                    **result,
-                    "payment_method": "crypto",
-                    "verified": result.get("verified", False),
-                    "message": "Payment verified" if result.get("verified") else "Payment verification pending"
-                }
-            except HTTPException as e:
-                raise e
-            except Exception as e:
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Error verifying crypto payment: {str(e)}"
-                )
-        
-        else:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Invalid payment method: {payment_method}"
-            )
-    
-    async def get_payment_status(self, payment_id: str, payment_method: str) -> Dict[str, Any]:
-        """
-        Get current status of a payment
-        
-        Args:
-            payment_id: Payment identifier
-            payment_method: Payment method used
-            
-        Returns:
-            dict: Payment status
-        """
-        if payment_method == "crypto":
-            return self.crypto.get_payment_status(payment_id)
-        else:
-            # For Zarinpal, we need to check with authority
-            # This would need to be stored in database
-            return {
-                "payment_id": payment_id,
-                "payment_method": payment_method,
-                "status": "unknown",
-                "message": "Payment status tracking not implemented for this method"
-            }
-    
-    def get_supported_methods(self) -> Dict[str, Any]:
-        """
-        Get list of supported payment methods
-        
-        Returns:
-            dict: Supported payment methods with details
-        """
-        return {
-            "methods": [
-                {
-                    "id": "crypto",
-                    "name": "پرداخت با تتر (USDT)",
-                    "description": "پرداخت با ارز دیجیتال تتر (شبکه TRC20)",
-                    "currency": "USDT",
-                    "is_active": True,
-                    "delivery_time": "فوری",
-                    "fee": "۰%",
-                    "min_amount": 100000,  # 100,000 Tomans
-                    "max_amount": None
-                },
-                {
-                    "id": "zarinpal",
-                    "name": "زرین‌پال",
-                    "description": "پرداخت با کارت بانکی از طریق درگاه زرین‌پال",
-                    "currency": "IRR",
-                    "is_active": True,
-                    "delivery_time": "پس از تایید",
-                    "fee": "۰.۹% + ۲۰۰ تومان",
-                    "min_amount": 10000,  # 10,000 Tomans
-                    "max_amount": 50000000  # 50,000,000 Tomans
-                }
-            ],
-            "default": "crypto"
-        }
+    if not amount_toman and not amount_usd and not amount_crypto:
+        raise ValueError("At least one amount field must be set (amount_toman, amount_usd, amount_crypto)")
+
+    if credits_to_add <= 0:
+        raise ValueError("credits_to_add must be > 0")
+
+    if not idempotency_key:
+        raise ValueError("idempotency_key is required")
+
+    # Check idempotency - if payment intent with same key exists, return it (idempotent)
+    existing = db.query(PaymentIntent).filter(PaymentIntent.idempotency_key == idempotency_key).first()
+    if existing:
+        return existing
+
+    # Snapshot exchange rate
+    exchange_rate_snapshot = get_exchange_rate_snapshot()
+
+    now = datetime.now(timezone.utc)
+    expires_at = now + timedelta(minutes=30)
+
+    # For crypto, generate wallet_address placeholder (would be real address in Part 3C)
+    wallet_address = None
+    if provider in ["crypto_trc20", "crypto_ton"]:
+        wallet_address = f"mock_wallet_address_{provider}_{user_id}_{now.timestamp()}"
+
+    payment_intent = PaymentIntent(
+        user_id=user_id,
+        amount_toman=amount_toman,
+        amount_usd=amount_usd,
+        amount_crypto=amount_crypto,
+        crypto_currency=crypto_currency,
+        crypto_network=crypto_network,
+        provider=provider,
+        status="pending",
+        idempotency_key=idempotency_key,
+        exchange_rate_snapshot=exchange_rate_snapshot,
+        credits_to_add=credits_to_add,
+        created_at=now,
+        expires_at=expires_at,
+        wallet_address=wallet_address,
+    )
+
+    # Initiate payment via provider to get provider_reference
+    try:
+        provider_instance = get_payment_provider(provider)
+        provider_reference = provider_instance.initiate_payment(payment_intent)
+        payment_intent.provider_reference = provider_reference
+    except Exception:
+        # If provider initiation fails, still save intent but without reference? Or fail?
+        # For MVP, we save intent even if provider fails, status pending, provider_reference None
+        pass
+
+    db.add(payment_intent)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        # Race condition: another request with same idempotency_key inserted just now
+        existing = db.query(PaymentIntent).filter(PaymentIntent.idempotency_key == idempotency_key).first()
+        if existing:
+            return existing
+        raise
+
+    db.refresh(payment_intent)
+    return payment_intent
+
+def complete_payment(db: Session, payment_intent_id: str, verification_data: dict = None) -> PaymentIntent:
+    """
+    Complete payment - only if status pending or processing and not expired
+    Verify idempotency (cannot complete twice)
+    Atomically: update PaymentIntent status to completed and credit wallet with credits_to_add
+    This is the ONLY way to add credits from a payment
+    """
+    payment_intent = db.query(PaymentIntent).filter(PaymentIntent.id == payment_intent_id).first()
+    if not payment_intent:
+        raise ValueError("PaymentIntent not found")
+
+    if payment_intent.status not in ["pending", "processing"]:
+        raise PaymentAlreadyCompletedError(f"PaymentIntent status is {payment_intent.status}, cannot complete")
+
+    now = datetime.now(timezone.utc)
+    expires_at = payment_intent.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if now > expires_at:
+        # Expire it
+        payment_intent.status = "expired"
+        payment_intent.failed_at = now
+        payment_intent.failure_reason = "Payment expired"
+        db.commit()
+        raise PaymentExpiredError("Payment expired")
+
+    # Check if already completed (idempotency for complete)
+    if payment_intent.status == "completed":
+        return payment_intent
+
+    # Atomically: update payment intent and credit wallet
+    try:
+        # Update payment intent
+        payment_intent.status = "completed"
+        payment_intent.verified_at = now
+        payment_intent.verification_data = verification_data or {}
+
+        # Credit wallet - this is the ONLY way to add credits from payment
+        # Use idempotency key for ledger as well: payment_intent_id + credits
+        wallet_idempotency_key = f"payment_{payment_intent.id}_credit_{payment_intent.credits_to_add}"
+        # Note: credit_wallet itself checks idempotency for ledger, but we also need to ensure wallet credit is not double
+        # We will call credit_wallet which is idempotent via ledger idempotency_key
+        credit_wallet(
+            db,
+            user_id=payment_intent.user_id,
+            amount=payment_intent.credits_to_add,
+            reference_type="payment",
+            reference_id=str(payment_intent.id),
+            idempotency_key=wallet_idempotency_key,
+        )
+
+        db.commit()
+        db.refresh(payment_intent)
+        return payment_intent
+    except Exception:
+        db.rollback()
+        raise
+
+def fail_payment(db: Session, payment_intent_id: str, reason: str) -> PaymentIntent:
+    """Fail payment - only if status pending or processing"""
+    payment_intent = db.query(PaymentIntent).filter(PaymentIntent.id == payment_intent_id).first()
+    if not payment_intent:
+        raise ValueError("PaymentIntent not found")
+
+    if payment_intent.status not in ["pending", "processing"]:
+        raise ValueError(f"Cannot fail payment with status {payment_intent.status}")
+
+    payment_intent.status = "failed"
+    payment_intent.failed_at = datetime.now(timezone.utc)
+    payment_intent.failure_reason = reason[:500] if reason else None
+    db.commit()
+    db.refresh(payment_intent)
+    return payment_intent
+
+def expire_stale_payments(db: Session) -> int:
+    """Find all pending payments where expires_at < now and update status to expired - called by periodic task"""
+    now = datetime.now(timezone.utc)
+    stale_payments = db.query(PaymentIntent).filter(
+        PaymentIntent.status == "pending",
+        PaymentIntent.expires_at < now
+    ).all()
+
+    count = 0
+    for payment in stale_payments:
+        payment.status = "expired"
+        payment.failed_at = now
+        payment.failure_reason = "Expired by scheduler"
+        count += 1
+
+    db.commit()
+    return count
+
+def get_user_payments(db: Session, user_id: int, page: int = 1, per_page: int = 20) -> Tuple[List[PaymentIntent], int]:
+    """Return paginated payment history for user - users can only see their own payments"""
+    query = db.query(PaymentIntent).filter(PaymentIntent.user_id == user_id).order_by(PaymentIntent.created_at.desc())
+    total = query.count()
+    payments = query.offset((page - 1) * per_page).limit(per_page).all()
+    return payments, total

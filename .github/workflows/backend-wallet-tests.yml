@@ -1,0 +1,83 @@
+name: Backend Wallet Tests
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: aiuser
+          POSTGRES_PASSWORD: aipass
+          POSTGRES_DB: aiplatform_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies from manifest
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run Alembic upgrade head (PostgreSQL 15)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          alembic -c alembic.ini upgrade head
+          echo "Upgrade to head successful - tables: payment_intents should exist"
+
+      - name: Verify payment_intents table exists
+        env:
+          PGPASSWORD: aipass
+        run: |
+          psql -h localhost -U aiuser -d aiplatform_test -c "\dt payment_intents"
+          psql -h localhost -U aiuser -d aiplatform_test -c "\d payment_intents"
+
+      - name: Run wallet and payment tests (including concurrency and idempotency)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          pytest tests/test_wallet.py tests/test_payments.py tests/test_postgres_wallet.py -v
+
+      - name: Run all backend tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          pytest tests/ -v
+
+      - name: Run Alembic downgrade base (verify reversible)
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://aiuser:aipass@localhost:5432/aiplatform_test
+        run: |
+          alembic -c alembic.ini downgrade base
+          echo "Downgrade to base successful"
+          alembic -c alembic.ini upgrade head
+          echo "Re-upgrade successful"
