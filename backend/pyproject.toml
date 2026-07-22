@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ai-subscription-platform-backend"
 version = "1.0.0"
-description = "Phase 1 Part 1 - core database schema and migrations"
+description = "Phase 1 Part 2 - secure cookie-based authentication"
 authors = ["AI Platform Team"]
 readme = "README.md"
 packages = [{include = "app"}]
@@ -16,6 +16,11 @@ pydantic-settings = ">=2.0.0"
 python-dotenv = ">=1.0.0"
 passlib = {extras = ["bcrypt"], version = ">=1.7.4"}
 python-jose = {extras = ["cryptography"], version = ">=3.3.0"}
+fastapi = ">=0.104.0"
+uvicorn = {extras = ["standard"], version = ">=0.23.0"}
+python-multipart = ">=0.0.6"
+email-validator = ">=2.0.0"
+httpx = ">=0.25.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.0"

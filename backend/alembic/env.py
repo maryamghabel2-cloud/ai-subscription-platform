@@ -17,6 +17,8 @@ from app.models.persona import Persona
 from app.models.conversation import Conversation
 from app.models.message import Message
 from app.models.api_key import ApiKey
+from app.models.auth_session import AuthSession
+from app.models.password_reset_token import PasswordResetToken
 
 config = context.config
 
