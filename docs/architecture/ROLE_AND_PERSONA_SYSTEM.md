@@ -91,13 +91,15 @@ Specialist Personas extend Role with knowledge-base fields:
 
 - **knowledge_base_ids:** List of approved Knowledge Base IDs this Persona may use
 
-- **retrieval_policy:** How retrieval works, e.g., top_k 5, minimum relevance score
+- **retrieval_policy:** How retrieval works, e.g., retrieval_limit:
+  CONFIGURED_RETRIEVAL_LIMIT, minimum relevance score
+  - retrieval_limit: CONFIGURED_RETRIEVAL_LIMIT
 
 - **allowed_source_types:** e.g., systematic_reviews, professional_guidelines,
   peer_reviewed, official_org, reviewed_public
 
-- **minimum_evidence_policy:** Policy for minimum evidence, e.g., requires at least
-  one Grade A or two Grade B, not just count
+- **minimum_evidence_policy:** Policy for minimum evidence
+  - minimum_evidence_policy: EXPERT_APPROVED_POLICY
 
 - **knowledge_pack_version:** Version of knowledge pack, e.g., v1.0.0
 
@@ -116,8 +118,8 @@ Specialist Personas extend Role with knowledge-base fields:
 - **conflicting_evidence_policy:** How to handle conflicting evidence:
   present both, note conflict, prioritize higher grade
 
-- **source_freshness_policy:** How recent sources must be, e.g., prefer last
-  2 years for AI, 5 years for stable guidelines
+- **source_freshness_policy:** How recent sources must be
+  - source_freshness_policy: EXPERT_APPROVED_FRESHNESS_POLICY
 
 - **geographic_scope:** e.g., Global, Iran, US - does source apply globally
   or specific jurisdiction
@@ -125,6 +127,24 @@ Specialist Personas extend Role with knowledge-base fields:
 - **jurisdiction_scope:** e.g., Iran general legal info only, not US law
 
 These fields are proposed, not final, and require owner approval.
+
+**Placeholder policy for knowledge fields:**
+
+- Exact numeric examples such as `top_k 5`, `one Grade A or two Grade B`,
+  `2 years / 5 years` freshness defaults are unapproved and must not be
+  treated as production values.
+
+- Use placeholders:
+  - retrieval_limit: CONFIGURED_RETRIEVAL_LIMIT
+  - minimum_evidence_policy: EXPERT_APPROVED_POLICY
+  - source_freshness_policy: EXPERT_APPROVED_FRESHNESS_POLICY
+
+- Exact values require:
+  - expert approval
+  - domain evaluation
+  - retrieval testing
+  - versioned config
+  - owner approval
 
 ### Care and Truthfulness Fields - New
 
