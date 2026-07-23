@@ -1,11 +1,14 @@
-# Produkt Vision - Persian AI Platform
+# Product Vision - Persian AI Platform
 
 **Version:** v2 - Product Identity Audit
+
 **Date:** 2026-07-23
+
 **Status:** Proposed Product Architecture — Pending Owner Approval
+
 **Decision Owner:** Founder (pending Project Manager review)
 
-## Vision Statement - Updated Identity
+## Vision Statement
 
 Build a Persian-first multimodal AI Workspace and
 Professional Creative Studio.
@@ -47,7 +50,9 @@ Professional Creative Studio
 
 ## What the Platform Includes
 
-- **General AI chat** - Persian-first, user-selectable models,
+### Core Chat and Customization
+
+- **General AI chat** - Persian-first, with user-selectable models,
   automatic model routing.
 
 - **User-selectable models** - User can choose preferred model
@@ -68,44 +73,13 @@ Professional Creative Studio
 
 - **Professional Prompt Enhancer** - Enhances user prompts.
 
+### Professional Studios - Core Revenue Products
+
 - **Professional Image Studio** - Core revenue product.
   Structured workflow for professional image creation.
 
 - **Professional Video Studio** - Core revenue product.
   Structured workflow for video creation.
-
-- **Source-Grounded Study Workspace** - Upload PDFs and docs,
-  ask questions with citations, RAG attachment.
-
-- **Deep Research Agents** - Multi-step research workflows
-  with sources and evidence grading.
-
-- **Immigration Research Agent** - Future specialist persona
-  for general immigration information (evidence-based,
-  not legal advice).
-
-- **Mobile application** - Native or PWA, Persian-first,
-  voice, camera for product photography.
-
-- **Privacy-aware Telegram integration** - User connects bot
-  via encrypted token, bot runs business agents,
-  privacy-aware: token encrypted at rest, no secret in logs,
-  anti-spam, no bulk without approval.
-
-- **Developer APIs** - Own APIs for chat, image, RAG,
-  with API keys (hashed), scopes, rate limiting, usage logs.
-
-- **Prompt Marketplace** - Future idea: user-created prompts,
-  with review.
-
-- **Agent Marketplace** - Future idea (Phase 8): user-created
-  business agents, with review and rev-share.
-
-## Professional Image and Video Studios - Core Revenue Products
-
-**Studios are core revenue products, not minor side features.**
-
-They are structured workflows, not simple Roles.
 
 **Image Studio is not limited to Instagram or e-commerce product photos.**
 
@@ -113,7 +87,8 @@ Supported future use cases must include:
 
 - Product photography - e-commerce, catalog
 - Advertising campaigns - ad creatives, variants
-- Posters, Banners - marketing materials
+- Posters
+- Banners
 - Social media assets - Instagram, Telegram, etc.
 - Website assets - hero images, backgrounds
 - Artistic images - creative, conceptual
@@ -131,21 +106,56 @@ Supported future use cases must include:
 - Character workflows - consistent character across images and videos
 - Voice-over and subtitles - for video
 
-**Studio Workflow Definition:**
+### Study and Research
 
-Structured image and video generation workflow with steps:
+- **Source-Grounded Study Workspace** - Upload PDFs and docs,
+  ask questions with citations, RAG attachment.
 
-- Upload or select
-- Settings (model, style, aspect ratio, etc.)
-- Prompt enhance
-- Generate
-- Review
-- Edit with inpaint, outpaint, upscaling
-- Select and download
+- **Deep Research Agents** - Multi-step research workflows
+  with sources and evidence grading.
 
-Must not be incorrectly classified as a simple Role.
+- **Immigration Research Agent** - Future separate capability
+  (see Immigration Persona vs Agent separation below).
 
-See `ROLE_PERSONA_AGENT_BOUNDARIES.md`.
+### Channels and Platform
+
+- **Mobile application** - Native or PWA, Persian-first,
+  voice, camera for product photography.
+
+- **Privacy-aware Telegram integration**
+  - Ordinary end users link their account to the platform's
+    Telegram bot.
+  - Ordinary users do not provide a bot token.
+  - Future business customers may connect their own bot token
+    through a separate reviewed integration where the token
+    is encrypted at rest.
+  - Privacy-aware: token encrypted, no secret in logs,
+    anti-spam, no bulk without approval.
+
+- **Developer APIs** - Own APIs for chat, image, RAG,
+  with API keys (hashed), scopes, rate limiting, usage logs.
+
+- **Prompt Marketplace** - Future idea: user-created prompts,
+  with review.
+
+- **Agent Marketplace** - Future idea (Phase 8): user-created
+  business agents, with review and rev-share.
+
+## Wallet and Ledger Status - Corrected
+
+- **Wallet and Ledger foundations are implemented** in Phase 1 Part 3A
+  (migration 003_payment_intents, wallet table with balance_credits
+  check >=0, ledger_transactions append-only signed credit ledger
+  with idempotency, atomic credit/debit with SELECT FOR UPDATE).
+
+- **Real payment providers are not active.**
+  - Only sandbox mock provider is active in Part 3A.
+  - Real ZarinPal integration is Part 3B (future).
+  - Real crypto verification (TRC20, TON) is Part 3C (future).
+  - Exchange rate is static 190600 Toman per USD for MVP,
+    later real-time rate from Bonbast or Arzbin.
+
+- **Balance never negative** enforced at DB and code level.
 
 ## Problem Summary
 
@@ -161,8 +171,7 @@ See `ROLE_PERSONA_AGENT_BOUNDARIES.md`.
 - No simple way for businesses to deploy Telegram agents
   or product studios.
 
-- No professional studio workflows for creators - need guided,
-  not just prompt box.
+- No professional studio workflows for creators.
 
 ## Solution Principles (Updated)
 
@@ -176,14 +185,14 @@ See `ROLE_PERSONA_AGENT_BOUNDARIES.md`.
 3. **Extensible Role and Persona system** - ordinary Roles
    (conversation-only) and specialist Personas (versioned,
    evidence-aware, domain-specific, still conversation-only,
-   may use approved knowledge retrieval, no autonomous external actions).
+   may use approved knowledge retrieval).
 
 4. **Professional Creative Studio as core revenue**
    - Not side feature.
 
 5. **Accuracy and Creativity control** - User-friendly label
    "Accuracy and Creativity" Persian "دقت و خلاقیت" with modes
-   strict_factual, balanced, creative - not "hallucination level".
+   strict_factual, balanced, creative.
 
 6. **Telegram and Business Agents** - low-code agents that run
    in Telegram or business workflows, privacy-aware.
@@ -198,8 +207,7 @@ See `ROLE_PERSONA_AGENT_BOUNDARIES.md`.
 ## What This Platform Is Not (De-scoped Legacies)
 
 - Not a reseller of shared Netflix or GPT accounts
-  - Deprecated model, archived to branch
-    `archive/legacy-code-2026-07-19`.
+  - Deprecated model, archived.
 
 - Not automated procurement from GGSel or FunPay
   - Deprecated, no scraping.
@@ -215,6 +223,42 @@ See `ROLE_PERSONA_AGENT_BOUNDARIES.md`.
 - Not a generic compassionate companion for mental health
   - Psychologist is future evidence-based structured direct
     assistant with clear boundaries, not therapist.
+
+## Default Mode
+
+- **Default mode: Normal Assistant - Not psychologist - Not therapist**
+
+- First-use onboarding should ask user what Role and communication
+  style they prefer.
+
+- User must be able to change these settings later.
+
+Normal Assistant is default for all new users to avoid accidental
+high-risk exposure.
+
+## Immigration Persona vs Agent - Separation (Fixed Contradiction)
+
+**Previously Product Vision listed Immigration Research Agent as
+Specialist Persona, which mixes concepts.**
+
+**Corrected:**
+
+- **Immigration Information Persona:**
+  - Conversation-only
+  - Uses approved official-source Knowledge Base through Retrieval Service
+  - Provides general information
+  - Does not browse autonomously
+  - Does not provide legal advice
+
+- **Immigration Research Agent:**
+  - Performs multi-step research
+  - May browse approved current official government and embassy sources
+  - Produces cited reports
+  - Uses budgets, permissions, and audit metadata
+  - Must not submit forms, spend money, contact authorities,
+    or guarantee outcomes without separately approved future workflows
+
+Do not describe an Immigration Research Agent as a Specialist Persona.
 
 ## Success Metrics (North Star)
 
@@ -246,13 +290,13 @@ See `ROLE_PERSONA_AGENT_BOUNDARIES.md`.
 
 ## Linkage
 
-- Roadmap: `docs/roadmap/MASTER_ROADMAP.md`
-- Agent OS: `docs/agents/AGENT_OPERATING_SYSTEM.md`
-- Roles and Personas: `docs/architecture/ROLE_AND_PERSONA_SYSTEM.md`
-  and `ROLE_PERSONA_AGENT_BOUNDARIES.md`
-- Agent Execution: `docs/architecture/AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md`
-- Personas: `docs/personas/PERSONA_FRAMEWORK.md`
-  (with mandatory evidence fields)
-- Accuracy and Creativity:
-  `docs/architecture/ACCURACY_CREATIVITY_CONTROL.md`
-- Safety: `docs/safety/TRUST_AND_SAFETY_FRAMEWORK.md`
+- Roadmap: [MASTER_ROADMAP](../roadmap/MASTER_ROADMAP.md)
+- Agent OS: [AGENT_OPERATING_SYSTEM](../agents/AGENT_OPERATING_SYSTEM.md)
+- Roles and Personas: [ROLE_AND_PERSONA_SYSTEM](../architecture/ROLE_AND_PERSONA_SYSTEM.md)
+- Boundaries: [ROLE_PERSONA_AGENT_BOUNDARIES](../architecture/ROLE_PERSONA_AGENT_BOUNDARIES.md)
+- Agent Execution: [AGENT_PLUGIN_AND_EXECUTION_SYSTEM](../architecture/AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
+- Accuracy and Creativity: [ACCURACY_CREATIVITY_CONTROL](../architecture/ACCURACY_CREATIVITY_CONTROL.md)
+- Personas: [PERSONA_FRAMEWORK](../personas/PERSONA_FRAMEWORK.md)
+- Safety: [TRUST_AND_SAFETY_FRAMEWORK](../safety/TRUST_AND_SAFETY_FRAMEWORK.md)
+- Provider Abstraction: [PROVIDER_ABSTRACTION_STRATEGY](../architecture/PROVIDER_ABSTRACTION_STRATEGY.md)
+- Human Approval Gates: [HUMAN_APPROVAL_GATES](../agents/HUMAN_APPROVAL_GATES.md)

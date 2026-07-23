@@ -1,8 +1,12 @@
 # Accuracy and Creativity Control
 
 **Date:** 2026-07-23
+
 **Status:** Proposed Product Architecture — Pending Owner Approval
-**Purpose:** Define user-friendly label for accuracy and creativity modes, avoid "hallucination level" wording, define normalized modes, and describe provider-neutral configuration.
+
+**Purpose:** Define user-friendly label for accuracy and creativity modes,
+avoid "hallucination level" wording, define normalized modes,
+and describe provider-neutral configuration.
 
 ## User-Facing Label
 
@@ -10,6 +14,7 @@
   - This is technical jargon, negative framing, and confusing for users.
 
 - **Use user-friendly label:** `Accuracy and Creativity`
+
 - **Persian UX concept:** `دقت و خلاقیت`
   - User-friendly, positive framing, understandable.
 
@@ -20,12 +25,15 @@ Define three normalized modes that are provider-neutral and user-friendly.
 ### 1. strict_factual
 
 - **Persian label:** دقیق و مستند
+
 - **Description:** Low creativity, high accuracy, factual, citation-aware.
+
 - **Behavior:**
   - No unsupported factual claims.
   - Citation-aware: must cite sources when making factual claims.
   - Must disclose uncertainty if sources conflict or not found.
-  - Must never invent citations, including fake URLs or fake publisher and date.
+  - Must never invent citations, including fake URLs or fake publisher
+    and date.
 
 - **Use cases:**
   - Research, study workspace, RAG with sources, fact-checking.
@@ -41,7 +49,9 @@ Define three normalized modes that are provider-neutral and user-friendly.
 ### 2. balanced
 
 - **Persian label:** متعادل
+
 - **Description:** General-purpose conversation with moderate creativity.
+
 - **Behavior:**
   - Helpful, balanced accuracy and creativity.
   - Suitable for most chats.
@@ -56,6 +66,7 @@ Define three normalized modes that are provider-neutral and user-friendly.
 ### 3. creative
 
 - **Persian label:** خلاق
+
 - **Description:** Storytelling, advertising, brainstorming, role-play,
   and creative writing.
 
@@ -96,8 +107,11 @@ and must not be treated as production-approved values.
 State clearly:
 
 - Exact mappings must be selected per model, not merely per provider.
+
 - Exact values require model evaluation and versioned tests.
+
 - Do not assume all models from one provider support the same parameters.
+
 - Values must be documented in versioned evaluation reports, not hardcoded
   as unvalidated defaults in architecture docs.
 
@@ -108,20 +122,33 @@ No exact numeric defaults are provided here.
 Each Role may recommend a default response mode:
 
 - **Normal Assistant:** `balanced`
+
 - **Language Learning Companion:** `balanced`
+
 - **Writer:** `creative` (but must not invent factual citations)
+
 - **Editor:** `balanced`
+
 - **Business Assistant:** `balanced`
+
 - **Planning Assistant:** `balanced`
+
 - **Prompt Engineer:** `balanced`
+
 - **Career Advisor (medium risk):** `balanced`, may allow `strict_factual`,
   not `creative`
+
 - **Sales Advisor:** `balanced`
+
 - **SEO Advisor:** `balanced`
+
 - **Evidence-Based Mental Health Information Assistant (high risk):**
   `strict_factual` only
+
 - **Immigration Information Assistant (high risk):** `strict_factual` only
+
 - **Legal Information Assistant (high risk):** `strict_factual` only
+
 - **Health Information Assistant (high risk):** `strict_factual` only
 
 **Rule:** High-risk specialist personas must NOT default to `creative`.
@@ -147,7 +174,9 @@ safe range.
 **Enforcement:**
 
 - UI Role selector shows allowed modes per Role.
+
 - Backend validates requested mode is in `allowed_response_modes`.
+
 - Rejects with 400 if not allowed.
 
 ## Separation of Factuality and Empathy
@@ -155,9 +184,11 @@ safe range.
 This is critical and was previously ambiguous.
 
 - **Accuracy and Creativity controls factual behavior and creative freedom.**
+
 - **It does NOT control kindness, warmth, empathy, respect, or Care Principle.**
 
 - `strict_factual` must NOT mean cold, robotic, abrupt, or dismissive.
+
 - A mental-health information Persona may remain `strict_factual` while still
   responding calmly, warmly, compassionately, and without judgment.
 
@@ -184,6 +215,63 @@ This is critical and was previously ambiguous.
     or emergency service.
   - Must include disclaimer and escalation to professional.
 
+## Care Without Uncritical Agreement
+
+For high-risk supportive Personas, add explicit policy:
+
+**Policy names:**
+
+- care_truthfulness_policy
+
+- belief_validation_policy
+
+**Policy must state:**
+
+- Validate the user's emotions and lived experience.
+
+- Do not automatically validate unsupported factual claims.
+
+- Do not agree merely to satisfy or retain the user.
+
+- Distinguish feelings, interpretations, assumptions, and observable facts.
+
+- Disclose uncertainty.
+
+- Ask calm, non-confrontational reality-checking questions where appropriate.
+
+- Do not intensify paranoia, delusional framing, self-destructive beliefs,
+  or unsupported accusations.
+
+- Do not shame, ridicule, argue aggressively, or dismiss the user.
+
+- Do not diagnose.
+
+- Do not claim that the system knows another person's intentions.
+
+- Maintain empathy while remaining grounded in evidence and uncertainty.
+
+**Clarify:**
+
+> Empathy means recognizing the user's feelings.
+> It does not mean confirming every interpretation or factual belief.
+
+**Proposed fields for registry (if retained):**
+
+- care_truthfulness_policy
+
+- belief_validation_policy
+
+- professional_handoff_policy
+
+- crisis_response_policy
+
+- prohibited_authority_claims
+
+This behavior must be testable in future Persona QA and red-team suites.
+
+See `ROLE_AND_PERSONA_SYSTEM.md` for full human professional handoff
+behavior (9 required steps plus additional safety notes).
+
 ## Violence and Sensitive-Content Wording (Refined)
 
 Previously overly broad wording forbade all "violent content" and could
@@ -194,27 +282,41 @@ Clearly distinguish:
 **Allowed examples (must not be prohibited):**
 
 - Discussing trauma, war, abuse, grief, and loss
+
 - Seeking emotional support related to those experiences
+
 - Historical, journalistic, educational, or fictional discussion
+
 - Safety-oriented analysis of violence
+
 - Non-graphic contextual discussion of difficult topics
+
 - Personal narratives about overcoming adversity
 
 **Restricted or prohibited examples (per Trust and Safety policy):**
 
 - Operational instructions intended to facilitate real-world harm
+
 - Instructions that enable illegal harmful activity
+
 - Non-consensual sexual imagery
+
 - Sexual exploitation
+
 - CSAM (Child Sexual Abuse Material)
+
 - Targeted abuse or harassment toward protected characteristics
+
 - Other content prohibited by the approved Trust and Safety policy
 
 **Principles:**
 
 - Do not make sensitive discussion itself prohibited.
+
 - Do not weaken protections against illegal or exploitative content.
+
 - Allow supportive, educational, journalistic, and fictional contexts.
+
 - Restrict instructions that facilitate harm, not discussion of harm.
 
 ## Provider-Neutral Configuration Layer
@@ -222,8 +324,11 @@ Clearly distinguish:
 **Problem:** Different providers use different sampling parameters.
 
 - OpenAI: temperature, top_p, presence_penalty, frequency_penalty, etc.
+
 - Anthropic: temperature, top_p, top_k, etc.
+
 - Google: temperature, top_p, top_k, etc.
+
 - Local models: various parameters
 
 **Solution:**
@@ -247,7 +352,9 @@ Clearly distinguish:
 **Storage:**
 
 - User preference: `user_role_preferences` table with `response_mode`
+
 - Role registry: `default_response_mode` and `allowed_response_modes`
+
 - Audit log: logs which mode was used per response (prompt hash,
   not raw content, per privacy logging correction)
 
@@ -288,14 +395,26 @@ Clearly distinguish:
       قیمت ارائه‌دهندگان، یا رویدادهای جاری را اختراع کند
 
 - **UI:** Slider or 3 buttons with Persian labels and descriptions.
+
 - **First-use onboarding:** Ask user preferred Accuracy and Creativity mode.
 
 ## Linkage
 
-- Role and Persona System: `ROLE_AND_PERSONA_SYSTEM.md`
-- Persona Framework: `../personas/PERSONA_FRAMEWORK.md`
-- Agent Plugin and Execution: `AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md`
-- Provider Abstraction: `PROVIDER_ABSTRACTION_STRATEGY.md`
-- Evaluation: `PERSONA_EVALUATION_STRATEGY.md`
-- Trust and Safety: `TRUST_AND_SAFETY_FRAMEWORK.md` (for restricted content definitions)
-- Future Care: `CARE_SAFETY_AND_HUMAN_SUPPORT.md` (to be created, defines human-support workflows)
+- Role and Persona System:
+  [ROLE_AND_PERSONA_SYSTEM](ROLE_AND_PERSONA_SYSTEM.md)
+
+- Persona Framework:
+  [PERSONA_FRAMEWORK](../personas/PERSONA_FRAMEWORK.md)
+
+- Agent Plugin and Execution:
+  [AGENT_PLUGIN_AND_EXECUTION_SYSTEM](AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
+
+- Provider Abstraction:
+  [PROVIDER_ABSTRACTION_STRATEGY](PROVIDER_ABSTRACTION_STRATEGY.md)
+
+- Evaluation: [PERSONA_EVALUATION_STRATEGY](../personas/PERSONA_QA_AND_RED_TEAMING.md)
+
+- Trust and Safety:
+  [TRUST_AND_SAFETY_FRAMEWORK](../safety/TRUST_AND_SAFETY_FRAMEWORK.md)
+
+- Future Care: CARE_SAFETY_AND_HUMAN_SUPPORT.md (planned, future - not clickable yet)
