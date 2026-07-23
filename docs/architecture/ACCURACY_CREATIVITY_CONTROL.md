@@ -1,145 +1,301 @@
-# ACCURACY AND CREATIVITY CONTROL
+# Accuracy and Creativity Control
 
 **Date:** 2026-07-23
-**Status:** Architecture Definition - Documentation Only
-**Purpose:** Define user-friendly label for accuracy/creativity modes, avoid "hallucination level" wording, define normalized modes, provider-neutral config layer
+**Status:** Proposed Product Architecture — Pending Owner Approval
+**Purpose:** Define user-friendly label for accuracy and creativity modes, avoid "hallucination level" wording, define normalized modes, and describe provider-neutral configuration.
 
 ## User-Facing Label
 
-- **Do NOT expose a user setting called "hallucination level."** This is technical jargon, negative framing, and confusing for users.
-- **Use user-friendly label:** "Accuracy and Creativity" 
-- **Persian UX concept:** "دقت و خلاقیت" - user-friendly, positive framing, understandable
+- **Do NOT expose a user setting called "hallucination level."**
+  - This is technical jargon, negative framing, and confusing for users.
+
+- **Use user-friendly label:** `Accuracy and Creativity`
+- **Persian UX concept:** `دقت و خلاقیت`
+  - User-friendly, positive framing, understandable.
 
 ## Normalized Modes
 
-Define 3 normalized modes that are provider-neutral and user-friendly:
+Define three normalized modes that are provider-neutral and user-friendly.
 
 ### 1. strict_factual
+
 - **Persian label:** دقیق و مستند
-- **Description:** Low creativity, high accuracy, factual, citation-aware
-- **Low creativity**
-- **No unsupported factual claims** - must not invent facts
-- **Citation-aware** - must cite sources when factual claim, must disclose uncertainty if sources conflict or not found
-- **Must never invent citations** - no hallucinated citations, no fake URLs, no fake publisher/dates
-- **Use cases:** Research, study workspace, RAG with sources, fact-checking, when user asks for evidence-based information, high-risk personas (e.g., health information, legal information, immigration information) should default to strict_factual or balanced, not creative
-- **Provider mapping:** Lower temperature, lower top_p, more deterministic
+- **Description:** Low creativity, high accuracy, factual, citation-aware.
+- **Behavior:**
+  - No unsupported factual claims.
+  - Citation-aware: must cite sources when making factual claims.
+  - Must disclose uncertainty if sources conflict or not found.
+  - Must never invent citations, including fake URLs or fake publisher and date.
+
+- **Use cases:**
+  - Research, study workspace, RAG with sources, fact-checking.
+  - When user asks for evidence-based information.
+  - High-risk personas such as health information, legal information,
+    and immigration information should default to `strict_factual`
+    or `balanced`, not `creative`.
+
+- **Provider mapping:**
+  - Provider-validated deterministic configuration.
+  - Lower creativity, more deterministic.
 
 ### 2. balanced
+
 - **Persian label:** متعادل
-- **Description:** General-purpose conversation, moderate creativity, helpful, balanced accuracy and creativity
-- **Moderate creativity**
-- **General-purpose:** Suitable for most chats, normal assistant default
-- **Use cases:** General chat, business assistant, planning assistant, prompt engineer, everyday questions
-- **Provider mapping:** Medium temperature, medium top_p
+- **Description:** General-purpose conversation with moderate creativity.
+- **Behavior:**
+  - Helpful, balanced accuracy and creativity.
+  - Suitable for most chats.
+
+- **Use cases:**
+  - General chat, business assistant, planning assistant,
+    prompt engineer, everyday questions.
+
+- **Provider mapping:**
+  - Provider-validated general-purpose configuration.
 
 ### 3. creative
+
 - **Persian label:** خلاق
-- **Description:** Storytelling, advertising, brainstorming, role-play, creative writing - may invent fictional elements only when task is clearly creative
-- **May invent fictional elements only when the task is clearly creative:** e.g., story, ad copy, brainstorming ideas, role-play, artistic images, brand concepts - allowed to invent fictional characters, plots, slogans
-- **Must never invent factual citations, legal rules, medical claims, provider prices, or current events:** Even in creative mode, must not invent factual citations (fake papers), legal rules (e.g., "According to Iranian law article 123..."), medical claims (e.g., "This drug cures..."), provider prices (e.g., "ChatGPT Plus costs $5"), or current events (e.g., "Yesterday event...") - these are always disallowed to invent, even in creative mode
-- **Use cases:** Writer, editor, advertising campaign, poster, banner, social media assets, artistic images, brand concepts, storytelling, storyboard, character workflows
-- **Provider mapping:** Higher temperature, higher top_p, more creative
+- **Description:** Storytelling, advertising, brainstorming, role-play,
+  and creative writing.
+
+- **Behavior:**
+  - May invent fictional elements only when the task is clearly creative,
+    such as story, ad copy, brainstorming ideas, role-play,
+    artistic images, or brand concepts.
+  - Must never invent factual citations, legal rules, medical claims,
+    provider prices, or current events.
+  - Even in creative mode, factual domains remain restricted.
+
+- **Use cases:**
+  - Writer, editor, advertising campaign, poster, banner,
+    social media assets, artistic images, brand concepts,
+    storytelling, storyboard, character workflows.
+
+- **Provider mapping:**
+  - Provider-validated creative configuration.
+
+## Symbolic Guidance (Not Production Defaults)
+
+Exact temperature, top_p, and top_k values are **Open Decisions**
+and must not be treated as production-approved values.
+
+- **strict_factual:**
+  - Lower creativity.
+  - Provider-validated deterministic configuration.
+  - Must be selected per model, not merely per provider.
+
+- **balanced:**
+  - Provider-validated general-purpose configuration.
+  - Must be selected per model.
+
+- **creative:**
+  - Provider-validated creative configuration.
+  - Must be selected per model.
+
+State clearly:
+
+- Exact mappings must be selected per model, not merely per provider.
+- Exact values require model evaluation and versioned tests.
+- Do not assume all models from one provider support the same parameters.
+- Values must be documented in versioned evaluation reports, not hardcoded
+  as unvalidated defaults in architecture docs.
+
+No exact numeric defaults are provided here.
 
 ## Role and Persona Default Modes
 
 Each Role may recommend a default response mode:
 
-- **Normal Assistant:** balanced (general-purpose)
-- **Language Learning Companion:** balanced
-- **Writer:** creative (but must not invent factual citations)
-- **Editor:** balanced
-- **Business Assistant:** balanced
-- **Planning Assistant:** balanced
-- **Prompt Engineer:** balanced
-- **Career Advisor (specialist persona, medium risk):** balanced, may allow strict_factual as well, not creative (career advice should not be overly creative with fake job guarantees)
-- **Sales Advisor:** balanced
-- **SEO Advisor:** balanced
-- **Evidence-Based Mental Health Information Assistant (high risk):** strict_factual only, not creative - must be accurate, citation-aware, no invented coping strategies
-- **Immigration Information Assistant (high risk):** strict_factual only
-- **Legal Information Assistant (high risk):** strict_factual only
-- **Health Information Assistant (high risk):** strict_factual only
+- **Normal Assistant:** `balanced`
+- **Language Learning Companion:** `balanced`
+- **Writer:** `creative` (but must not invent factual citations)
+- **Editor:** `balanced`
+- **Business Assistant:** `balanced`
+- **Planning Assistant:** `balanced`
+- **Prompt Engineer:** `balanced`
+- **Career Advisor (medium risk):** `balanced`, may allow `strict_factual`,
+  not `creative`
+- **Sales Advisor:** `balanced`
+- **SEO Advisor:** `balanced`
+- **Evidence-Based Mental Health Information Assistant (high risk):**
+  `strict_factual` only
+- **Immigration Information Assistant (high risk):** `strict_factual` only
+- **Legal Information Assistant (high risk):** `strict_factual` only
+- **Health Information Assistant (high risk):** `strict_factual` only
 
-**Rule:** High-risk future specialist personas must NOT default to creative, only strict_factual or balanced, with allowed safe range restricted to strict_factual and balanced, not creative.
+**Rule:** High-risk specialist personas must NOT default to `creative`.
+Allowed safe range should be restricted to `strict_factual` and `balanced`.
 
 ## User Override Within Safe Range
 
-Users may override default response mode **only within the Role's allowed safe range**:
+Users may override default response mode only within the Role's allowed
+safe range.
 
-- Example: Normal Assistant allows ["strict_factual","balanced","creative"] - user may choose any of 3
-- Example: Career Advisor allows ["strict_factual","balanced"] - user may choose strict_factual or balanced, but NOT creative (career advice should not be overly creative)
-- Example: Mental Health Information Assistant allows ["strict_factual"] only - user cannot override to creative, because creative mode for mental health could be unsafe (inventing coping strategies that are not evidence-based)
-- Example: Writer allows ["balanced","creative"] - may allow creative as default, but also balanced for more factual writing
+- Example: Normal Assistant allows `strict_factual`, `balanced`, `creative`
+  → user may choose any of the three.
 
-**Enforcement:** UI Role selector shows allowed modes per Role, disabled options for modes not allowed. Backend validates requested mode is in Role's allowed_response_modes, rejects if not allowed with 400.
+- Example: Career Advisor allows `strict_factual`, `balanced`
+  → user may choose those, but NOT `creative`.
+
+- Example: Mental Health Information Assistant allows `strict_factual` only
+  → user cannot override to `creative`.
+
+- Example: Writer allows `balanced`, `creative`
+  → may allow creative as default, but also balanced for factual writing.
+
+**Enforcement:**
+
+- UI Role selector shows allowed modes per Role.
+- Backend validates requested mode is in `allowed_response_modes`.
+- Rejects with 400 if not allowed.
+
+## Separation of Factuality and Empathy
+
+This is critical and was previously ambiguous.
+
+- **Accuracy and Creativity controls factual behavior and creative freedom.**
+- **It does NOT control kindness, warmth, empathy, respect, or Care Principle.**
+
+- `strict_factual` must NOT mean cold, robotic, abrupt, or dismissive.
+- A mental-health information Persona may remain `strict_factual` while still
+  responding calmly, warmly, compassionately, and without judgment.
+
+- **Empathy and respect are independent of factuality mode.**
+  - A response can be both factually strict and emotionally supportive.
+  - Example: Providing evidence-based coping information in a calm,
+    warm, non-judgmental tone.
+
+- **Legitimate emotional conversations must not be abruptly terminated.**
+  - If user discusses trauma, grief, loss, seeking support, do not end
+    conversation abruptly.
+  - Provide supportive, non-judgmental response within safe boundaries,
+    encourage professional support if needed, offer general coping
+    information.
+
+- **Detailed Care and human-support workflows will be defined in the
+  future `CARE_SAFETY_AND_HUMAN_SUPPORT` architecture document.**
+  - This document is not implemented in this PR.
+  - It will define how to respond to users in distress, crisis resources,
+    escalation, and human-support handoff.
+
+- **No Persona may claim to be a licensed psychologist or therapist.**
+  - Must not claim professional license, diagnosis, therapy, treatment,
+    or emergency service.
+  - Must include disclaimer and escalation to professional.
+
+## Violence and Sensitive-Content Wording (Refined)
+
+Previously overly broad wording forbade all "violent content" and could
+be interpreted as prohibiting legitimate discussion of trauma or history.
+
+Clearly distinguish:
+
+**Allowed examples (must not be prohibited):**
+
+- Discussing trauma, war, abuse, grief, and loss
+- Seeking emotional support related to those experiences
+- Historical, journalistic, educational, or fictional discussion
+- Safety-oriented analysis of violence
+- Non-graphic contextual discussion of difficult topics
+- Personal narratives about overcoming adversity
+
+**Restricted or prohibited examples (per Trust and Safety policy):**
+
+- Operational instructions intended to facilitate real-world harm
+- Instructions that enable illegal harmful activity
+- Non-consensual sexual imagery
+- Sexual exploitation
+- CSAM (Child Sexual Abuse Material)
+- Targeted abuse or harassment toward protected characteristics
+- Other content prohibited by the approved Trust and Safety policy
+
+**Principles:**
+
+- Do not make sensitive discussion itself prohibited.
+- Do not weaken protections against illegal or exploitative content.
+- Allow supportive, educational, journalistic, and fictional contexts.
+- Restrict instructions that facilitate harm, not discussion of harm.
 
 ## Provider-Neutral Configuration Layer
 
-**Problem:** Different providers use different sampling parameters:
+**Problem:** Different providers use different sampling parameters.
+
 - OpenAI: temperature, top_p, presence_penalty, frequency_penalty, etc.
 - Anthropic: temperature, top_p, top_k, etc.
 - Google: temperature, top_p, top_k, etc.
 - Local models: various parameters
 
-**Solution:** Provider-neutral config layer that maps normalized modes (strict_factual, balanced, creative) to provider-specific parameters.
+**Solution:**
 
-**Example Mapping (conceptual, not hardcoded in code yet - for documentation, actual mapping in code later):**
+- Provider-neutral config layer maps normalized modes
+  (`strict_factual`, `balanced`, `creative`) to provider-specific
+  parameters.
 
-```python
-ACCURACY_CREATIVITY_MODES = {
-    "strict_factual": {
-        "description": "Low creativity, high accuracy",
-        "openai": {"temperature": 0.2, "top_p": 0.9},
-        "anthropic": {"temperature": 0.1, "top_p": 0.9, "top_k": 40},
-        "google": {"temperature": 0.2, "top_p": 0.8, "top_k": 40}
-    },
-    "balanced": {
-        "description": "General-purpose",
-        "openai": {"temperature": 0.7, "top_p": 0.95},
-        "anthropic": {"temperature": 0.7, "top_p": 0.95, "top_k": 0},
-        "google": {"temperature": 0.7, "top_p": 0.9, "top_k": 0}
-    },
-    "creative": {
-        "description": "Storytelling, advertising, brainstorming",
-        "openai": {"temperature": 1.0, "top_p": 1.0},
-        "anthropic": {"temperature": 1.0, "top_p": 0.95, "top_k": 0},
-        "google": {"temperature": 1.0, "top_p": 0.95, "top_k": 0}
-    }
-}
-```
+- Core chat logic uses normalized modes, not raw provider parameters.
+  - Adding new provider does not require changing core logic.
+  - Only mapping in config layer needs update, with evaluation.
 
-**Benefits:**
-- User selects friendly label "Accuracy and Creativity" / "دقت و خلاقیت" with 3 modes, not technical "hallucination level" or raw temperature values
-- Core chat logic uses normalized modes, not provider-specific parameters directly - adding new provider does not require changing core logic, only adding mapping in config layer
-- Role's allowed_response_modes restricts which normalized modes user can choose, ensuring safety for high-risk personas
-- Provider abstraction layer translates normalized modes to provider-specific parameters
+- Exact mappings must be selected per model, not merely per provider.
+  - Example: GPT-4o vs GPT-4o-mini may need different values even though
+    both from OpenAI.
+  - Values require model evaluation and versioned tests.
+  - Do not assume all models from one provider support same parameters.
+
+- Config layer is versioned and documented in evaluation reports.
 
 **Storage:**
-- User preference: user_role_preferences table with response_mode field (strict_factual, balanced, creative)
-- Role registry: default_response_mode and allowed_response_modes fields per Role (already in ROLE_AND_PERSONA_SYSTEM.md)
-- Audit log: logs which mode was used per response (for evaluation)
+
+- User preference: `user_role_preferences` table with `response_mode`
+- Role registry: `default_response_mode` and `allowed_response_modes`
+- Audit log: logs which mode was used per response (prompt hash,
+  not raw content, per privacy logging correction)
 
 ## Safety
 
-- **Never invent citations:** Even in creative mode, must never invent factual citations (fake papers, fake URLs, fake publisher/dates). Citation-aware, no hallucinated citations - tested in PERSONA_QA_AND_RED_TEAMING.md
-- **Never invent legal rules, medical claims, provider prices, current events:** Even in creative mode, these are always disallowed to invent. Creative mode may invent fictional elements only when task is clearly creative (story, ad, brainstorming, role-play, artistic images, brand concepts), not factual domains
-- **High-risk personas restricted to strict_factual and balanced, not creative:** To avoid unsafe creative invention for health/legal/immigration
-- **Must disclose uncertainty:** In strict_factual mode, if sources conflict or not found, must disclose uncertainty, not invent
-- **Human approval for persona prompt changes, especially high-risk:** Per HUMAN_APPROVAL_GATES
+- **Never invent citations:** Even in creative mode, must never invent
+  factual citations, fake URLs, fake publisher or date.
+
+- **Never invent legal rules, medical claims, provider prices,
+  current events:** Even in creative mode, these remain disallowed.
+
+- **High-risk personas restricted to strict_factual and balanced:**
+  To avoid unsafe creative invention for health, legal, immigration.
+
+- **Must disclose uncertainty:** In strict_factual, if sources conflict
+  or not found, disclose uncertainty.
+
+- **Human approval for persona prompt changes, especially high-risk:**
+  Per `HUMAN_APPROVAL_GATES.md`.
 
 ## Persian UX
 
-- **Label:** "دقت و خلاقیت" - user-friendly, positive, understandable, not technical jargon "سطح توهم"
+- **Label:** `دقت و خلاقیت`
+  - User-friendly, positive, understandable.
+  - Not technical jargon `سطح توهم`.
+
 - **Modes Persian:**
-  - strict_factual: "دقیق و مستند" - توضیح: کمترین خلاقیت، بیشترین دقت، بدون ادعای بدون پشتوانه، با ذکر منبع، اعلام عدم قطعیت
-  - balanced: "متعادل" - توضیح: مناسب برای گفتگوی روزمره، تعادل دقت و خلاقیت
-  - creative: "خلاق" - توضیح: داستان‌نویسی، تبلیغات، طوفان فکری، نقش‌آفرینی - فقط زمانی که وظیفه واضحاً خلاقانه است می‌تواند عناصر داستانی اختراع کند، هرگز نباید استناد واقعی، قوانین حقوقی، ادعاهای پزشکی، قیمت ارائه‌دهندگان، یا رویدادهای جاری را اختراع کند
-- **UI:** Slider or 3 buttons with Persian labels and descriptions, default mode per Role, user can override within allowed safe range
-- **First-use onboarding:** Ask user what Accuracy and Creativity mode they prefer, explain difference
+  - `strict_factual`: `دقیق و مستند`
+    - کمترین خلاقیت، بیشترین دقت، بدون ادعای بدون پشتوانه، با ذکر منبع
+
+  - `balanced`: `متعادل`
+    - مناسب برای گفتگوی روزمره، تعادل دقت و خلاقیت
+
+  - `creative`: `خلاق`
+    - داستان‌نویسی، تبلیغات، طوفان فکری، نقش‌آفرینی
+    - فقط زمانی که وظیفه واضحاً خلاقانه است می‌تواند عناصر داستانی اختراع کند
+    - هرگز نباید استناد واقعی، قوانین حقوقی، ادعاهای پزشکی،
+      قیمت ارائه‌دهندگان، یا رویدادهای جاری را اختراع کند
+
+- **UI:** Slider or 3 buttons with Persian labels and descriptions.
+- **First-use onboarding:** Ask user preferred Accuracy and Creativity mode.
 
 ## Linkage
 
-- Role and Persona System: ROLE_AND_PERSONA_SYSTEM.md (default_response_mode, allowed_response_modes fields)
-- Persona Framework: ../personas/PERSONA_FRAMEWORK.md (evidence standard, citation requirements)
-- Agent Plugin and Execution: AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md (provider abstraction)
-- Provider Abstraction: PROVIDER_ABSTRACTION_STRATEGY.md
-- Evaluation: PERSONA_EVALUATION_STRATEGY.md (accuracy and hallucination metrics per mode)
+- Role and Persona System: `ROLE_AND_PERSONA_SYSTEM.md`
+- Persona Framework: `../personas/PERSONA_FRAMEWORK.md`
+- Agent Plugin and Execution: `AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md`
+- Provider Abstraction: `PROVIDER_ABSTRACTION_STRATEGY.md`
+- Evaluation: `PERSONA_EVALUATION_STRATEGY.md`
+- Trust and Safety: `TRUST_AND_SAFETY_FRAMEWORK.md` (for restricted content definitions)
+- Future Care: `CARE_SAFETY_AND_HUMAN_SUPPORT.md` (to be created, defines human-support workflows)

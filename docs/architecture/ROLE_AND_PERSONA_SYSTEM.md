@@ -11,8 +11,10 @@
 Core chat logic:
 1. Load Role by id from registry
 2. Load system_instructions, tone, language style, response mode, model policy, memory policy, safety profile
-3. Load user customization (custom role instructions, tone override within allowed range, formal/casual, concise/detailed, language selection, "Speak like me" mirroring, creativity/factuality mode mapped to Accuracy and Creativity, preferred model, output format)
-4. Build final system prompt: system_instructions + user customization + safety / disclaimer policy + evidence policy if persona + memory + RAG context if attached
+3. Load user customization (custom role instructions, tone override within allowed range, formal/casual, concise/detailed, language
+selection, "Speak like me" mirroring, creativity/factuality mode mapped to Accuracy and Creativity, preferred model, output format)
+4. Build final system prompt: system_instructions + user customization + safety / disclaimer policy + evidence policy if persona + memory +
+RAG context if attached
 5. Call provider abstraction with provider-neutral config (temperature, top_p, etc. mapped from Accuracy and Creativity mode)
 6. Return response with citations if any, disclaimer if required, audit log with Role version, prompt version, model, tokens, cost
 
@@ -48,7 +50,9 @@ No hardcoding of Role names in core logic.
 **Additional for Specialist Personas (extends Role):**
 - knowledge_sources_required: list of required sources with mandatory fields (source hierarchy, publisher, dates, geographic scope, etc. per PERSONA_FRAMEWORK)
 - knowledge_sources_actual: list of actual sources with full mandatory fields
-- source_hierarchy, primary_vs_secondary, evidence_grade, source_publisher, publication/update/access dates, geographic/jurisdiction scope, last_knowledge_review_date, conflicting_evidence_handling, minimum_primary_sources, domain_expert_reviewer_requirement (name, credentials, date), citation_requirements, benchmark_dataset, accuracy/hallucination metrics, knowledge_pack_version, expiry/review_schedule
+- source_hierarchy, primary_vs_secondary, evidence_grade, source_publisher, publication/update/access dates, geographic/jurisdiction scope,
+last_knowledge_review_date, conflicting_evidence_handling, minimum_primary_sources, domain_expert_reviewer_requirement (name, credentials,
+date), citation_requirements, benchmark_dataset, accuracy/hallucination metrics, knowledge_pack_version, expiry/review_schedule
 - All as per PERSONA_FRAMEWORK mandatory fields
 
 ## Initial Ordinary Roles (Low/Medium Risk, Can Be First)
@@ -124,22 +128,28 @@ All low risk, can be Phase 1, no expert review required beyond QA and compliance
 
 ## High-Risk Future Specialist Personas (Require Expert Review, Not Phase 1)
 
-These are versioned, evidence-aware, domain-specific Roles, still conversation-only, may use approved knowledge retrieval, do not independently perform external actions, high-risk requires expert review:
+These are versioned, evidence-aware, domain-specific Roles, still conversation-only, may use approved knowledge retrieval, do not
+independently perform external actions, high-risk requires expert review:
 
 1. **Evidence-Based Mental Health Information Assistant**
    - id: mental_health_info_assistant (NOT psychologist, therapist, diagnosis service)
    - display_name_fa: دستیار اطلاعات سلامت روان مبتنی بر شواهد
    - display_name_en: Evidence-Based Mental Health Information Assistant
    - category: specialist
-   - description: Provides evidence-based mental health information, psychoeducation, general coping strategies based on reputable sources, guided self-reflection questions with clear disclaimer that formal assessment requires professional. NOT therapy, NOT diagnosis, NOT treatment, NOT emergency service.
+   - description: Provides evidence-based mental health information, psychoeducation, general coping strategies based on reputable sources,
+guided self-reflection questions with clear disclaimer that formal assessment requires professional. NOT therapy, NOT diagnosis, NOT
+treatment, NOT emergency service.
    - risk_level: high
    - Must NOT be described as actual psychologist, therapist, diagnosis service, treatment service, or emergency service
    - Tone: structured, direct, calm, evidence-based (not merely generic compassionate companion)
    - Method: psychoeducation + evidence-based coping + guided self-reflection with disclaimer
    - Evidence: Grade A/B only, 7+ primary sources, domain-expert reviewer licensed psychologist required
-   - Disclaimer: "I am an evidence-based mental health information assistant, not a psychologist, not therapy, not diagnosis, not emergency service. Information only based on [publisher, date]. For specific situation consult qualified mental health professional. If crisis contact local crisis line/emergency services."
+   - Disclaimer: "I am an evidence-based mental health information assistant, not a psychologist, not therapy, not diagnosis, not emergency
+service. Information only based on [publisher, date]. For specific situation consult qualified mental health professional. If crisis contact
+local crisis line/emergency services."
    - Escalation: If self-harm, diagnosis attempt, therapy request: immediate crisis resources general, encourage professional help, no therapy session
-   - Status: idea/research-needed, not ready, pending domain-expert review, contains literal "NOT READY FOR PRODUCTION — pending domain-expert review" in role_definition as per seed
+   - Status: idea/research-needed, not ready, pending domain-expert review, contains literal "NOT READY FOR PRODUCTION — pending
+domain-expert review" in role_definition as per seed
 
 2. **Immigration Information Assistant**
    - id: immigration_info_assistant
@@ -147,7 +157,8 @@ These are versioned, evidence-aware, domain-specific Roles, still conversation-o
    - category: specialist
    - description: Provides general immigration information, not legal advice, not legal verdict
    - risk_level: high (legal)
-   - Must not claim professional authority, disclaimer: information only, consult qualified lawyer, geographic/jurisdiction scope important (e.g., Iran, Canada, etc.)
+   - Must not claim professional authority, disclaimer: information only, consult qualified lawyer, geographic/jurisdiction scope important
+(e.g., Iran, Canada, etc.)
    - Requires legal expert review
 
 3. **Legal Information Assistant**
@@ -166,7 +177,9 @@ These are versioned, evidence-aware, domain-specific Roles, still conversation-o
    - Description: General health information, not diagnosis, not treatment
    - Disclaimer: Information only, not medical advice, consult qualified physician, if emergency call emergency services
 
-All high-risk must have disclaimer_policy, safety_profile high_risk, evidence_policy with source hierarchy, primary vs secondary, evidence grade, publisher, dates, geographic scope, last review, conflicting handling, min primary sources, expert reviewer, citation requirements, benchmark, accuracy/hallucination metrics, knowledge-pack version, expiry.
+All high-risk must have disclaimer_policy, safety_profile high_risk, evidence_policy with source hierarchy, primary vs secondary, evidence
+grade, publisher, dates, geographic scope, last review, conflicting handling, min primary sources, expert reviewer, citation requirements,
+benchmark, accuracy/hallucination metrics, knowledge-pack version, expiry.
 
 ## User Customization
 
@@ -178,7 +191,8 @@ User should be able to customize:
 - **Concise/detailed style:** Part of language_style or separate? Could be allowed_language_styles includes concise/detailed
 - **Language selection:** Persian, English, bilingual - user can select preferred language
 - **"Speak like me" language mirroring:** If enabled, model mirrors user's language style (formal/casual, concise/detailed)
-- **Creativity and factuality mode:** Maps to Accuracy and Creativity - strict_factual, balanced, creative - user may override only within Role's allowed safe range (e.g., high-risk persona only allows strict_factual and balanced, not creative)
+- **Creativity and factuality mode:** Maps to Accuracy and Creativity - strict_factual, balanced, creative - user may override only within
+Role's allowed safe range (e.g., high-risk persona only allows strict_factual and balanced, not creative)
 - **Preferred model:** User-selectable models within default_model_policy allowed range (e.g., fast, balanced, strong)
 - **Preferred output format:** e.g., markdown, plain text, bullet list
 
@@ -187,17 +201,22 @@ All customization stored per user per Role, versioned, editable later.
 ## Default Mode
 
 - **Default mode: Normal Assistant - Not psychologist - Not therapist**
-- First-use onboarding should ask user what Role and communication style they prefer: e.g., "به چه سبکی دوست دارید صحبت کنم؟ رسمی یا صمیمی؟ خلاصه یا مفصل؟ نقش پیش‌فرض: دستیار عادی"
+- First-use onboarding should ask user what Role and communication style they prefer: e.g., "به چه سبکی دوست دارید صحبت کنم؟ رسمی یا صمیمی؟
+خلاصه یا مفصل؟ نقش پیش‌فرض: دستیار عادی"
 - User must be able to change these settings later via settings page: Role selector, tone selector, language style, creativity mode, model, output format
 - Default for all new users is Normal Assistant with balanced mode, Persian-first, supportive structured tone
 
 ## Extensibility: Adding New Role Should Not Require Changing Core Chat Logic
 
 - Registry-based: Add new entry in Role registry (database table roles or YAML/JSON file) with all fields
-- No code change in core chat logic: Core logic loads Role by id from registry, builds system prompt from registry fields + user customization, calls provider abstraction
-- Versioning: When Role updated, version bumped, changelog, old version kept for audit, new conversations use new version, old conversations keep old version reference
+- No code change in core chat logic: Core logic loads Role by id from registry, builds system prompt from registry fields + user
+customization, calls provider abstraction
+- Versioning: When Role updated, version bumped, changelog, old version kept for audit, new conversations use new version, old conversations
+keep old version reference
 - Enabled flag: Can enable/disable Role without code deploy
-- Example: To add new Role "Travel Assistant", just add new row to roles table with id=travel_assistant, version=v1.0.0, display names, description, system_instructions, default_tone, allowed_tones, etc., and it becomes available in UI Role selector, no need to change core chat logic file
+- Example: To add new Role "Travel Assistant", just add new row to roles table with id=travel_assistant, version=v1.0.0, display names,
+description, system_instructions, default_tone, allowed_tones, etc., and it becomes available in UI Role selector, no need to change core
+chat logic file
 
 ## Storage
 
@@ -214,6 +233,24 @@ All customization stored per user per Role, versioned, editable later.
 - Allowed response modes restricted per risk: high-risk only strict_factual and balanced, not creative
 - User customization within allowed safe range only: cannot override to allow disallowed tones or modes if Role forbids
 - Default mode Normal Assistant, not psychologist/therapist, to avoid accidental high-risk exposure for new users
+
+
+## Separation of Factuality and Empathy
+
+- **Accuracy and Creativity controls factual behavior and creative freedom.**
+- **It does NOT control kindness, warmth, empathy, respect, or Care Principle.**
+
+- `strict_factual` must NOT mean cold, robotic, abrupt, or dismissive.
+- A mental-health information Persona may remain `strict_factual` while still
+  responding calmly, warmly, compassionately, and without judgment.
+
+- Legitimate emotional conversations must not be abruptly terminated.
+- Detailed Care and human-support workflows will be defined in the future
+  `CARE_SAFETY_AND_HUMAN_SUPPORT` architecture document.
+- No Persona may claim to be a licensed psychologist or therapist.
+
+This separation ensures factual strictness does not override empathy and care.
+
 
 ## Linkage
 
