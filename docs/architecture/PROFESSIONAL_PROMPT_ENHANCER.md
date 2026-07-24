@@ -192,15 +192,47 @@ Rules:
   prompt must never be visible to user B, no cross-user access, tenant isolation
   FK RESTRICT, pseudonymous identifiers in logs, no raw sensitive content)
 
+## Cross-Document Consistency: Credit Lots vs Reservations
+
+Clarification to reconcile with PRICING_AND_UNIT_ECONOMICS.md and
+REFERRAL_AND_PROMOTIONAL_CREDITS.md:
+
+- A Credit Lot is a balance-tracking construct: where credits come from and
+  their rules, expiry, scope, source, initial_amount, remaining_amount,
+  campaign_id, allowed_scope, issued_at, expires_at, non_cashable flag,
+  refundable flag, accounting_class. Defined in REFERRAL_AND_PROMOTIONAL_CREDITS.md.
+
+- A Reservation/Settlement is a transaction-tracking construct: how a specific
+  operation holds and then consumes credits. Lifecycle quoted, reserved,
+  executing, settled, released, expired, failed. Defined in
+  PRICING_AND_UNIT_ECONOMICS.md.
+
+- A single operation (including Prompt Enhancer cost) may draw from one or more
+  active Credit Lots according to the (still Open Decision) consumption order
+  policy, but must always go through the Reservation lifecycle for atomicity.
+  Available balance = sum of remaining_amount across active lots.
+
+- These are complementary layers, not competing systems: Credit Lots track
+  balance origin and rules; Reservations track transaction holds and consumption.
+  Ledger remains single append-only source of truth. Enhancer cost goes through
+  same Reserve-Settle-Release workflow as normal AI usage.
+
+- Enhancer billing: Enhancer usage is a separate operation type in the ledger
+  (is_enhancer true, enhancer_profile), must go through Reserve-Settle-Release
+  with idempotency, available balance check, no double debit, no negative balance.
+
 ## Related Documents
 
-- Security Index: [../security/README.md](../security/README.md)
 - Multi-Provider Routing: [MULTI_PROVIDER_MODEL_ROUTING.md](MULTI_PROVIDER_MODEL_ROUTING.md)
 - Pricing and Unit Economics: [PRICING_AND_UNIT_ECONOMICS.md](PRICING_AND_UNIT_ECONOMICS.md)
+- Referral and Promotional Credits: [REFERRAL_AND_PROMOTIONAL_CREDITS.md](REFERRAL_AND_PROMOTIONAL_CREDITS.md)
+- Security Index: [../security/README.md](../security/README.md)
+- Secrets and Key Management: [../security/SECRETS_AND_KEY_MANAGEMENT.md](../security/SECRETS_AND_KEY_MANAGEMENT.md)
+- Prompt Injection Defense: [../security/PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md)
+- Agent Security Model: [../security/AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md)
 - Accuracy and Creativity: [ACCURACY_CREATIVITY_CONTROL.md](ACCURACY_CREATIVITY_CONTROL.md)
 - Role and Persona System: [ROLE_AND_PERSONA_SYSTEM.md](ROLE_AND_PERSONA_SYSTEM.md)
 - Agent Plugin and Execution: [AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md](AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
-- Prompt Injection Defense: [../security/PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md)
 - Data Protection: [../security/DATA_PROTECTION_AND_ENCRYPTION.md](../security/DATA_PROTECTION_AND_ENCRYPTION.md)
 - Logging and Monitoring: [../security/LOGGING_AND_MONITORING.md](../security/LOGGING_AND_MONITORING.md)
 

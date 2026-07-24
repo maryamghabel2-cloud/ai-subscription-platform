@@ -233,15 +233,46 @@ Add explicit requirements:
   interpretation of promotional credits (e.g., if promotional credits could be
   considered cash equivalent in some jurisdiction, legal review required)
 
+## Cross-Document Consistency: Credit Lots vs Reservations
+
+Required clarification to reconcile Credit Lot model defined here with Reservation
+lifecycle defined in PRICING_AND_UNIT_ECONOMICS.md and Reserve-Settle-Release
+billing statement in PROFESSIONAL_PROMPT_ENHANCER.md:
+
+- A Credit Lot is a balance-tracking construct: where credits come from and
+  their rules, expiry, scope, source, initial_amount, remaining_amount,
+  campaign_id, allowed_scope, issued_at, expires_at, non_cashable flag,
+  refundable flag, accounting_class.
+
+- A Reservation/Settlement is a transaction-tracking construct: how a specific
+  operation holds and then consumes credits. Lifecycle quoted, reserved,
+  executing, settled, released, expired, failed.
+
+- A single operation may draw from one or more active Credit Lots according to
+  the (still Open Decision) consumption order policy (e.g., promotional first vs
+  purchased first), but must always go through the Reservation lifecycle for
+  atomicity. Available balance = sum of remaining_amount across active lots.
+
+- These are complementary layers, not competing systems: Credit Lots track
+  balance origin and rules; Reservations track transaction holds and consumption.
+  Ledger remains single append-only source of truth.
+
+Cross-linked from:
+- PRICING_AND_UNIT_ECONOMICS.md defines Reservation lifecycle
+- PROFESSIONAL_PROMPT_ENHANCER.md uses Reserve-Settle-Release for enhancer cost
+
 ## Related Documents
 
-- Security Index: [../security/README.md](../security/README.md)
 - Multi-Provider Routing: [MULTI_PROVIDER_MODEL_ROUTING.md](MULTI_PROVIDER_MODEL_ROUTING.md)
 - Pricing and Unit Economics: [PRICING_AND_UNIT_ECONOMICS.md](PRICING_AND_UNIT_ECONOMICS.md)
-- Wallet and Payments: WALLET_AND_PAYMENTS.md (planned, future - not clickable yet)
+- Professional Prompt Enhancer: [PROFESSIONAL_PROMPT_ENHANCER.md](PROFESSIONAL_PROMPT_ENHANCER.md)
+- Security Index: [../security/README.md](../security/README.md)
+- Secrets and Key Management: [../security/SECRETS_AND_KEY_MANAGEMENT.md](../security/SECRETS_AND_KEY_MANAGEMENT.md)
+- Prompt Injection Defense: [../security/PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md)
 - Agent Security Model: [../security/AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md)
 - Data Classification: [DATA_CLASSIFICATION_AND_RETENTION.md](DATA_CLASSIFICATION_AND_RETENTION.md)
 - Channel Security: [../security/CHANNEL_SECURITY_TELEGRAM_WEB_MOBILE.md](../security/CHANNEL_SECURITY_TELEGRAM_WEB_MOBILE.md)
+- Wallet and Payments: WALLET_AND_PAYMENTS.md (planned, future - not clickable yet)
 
 ## Open Decisions
 

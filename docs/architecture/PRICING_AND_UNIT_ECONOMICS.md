@@ -217,6 +217,40 @@ Document a future separate entity: CreditReservation or UsageReservation.
 - Never charge beyond the user-approved maximum without new consent (approved
   estimate or reservation max).
 
+## Credit Lots vs Reservations - Complementary Layers
+
+Required clarification to reconcile Reservation lifecycle with Credit Lot model
+from REFERRAL_AND_PROMOTIONAL_CREDITS.md and Reserve-Settle-Release statement in
+PROFESSIONAL_PROMPT_ENHANCER.md:
+
+- **A Credit Lot is a balance-tracking construct:** Where credits come from and
+  their rules, expiry, scope, source (purchase, promotional_campaign, refund,
+  admin_grant), initial_amount, remaining_amount, campaign_id, allowed_scope,
+  issued_at, expires_at, non_cashable flag, refundable flag, accounting_class.
+  Lots track where credits come from and their rules.
+
+- **A Reservation/Settlement is a transaction-tracking construct:** How a specific
+  operation holds and then consumes credits. Lifecycle quoted, reserved,
+  executing, settled, released, expired, failed. Reservation reduces available
+  balance, not posted ledger balance. Settlement creates exactly one final usage
+  debit in append-only ledger.
+
+- **A single operation may draw from one or more active Credit Lots:** According
+  to the (still Open Decision) consumption order policy (e.g., promotional first
+  vs purchased first), but must always go through the Reservation lifecycle for
+  atomicity. Available balance = sum of remaining_amount across active lots.
+  Expired lots are closed and not treated as user income or refunds.
+
+- **These are complementary layers, not competing systems:** Credit Lots track
+  balance origin and rules; Reservations track transaction holds and consumption.
+  Ledger remains single append-only source of truth. PaymentIntent is for
+  purchasing credits and must not be updated for normal AI usage settlement.
+  Usage reservation and PaymentIntent are separate domains.
+
+Cross-linked from:
+- REFERRAL_AND_PROMOTIONAL_CREDITS.md defines Credit Lots
+- PROFESSIONAL_PROMPT_ENHANCER.md uses Reserve-Settle-Release for enhancer cost
+
 ## Pricing Quote and Settlement
 
 ### User Quote Must Include
@@ -260,13 +294,17 @@ Document a future separate entity: CreditReservation or UsageReservation.
 
 ## Related Documents
 
-- Security Index: [../security/README.md](../security/README.md)
 - Multi-Provider Routing: [MULTI_PROVIDER_MODEL_ROUTING.md](MULTI_PROVIDER_MODEL_ROUTING.md)
-- Wallet and Payments: WALLET_AND_PAYMENTS.md (planned, future - not clickable yet)
 - Referral and Promotional Credits: [REFERRAL_AND_PROMOTIONAL_CREDITS.md](REFERRAL_AND_PROMOTIONAL_CREDITS.md)
+- Professional Prompt Enhancer: [PROFESSIONAL_PROMPT_ENHANCER.md](PROFESSIONAL_PROMPT_ENHANCER.md)
+- Security Index: [../security/README.md](../security/README.md)
+- Secrets and Key Management: [../security/SECRETS_AND_KEY_MANAGEMENT.md](../security/SECRETS_AND_KEY_MANAGEMENT.md)
+- Prompt Injection Defense: [../security/PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md)
+- Agent Security Model: [../security/AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md)
 - Provider Abstraction: [PROVIDER_ABSTRACTION_STRATEGY.md](PROVIDER_ABSTRACTION_STRATEGY.md)
 - Agent Plugin and Execution: [AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md](AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
 - Data Classification: [DATA_CLASSIFICATION_AND_RETENTION.md](DATA_CLASSIFICATION_AND_RETENTION.md)
+- Wallet and Payments: WALLET_AND_PAYMENTS.md (planned, future - not clickable yet)
 
 ## Open Decisions
 
