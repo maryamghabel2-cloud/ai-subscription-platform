@@ -1,10 +1,10 @@
-# Persian AI Workspace - Persian-first Multimodal AI Workspace (Phase 1 Continuation)
+# Persian-first Multimodal AI Workspace
 
 > **New Direction:** This repository is no longer an AI subscription account reseller. The legacy shared-account model is **deprecated** and archived.
 
 > **Legacy Code:** Original backend/frontend incomplete code has been archived to branch `archive/legacy-code-2026-07-19` at `archive/legacy_2026-07-19/` for reference without deletion of history.
 
-We are now building a **phased Persian-first AI platform** for creators, businesses, developers, and everyday users.
+We are building a **phased Persian-first AI platform** for creators, businesses, developers, and everyday users. Product direction is a Persian-first multimodal AI Workspace and Professional Creative Studio.
 
 ## What the Platform Will Include (Phased)
 
@@ -27,9 +27,9 @@ We are now building a **phased Persian-first AI platform** for creators, busines
 - Solo founder + **external project-building agents** (coding agents, research agents, design agents, marketing agents, SEO agents) now
 - Some of these may become **internal automated agents** later, connected to APIs with strict approval gates
 
-## Project Structure Now (Phase 1 - Auth and Wallet Foundations Implemented, Real Payment Providers Not Active)
+## Project Structure Now
 
-This Pull Request changes documentation and GitHub planning files only. The inherited repository still contains legacy application code (backend/ and frontend/ placeholders from earlier phase). This PR does not modify production application code, does not add secrets, and does not deploy.
+This repository contains documentation, architecture, and phased implementation. Legacy application code placeholders remain in backend/ and frontend/ for reference during migration. Documentation and production code changes require reviewed pull requests.
 
 ### Key Docs
 
@@ -44,8 +44,7 @@ This Pull Request changes documentation and GitHub planning files only. The inhe
 See `docs/roadmap/MASTER_ROADMAP.md`:
 
 - Phase 0: Foundation (completed, merged e4ad2f1, no longer current) - docs, Agent OS, GitHub structure, safety gates
-- Phase 1: Core MVP (current continuation) - Part 1 Database (users/wallets/ledger), Part 2 Auth (opaque session tokens HttpOnly), Part 3A Wallet foundations implemented (atomic credit/debit, ledger append-only, balance never negative), Real payment providers not active (sandbox mock only, ZarinPal Part 3B future)
-- Phase 1: Core MVP - auth, wallet mock, general chat, prompt enhancer, landing
+- Phase 1 Core MVP — Database, secure authentication, wallet, ledger, and sandbox payment-intent foundations implemented. General chat, Prompt Enhancer, frontend MVP, and remaining product features are pending. Real payment providers are not active.
 - Phase 2: Specialist Personas - evidence-based assistants
 - Phase 3: Image Studio & Product Photography
 - Phase 4: API Platform - API keys, usage logs
@@ -61,7 +60,6 @@ Each phase doc includes: objective, in/out scope, dependencies, technical/UX/bus
 **Three categories (Updated 2026-07-20 - 28 project-building agents, mix L1/L2):**
 
 1. **Project-building agents** (28 total: 19 L1 report/draft + 9 L2 branch+PR): Orchestrator (L2 docs/planning PRs only, does NOT write product code), Product Manager (L1), Fullstack Builder (L2), Website Builder (L2), DevOps (L2), QA/Security (L2), Research (L1), Prompt Engineer (L2), RAG Knowledge (L1), SEO Content (L1 draft-only), Growth Marketing (L1), Social Media (L1), Analytics (L1), Customer Success (L1), Sales/Partnership (L1), Compliance/Risk (L1), Finance/Unit Economics (L1), Supplier Scout (L1), App Store/ASO (L1), Execution Coach (L1), plus new per review: UX/Product Design (L2), Brand Visual Identity (L1), ML Inference Engineer (L2), Model Evaluation (L1), Trust & Safety (L1), Data Privacy Governance (L1), Localization & Accessibility (L2), SRE/Incident Response (L1) - **Authoritative: Total 28 = 19 L1 + 9 L2** - L1 = prompt-driven that returns report/draft NO branch/PR, L2 = may create scoped branch + PR, Orchestrator = L2 but docs/planning PRs only. Human approval required for merge/publish/spending.
-
 
 ## Authoritative Count (Extracted From Files - 2026-07-20 Verification)
 
@@ -104,8 +102,6 @@ Each phase doc includes: objective, in/out scope, dependencies, technical/UX/bus
 | UX/Product Design Agent | UX_PRODUCT_DESIGN_AGENT.md | L2 |
 | Website Builder Agent | WEBSITE_BUILDER_AGENT.md | L2 |
 
-
-
 2. **Runtime product agents** (for customers, 11): General Persian Chat, Prompt Enhancer, Specialist Personas (evidence-based, structured, direct where appropriate, citation-aware), Image Studio, Product Photography Studio, Video Gen, Character Tools (consent gate), Telegram Agent (encrypted token), Business Agents (FAQ/lead/content draft), Research/RAG (citations), Developer API (hashed keys).
 
 3. **Internal operations agents** (future, 5): SEO tech crawler, content draft, growth reporter, support draft, research scout - all draft-only initially, publish requires approval, future L3.
@@ -145,27 +141,27 @@ See `docs/agents/HUMAN_APPROVAL_GATES.md` and `docs/agents/AGENT_PERMISSION_MODE
 
 - **Shared consumer accounts:** Deprecated, violates provider ToS, archived.
 - **Automated procurement from GGSel/FunPay/Oyunfor/Kie.ai/ShareTool:** Deprecated, no scraping, no bypassing geographic/KYC restrictions.
-- **API-key resale, supplier scraping, crypto payment for MVP:** Not in Phase 0/1. Credit-based wallet planned, no mock payment verification.
+- **API-key resale, supplier scraping:** Deprecated, no reselling unauthorized credentials.
+- **Payment verification:** A sandbox-only mock payment provider exists for development and testing. Real payment gateways and real blockchain verification are not active. Sandbox completion must never be enabled in production.
 - Old code archived, not deleted: `archive/legacy_2026-07-19/` on branch `archive/legacy-code-2026-07-19`.
 
-### Quick Start (Phase 0 Merged - Docs on Main)
+### Quick Start (Current Status)
 
 ```bash
 git clone https://github.com/maryamghabel2-cloud/ai-subscription-platform.git
 cd ai-subscription-platform
 
-# Docs are now on main (Phase 0 merged on 2026-07-19)
 cat docs/roadmap/MASTER_ROADMAP.md
 cat docs/agents/AGENT_OPERATING_SYSTEM.md
-cat docs/CHANGELOG.md
+cat docs/vision/PRODUCT_VISION.md
 
-# Verify branch exists before checkout - old docs branch was merged and may be deleted
 git ls-remote --heads origin
 ```
 
-Documentation for Phase 0 is now on `main`. No production build yet for Phase 0. The previous branch `docs/phase-0-agent-operating-system` was merged in PR #2 (merge commit e4ad2f1) and is no longer the source of truth.
-
-For future MVP skeleton (Phase 1), see `docs/roadmap/PHASE_1_CORE_MVP.md` and upcoming branches for Phase 1 Part 1 (Database Schema). Always verify current remote branches with `git ls-remote --heads origin` before referencing.
+- Phase 0 documentation foundation is complete.
+- Phase 1 Database, Authentication, Wallet, Ledger, and sandbox Payment Intent foundations are implemented.
+- The repository is under active architecture alignment and product implementation.
+- General Chat, Providers, Pricing, Prompt Enhancer, frontend MVP, Studio, Mobile, and Telegram remain pending.
 
 ### Growth & Safety
 
@@ -177,17 +173,12 @@ For future MVP skeleton (Phase 1), see `docs/roadmap/PHASE_1_CORE_MVP.md` and up
 
 ### Contributing
 
-This is documentation + planning phase. Use issue templates:
+The project is in active phased implementation.
 
-- Feature Request
-- Persona Design
-- Research Task
-- Agent Task
-- Growth Experiment
-- SEO Content Task
-- Bug Report
-
-PRs require checklist from `pull_request_template.md`, no direct main commit, no secrets, human approval required for all publishing/spending/pricing/config/merge/deploy/API keys/persona changes.
+- Documentation and production code changes require reviewed pull requests.
+- Human authorization is required for merge, deployment, pricing, provider activation, and security-sensitive configuration.
+- Use issue templates: Feature Request, Persona Design, Research Task, Agent Task, Growth Experiment, SEO Content Task, Bug Report.
+- PRs require checklist from `pull_request_template.md`, no direct main commit, no secrets.
 
 ### Links
 
@@ -200,8 +191,8 @@ PRs require checklist from `pull_request_template.md`, no direct main commit, no
 
 ### License
 
-MIT - See LICENSE file. This is planning documentation, not production code.
+MIT - See LICENSE file.
 
 ---
 
-**Status:** Phase 0 completed (merged e4ad2f1 on 2026-07-19, no longer current). Phase 1 Part 1 Database, Part 2 Auth (opaque session tokens), Part 3A Wallet foundations implemented (wallet table balance>=0, ledger append-only signed, atomic SELECT FOR UPDATE, sandbox mock provider only). Real payment providers are not active (ZarinPal Part 3B, crypto Part 3C future). Product direction: Persian-first multimodal AI Workspace and Professional Creative Studio (see docs/vision/PRODUCT_VISION.md). Latest merges: 6c38d6a product architecture audit, 093af0cb12ff43cad4bbd5a42400c0351bbfc741 architecture finalization v0.1.4-docs-aligned.
+**Status:** Phase 0 is completed. Authentication is implemented. Wallet and Ledger foundations are implemented (append-only ledger with positive and negative amount entries, atomic SELECT FOR UPDATE, balance check). This does not mean that ledger entries currently have cryptographic signatures. Payment Intent sandbox foundation is implemented (sandbox-only mock payment provider exists for development and testing, real gateways and blockchain verification not active, sandbox completion must never be enabled in production). Real payment providers are not active. Product direction is a Persian-first multimodal AI Workspace and Professional Creative Studio. Legacy reseller functionality is deprecated. Human approval remains required for sensitive operations. Latest merges: 6c38d6a architecture audit, 093af0cb12ff43cad4bbd5a42400c0351bbfc741 architecture finalization v0.1.4-docs-aligned, e0bed88 security hardening.
