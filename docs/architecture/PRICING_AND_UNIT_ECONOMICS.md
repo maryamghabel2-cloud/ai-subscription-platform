@@ -4,159 +4,259 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner, Finance, Security, and
+Compliance Approval
 
 **Document Owner:** Product Architect / Finance
 
-**Purpose:** Define business decision for target contribution margin, mathematical
-clarification of selling price, all-in variable cost components, hybrid
-monetization, and billing workflow Reserve-Settle-Refund.
+**Purpose:** Define business decision for target contribution margin,
+mathematical clarification of selling price, expanded all-in variable cost
+components, hybrid monetization, billing workflow Reserve-Settle-Release with
+future CreditReservation entity, pricing quote and settlement, and margin policy.
 
 **Note:** Documentation only. No payment gateways, no real provider API calls,
 no secrets.
 
 ## Purpose
 
-Define how the Persian-first AI Workspace prices AI usage with sustainable
-unit economics while keeping billing simple and transparent.
+Define how the Persian-first AI Workspace prices AI usage with sustainable unit
+economics while keeping billing simple, transparent, and privacy-preserving.
 
 ## In Scope
 
-- Business decision for contribution margin, mathematical clarification,
-  all-in variable cost components, hybrid monetization, billing workflow
-- Wallet, ledger, payment intent foundations already implemented
-- Credit-based billing, atomic and idempotent, balance never negative
+- Business decision for contribution margin and mathematical clarification
+- Expanded all-in variable cost components
+- Hybrid monetization (Free tier, Wallet/pay-as-you-go, Subscription, Promotional)
+- Billing workflow Reserve-Settle-Release with future CreditReservation entity
+- Pricing quote and settlement and margin policy clarification
 
 ## Out of Scope
 
 - Final pricing numbers and exact credit packages (future, CONFIGURED_LIMIT)
 - Real payment gateway integration (ZarinPal Part 3B, crypto Part 3C future)
-- Production pricing engine code (future PRs)
+- Production pricing engine code and final exchange-rate supplier (future)
 - Final promotional credit amounts (CONFIGURED_LIMIT pending cost analysis)
 
 ## Business Decision: Contribution Margin
 
 - **Target contribution margin is 70%.**
-- **Minimum contribution margin is 50%.**
+- **Minimum contribution margin for ordinary paid metered operations is 50%.**
 - Contribution margin is defined as (selling_price - all_in_variable_cost) /
   selling_price
-- Business must maintain at least 50% margin on every billable AI operation
-  to cover fixed costs, support, and profit
+- Business must maintain at least 50% margin on every ordinary paid metered
+  operation to cover fixed costs, support, and profit
 - Target of 70% allows buffer for retries, storage, payment fees, and
   promotional credits
-- Margins below 50% require product-owner and finance approval and must not be
-  silently allowed
+- Margins below 50% for ordinary paid operations require product-owner and
+  finance approval and must not be silently allowed
+- Free-tier, promotional, and subscription operations may have different
+  campaign/cohort economics under an explicitly approved budget (separate
+  from ordinary paid metered operations)
 
 ## Mathematical Clarification
 
 - **Formula:** selling_price = all_in_variable_cost / (1 - target_margin)
-- Example: if all_in_variable_cost = $0.03 and target_margin = 0.70 (70%),
-  then selling_price = 0.03 / (1 - 0.70) = 0.03 / 0.30 = $0.10
-- If target_margin = 50% (minimum), selling_price = all_in_variable_cost /
-  (1 - 0.50) = all_in_variable_cost / 0.50 = 2x cost
+- **NON_PRODUCTION_MATH_EXAMPLE:** If all_in_variable_cost = CONFIGURED_VALUE
+  and target_margin = 0.70 (70%), then selling_price = CONFIGURED_VALUE /
+  (1 - 0.70) = CONFIGURED_VALUE / 0.30. This is a non-production math example
+  for illustration only, not a production price.
+
 - All calculations must use decimal arithmetic, not floating point for money
   where possible, or store credits as integer smallest unit
-- Pricing version must be tracked: pricing_version, e.g., v1.0.0, for audit
-- Exchange rate for display: static 190600 Toman per USD for MVP, later
-  real-time rate from Bonbast or Arzbin (future)
+- Use CONFIGURED_ROUNDING_POLICY and CONFIGURED_MINIMUM_BILLABLE_UNIT for
+  rounding and minimum billable unit, both are Open Decisions requiring finance
+  and owner approval
+- Pricing version must be tracked: pricing_version, e.g., v1.0.0, for audit and
+  rollback, settlement must use pricing version accepted at reservation time
+- Exchange rate handling:
+  - Use EXCHANGE_RATE_SNAPSHOT for each quote/reservation, versioned and
+    timestamped, stored as snapshot for audit
+  - EXCHANGE_RATE_SNAPSHOT source is CONFIGURED_CURRENCY_SOURCE, not a named
+    commercial supplier without approval
+  - No static production-looking rate such as 190600 Toman per USD as approved
+    value; if used in example, label as NON_PRODUCTION_MATH_EXAMPLE
+  - Exchange rates must be versioned, timestamped, stored as snapshot for each
+    quote/reservation, subject to finance and owner approval
 
 ## All-In Variable Cost Components
 
-- Input tokens: provider input token price per 1K tokens, per model,
-  pricing_version tracked
-- Output tokens: provider output token price per 1K tokens, includes reasoning
-  tokens if applicable (e.g., chain-of-thought)
+Expanded list:
+
+- Input tokens: provider input token price per 1K tokens, per model, pricing_version
+- Output tokens: provider output token price per 1K tokens
 - Cached tokens: cached input at reduced price if provider supports
-- Reasoning tokens: for models that bill separately for reasoning
+- Provider-reported reasoning usage: provider-reported reasoning tokens if
+  applicable, not internal chain-of-thought
 - Embeddings: vector store query, embedding price per 1K tokens or per call
-- STT seconds: speech-to-text seconds, provider STT price per second or minute
-- TTS seconds: text-to-speech seconds, provider TTS price
-- Image units: image generation per image, per resolution, per model
-- Video units: video generation per second, per resolution, per model
+- Reranking: reranking service price per call or per document if used
+- Web search: web search API price per search if used for Deep Research
+- STT: speech-to-text seconds, provider STT price per second or minute,
+  CONFIGURED_LIMIT placeholder
+- TTS: text-to-speech seconds, provider TTS price per second
+- Image generation/editing: image generation per image, per resolution, editing
+  per operation, upscaling, inpainting/outpainting
+- Video generation: video generation per second, per resolution, per model
 - Storage: uploaded files, generated images/videos, conversation history,
   vector store, per GB per month
-- Retries: provider retries due to transient failures, must be included in cost
-- Payment fees: ZarinPal fee, crypto network fee, exchange rate spread, future
+- Bandwidth and egress: data transfer out, CDN egress, per GB
+- Safety/moderation calls: moderation API price per call if used
+- Failed but provider-billed requests: provider may bill even if output not
+  usable, must be included in cost accounting
+- Expected retries: provider retries due to transient failures, must be included
+- Payment fees: payment gateway fee, crypto network fee, exchange rate spread
+- Currency-conversion buffer: buffer for exchange rate fluctuation, per
+  CONFIGURED_ROUNDING_POLICY
+- Provider taxes or fees where applicable: VAT, sales tax, provider service fees
+- Other metered variable infrastructure: vector DB query, search, cache, etc.
+
+Do not state or imply that internal chain-of-thought should be requested,
+stored, logged, or exposed. Only provider-reported reasoning usage if provider
+bills separately for reasoning may be included, not internal model thinking.
 
 ## Hybrid Monetization
 
 - **Free tier (abuse-protected):**
-  - Limited credits per day/week, rate limited, no bulk
+  - Limited credits per day/week, rate limited, no bulk, no self-referral
   - Anti-abuse: device/account farming prevention, velocity rate limits,
-    no self-referral, fraud review triggers
+    fraud review triggers
   - Purpose: activation, referral loop, product-led growth
-  - Free tier models: auto_free routing mode, lowest cost models
+  - Free tier models: auto_free routing mode, lowest cost models, provider-free
+    model status versioned and may expire
 
 - **Wallet/pay-as-you-go:**
   - User buys credit packages, wallet table with balance_credits check >=0,
     ledger_transactions append-only ledger with positive and negative amount
-    entries, atomic credit/debit with SELECT FOR UPDATE, idempotency,
-    balance never negative enforced at DB and code
+    entries, atomic credit/debit with SELECT FOR UPDATE, idempotency, balance
+    never negative enforced at DB and code
   - Credit packages in config: CREDIT_PACKAGES list, exact amounts are
     CONFIGURED_LIMIT placeholders pending provider cost analysis
-  - Packages are purchased via payment intents, sandbox mock provider only in
-    Part 3A, real ZarinPal Part 3B and crypto Part 3C future
+  - Packages are purchased via payment intents, sandbox-only mock provider
+    exists for development and testing, real payment gateways not active,
+    sandbox completion must never be enabled in production
 
 - **Subscription entitlements:**
-  - Future: monthly subscription that grants entitlements (e.g., X credits per
-    month, Y image generations, Z video seconds, access to certain personas)
-  - Entitlements are separate from wallet, must not be double-billed
-  - Subscription is not shared consumer accounts, no reselling, no ToS bypass
+  - Future: monthly subscription that grants entitlements (e.g., CONFIGURED_LIMIT
+    credits per month, image generations, video seconds)
+  - Entitlements separate from wallet, must not be double-billed
+  - No shared consumer accounts, no ToS bypass
 
 - **Promotional credits:**
-  - New user promotional credit and referrer promotional credit via referral
-    system (see REFERRAL_AND_PROMOTIONAL_CREDITS.md)
-  - Promotional credits are not cash and may expire (expiry date, e.g., 30 days)
+  - New user promotional and referrer promotional via referral system
+  - Not cash and may expire (expiry date CONFIGURED_LIMIT)
   - Separate accounting metadata for promotional vs purchased credits: source,
-    expiry, campaign, referral code
-  - Promotional credits used first or last? Open Decision, requires finance
-    review, must be documented and versioned
+    expiry, campaign, referral code, is_promotional
+  - Usage order: promotional vs purchased vs subscription is Open Decision,
+    requires finance review, versioned config
 
-## Billing Workflow (Reserve-Settle-Refund)
+## Billing Workflow: Reserve-Settle-Release (Future Architecture)
 
-This workflow ensures atomic and idempotent billing, balance never negative,
-and accurate settlement based on actual provider usage.
+The current Wallet and Ledger support posted credit/debit operations. They do
+not currently implement pending credit reservations. Do not claim the existing
+Wallet already supports pending reservations.
 
-1. **Estimate max cost:**
-   - Based on model, max tokens, image/video units, estimated STT/TTS, storage
-   - Use Model Catalog: input/output token price, pricing_version
+Document a future separate entity: CreditReservation or UsageReservation.
 
-2. **Reserve credits atomically (using existing wallet features):**
-   - SELECT FOR UPDATE wallet row, check balance >= estimated max cost
-   - If insufficient, return error with required credits, do not execute provider
-   - Create ledger entry with pending reservation, idempotency key
+### Proposed Lifecycle
 
-3. **Execute provider request:**
-   - Call provider abstraction with provider-neutral config mapped from Accuracy
-     and Creativity mode
-   - Track actual usage: input/output tokens, cached tokens, reasoning tokens,
-     embeddings, STT/TTS seconds, image/video units
+- **quoted:** Quote created with estimated max credits, pricing_version,
+  exchange_rate_snapshot, expiration, privacy classification, balance source
 
-4. **Measure actual usage:**
-   - Provider returns usage: tokens, embeddings, seconds, units
-   - Calculate all_in_variable_cost based on actual usage and Model Catalog
-     pricing_version
+- **reserved:** Reservation reduces available balance, not posted ledger balance.
+  Available balance = posted balance - sum(reserved not yet settled). Reservation
+  created atomically, idempotent, with operation id.
 
-5. **Settle credits:**
-   - Calculate selling_price = all_in_variable_cost / (1 - target_margin)
-   - Deduct actual selling_price from wallet atomically
-   - Create ledger entry with settled cost, provider_id, model_id, prompt hash
-     replaced with content_fingerprint DISABLED_BY_DEFAULT per privacy hardening
-   - Update payment intent with actual cost if applicable
+- **executing:** Provider request is executing, actual usage not yet known.
 
-6. **Refund unused reservation:**
-   - Refund = estimated max cost - actual selling_price
-   - If refund > 0, credit wallet atomically
-   - Create ledger entry for refund, idempotency
-   - If actual cost > estimated max due to provider returning more tokens than
-     estimated, handle as overage: either allow small overage within buffer or
-     require re-reservation, must not make balance negative, requires product
-     and finance review
+- **settled:** Settlement creates exactly one final usage debit in the
+  append-only ledger. Uses pricing version accepted at reservation time. Do not
+  retroactively charge different price because Provider Catalog changed while
+  request was running.
 
-- All steps must be atomic and idempotent, balance never negative, ledger
-  append-only, audit metadata only by default (pseudonymous user id, agent id,
-  provider id, model id, token counts, cost, timestamps, not raw sensitive
-  content)
+- **released:** Releasing an unused hold is not a new credit or user income.
+  Unused reservation amount is released back to available balance, no new ledger
+  credit, only reservation state change to released.
+
+- **expired:** Reservation expired before execution or settlement, e.g., quote
+  expiration or scheduled orphan cleanup. Full reservation released.
+
+- **failed:** Provider rejected, timeout, failure, or user cancellation before
+  settlement. Reservation released or partially settled per refund policy.
+
+### Required Principles
+
+- Reservation reduces available balance, not the posted ledger balance.
+- Settlement creates exactly one final usage debit in the append-only ledger.
+- Releasing an unused hold is not a new credit or user income, only release.
+- The user must never be debited twice (idempotency, operation id).
+- PaymentIntent is for purchasing credits and must not be updated for normal
+  AI usage settlement.
+- Usage reservation and PaymentIntent are separate domains.
+- Reservation, settlement, release, expiry, and failure are idempotent (same
+  operation id returns same result).
+- Concurrent operations must not make available balance or posted balance
+  negative (SELECT FOR UPDATE, atomic checks).
+- Reservation expiry and orphan cleanup require a future scheduled process
+  (e.g., cron job that releases expired reservations).
+- A future database migration is required before this workflow is implemented
+  (new table credit_reservations or usage_reservations).
+
+### Failure Behavior
+
+- Provider rejected before execution: release full reservation, state failed,
+  no debit, idempotent.
+- Timeout with unknown provider result: reconcile before charging again, do not
+  double-charge, state remains executing until reconciliation, then settled or
+  released per provider actual usage if known.
+- Provider failure with no usable output: apply the approved refund policy,
+  e.g., release reservation or charge minimal cost for failed but provider-billed
+  requests if provider billed, per finance and owner approved policy.
+- User cancellation before provider execution: release reservation, state
+  released, no debit.
+- Retry must reuse the same operation id or create an explicitly linked retry
+  (retry_of_operation_id) to avoid double-charging, idempotent.
+- Never charge beyond the user-approved maximum without new consent (approved
+  estimate or reservation max).
+
+## Pricing Quote and Settlement
+
+### User Quote Must Include
+
+- Operation type: e.g., chat, image generation, video generation, STT, TTS,
+  embeddings, web search, reranking
+- Provider/model or routing policy: e.g., provider_a/model_a or
+  auto_balanced, manual_model_selection
+- Estimated maximum credits: based on max tokens, image/video units, etc.
+- Pricing_version: version of Model Catalog pricing used for quote
+- Exchange_rate_snapshot: EXCHANGE_RATE_SNAPSHOT, versioned, timestamped,
+  stored as snapshot for audit, source CONFIGURED_CURRENCY_SOURCE
+- Quote expiration: e.g., 5 minutes, CONFIGURED_LIMIT, after expiry quote invalid
+- Privacy classification: e.g., privacy_preferred, standard, requires policy
+  evidence
+- Whether promotional, subscription, or purchased balance will be used: source
+  of balance, promotional expiry, subscription entitlements
+
+### Settlement Must Use Pricing Version Accepted at Reservation Time
+
+- Settlement must use the pricing version accepted at reservation time
+  (pricing_version from quote/reservation).
+- Do not retroactively charge a different price because the Provider Catalog
+  changed while the request was running (e.g., provider price increase during
+  execution).
+- Exchange rate snapshot from quote must be used for settlement, not current
+  rate, unless explicitly approved and disclosed.
+
+### Margin Policy Clarification
+
+- Target contribution margin: 70%.
+- Minimum contribution margin for ordinary paid metered operations: 50%.
+- Free-tier, promotional, and subscription operations may have different
+  campaign/cohort economics under an explicitly approved budget (e.g., free tier
+  platform-subsidized budget, promotional campaign budget, subscription
+  entitlement budget).
+- No unapproved negative-margin route may be activated silently. All negative
+  margin or below-minimum-margin routes require product-owner, finance, and
+  owner approval and must be explicitly documented as campaign/cohort economics,
+  not ordinary paid metered operations.
 
 ## Related Documents
 
@@ -170,15 +270,20 @@ and accurate settlement based on actual provider usage.
 
 ## Open Decisions
 
-- Exact target and minimum contribution margin numbers (currently 70% target,
-  50% minimum, requires finance and owner approval)
+- Exact target and minimum contribution margin numbers (70% target, 50% minimum
+  for ordinary paid, requires finance and owner approval)
 - All-in variable cost components and pricing_version per model
-- Credit package amounts and exchange rate real-time source (CONFIGURED_LIMIT)
+- Credit package amounts and EXCHANGE_RATE_SNAPSHOT source
+  (CONFIGURED_CURRENCY_SOURCE) and CONFIGURED_ROUNDING_POLICY and
+  CONFIGURED_MINIMUM_BILLABLE_UNIT
 - Free tier limits and abuse protection thresholds (CONFIGURED_LIMIT)
 - Subscription entitlement amounts and pricing (future)
-- Promotional credit expiry and usage order (first vs last)
-- Reserve-Settle-Refund buffer for overage handling
-- Owner and finance approval required for all decisions
+- Promotional credit expiry and usage order (first vs last) and allowed model
+  scope (Open Decision)
+- Reserve-Settle-Release: CreditReservation table schema, scheduled orphan cleanup,
+  future migration, idempotency, failure handling, refund policy
+- Quote fields and expiration and settlement using accepted pricing version
+- Owner, finance, security, privacy, legal approval required for all decisions
 
 ## Planned Completion Stage
 
@@ -186,5 +291,6 @@ Phase 1 - Pricing and Unit Economics
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later with product, finance, security,
-and owner review. No real payment gateways in this PR.
+Proposed Architecture - Pending Owner, Finance, Security, and Compliance Approval.
+Will be completed later with product, finance, security, and owner review.
+No real payment gateways in this PR.
