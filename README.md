@@ -188,6 +188,7 @@ The project is in active phased implementation.
 - Product Vision: [docs/vision/PRODUCT_VISION.md](docs/vision/PRODUCT_VISION.md)
 - Persona Framework: [docs/personas/PERSONA_FRAMEWORK.md](docs/personas/PERSONA_FRAMEWORK.md)
 - Growth System: [docs/growth/GROWTH_SYSTEM.md](docs/growth/GROWTH_SYSTEM.md)
+- Security Documentation: [docs/security/README.md](docs/security/README.md)
 
 ### License
 
