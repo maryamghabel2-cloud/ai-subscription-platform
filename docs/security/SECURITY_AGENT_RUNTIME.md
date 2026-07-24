@@ -8,40 +8,75 @@
 
 **Document Owner:** Security Architect / SRE
 
-**Purpose:** Define continuous Security Agent, monitoring responsibilities, detection signals, controlled response authority, human oversight, immutable audit trail, and reversible protective actions.
+**Purpose:** Define continuous Security Agent, monitoring responsibilities,
+detection signals, controlled response authority, human oversight, immutable
+audit trail, and reversible protective actions.
 
 **Note:** This is a structure-only stub. Final policy will be completed later.
 
+## Purpose
+
+Define how a future Security Agent will monitor and respond to security events.
+
 ## In Scope
 
-- Continuous Security Agent: monitors security events, authentication failures, authorization failures, agent executions, payment intent state changes, rate limit hits, prompt injection attempts, data exfiltration signals
-- Monitoring responsibilities: detect malicious requests, anomalous behavior, compromised sessions, compromised tokens, compromised agents, suspicious files, payment fraud
-- Detection signals: brute force, credential stuffing, abuse, prompt injection, tool abuse, data exfiltration, channel spoofing
-- Controlled response authority: future Security Agent may perform approved protective actions, including:
-  - block a malicious request;
-  - apply emergency rate limits;
-  - suspend a suspicious session;
-  - revoke a compromised token;
-  - disable or quarantine a compromised Agent;
-  - quarantine a suspicious file;
-  - stop a suspected data-exfiltration attempt;
-  - create and escalate a security incident.
+- Continuous Security Agent:
+  - Monitors security events, authentication failures, authorization failures,
+    agent executions, payment intent state changes, rate limit hits, prompt
+    injection attempts, data exfiltration signals
 
-- Also state:
-  - It cannot grant itself new permissions.
-  - It cannot disable its own audit logging.
-  - It must not read raw private conversation content by default.
-  - High-impact actions require human approval or must be reversible.
-  - All actions must be auditable.
+- Detection scope:
+  - Brute force and credential stuffing
+  - Abuse and anomalous behavior
+  - Prompt injection and tool abuse
+  - Data exfiltration signals
+  - Channel spoofing and payment fraud
+  - Compromised sessions, tokens, agents, files
 
-- Human oversight: high-impact actions (disable agent, revoke token, suspend session, block request) require human approval or must be reversible, audit logging with metadata only by default, no raw sensitive content, content_fingerprint DISABLED_BY_DEFAULT
-- Immutable audit trail: append-only audit log table, tamper-evident, retention, access control, no raw sensitive prompts, only metadata (pseudonymous user id, agent id/version/execution id, tool names, provider/model ids, token counts, cost, timestamps, approval records, result status, error category without sensitive content, rollback reference)
-- Reversible protective actions: emergency rate limits reversible, session suspension reversible, token revocation with re-authentication path, agent quarantine with review, file quarantine with review, incident escalation
+- Protective actions the future Security Agent may perform:
+  - block a malicious request
+  - apply emergency rate limits
+  - suspend a suspicious session
+  - revoke a compromised token
+  - disable or quarantine a compromised Agent
+  - quarantine a suspicious file
+  - stop a suspected data-exfiltration attempt
+  - create and escalate a security incident
+
+- Guardrails:
+  - cannot grant itself new permissions
+  - cannot disable its own audit logging
+  - must not read raw private conversation content by default
+  - high-impact actions require human approval or must be reversible
+  - all actions must be auditable
+
+- Human oversight:
+  - High-impact actions (disable agent, revoke token, suspend session, block
+    request) require human approval or must be reversible
+  - Audit logging with metadata only by default, no raw sensitive content
+  - content_fingerprint DISABLED_BY_DEFAULT
+
+- Immutable audit trail:
+  - Append-only audit log table, tamper-evident, retention, access control
+  - No raw sensitive prompts, only metadata (pseudonymous user id, agent
+    id/version/execution id, tool names, provider/model ids, token counts,
+    cost, timestamps, approval records, result status, error category without
+    sensitive content, rollback reference)
+
+- Reversible protective actions:
+  - Emergency rate limits reversible
+  - Session suspension reversible
+  - Token revocation with re-authentication path
+  - Agent quarantine with review
+  - File quarantine with review
+  - Incident escalation
 
 ## Out of Scope
 
-- Final detection rules, exact thresholds, implementation code (future PRs)
-- Autonomous enforcement without approval for absolutely forbidden actions (never allowed)
+- Final detection rules and exact thresholds
+- Implementation code (future PRs)
+- Autonomous enforcement without approval for absolutely forbidden actions
+  (never allowed)
 
 ## Related Documents
 
@@ -56,11 +91,12 @@
 - Detection signals and thresholds
 - Approval workflow for high-impact actions
 - Reversibility criteria and SLA
+- Owner approval required
 
 ## Planned Completion Stage
 
-- Phase 2 - Security Automation
+Phase 2 - Security Automation
 
-## Status
+## Status Note
 
 Draft - Structure Only. Will be completed later.

@@ -8,18 +8,39 @@
 
 **Document Owner:** Security Architect
 
-**Purpose:** Define protected assets, threat actors, attack surfaces, trust boundaries, threat categorization, and risk prioritization.
+**Purpose:** Define protected assets, threat actors, attack surfaces, trust
+boundaries, threat categorization, and risk prioritization.
 
-**Note:** This is a structure-only stub. Final threat model will be completed in later PRs.
+**Note:** This is a structure-only stub. Final threat model will be completed
+later.
+
+## Purpose
+
+Define what we protect, who might attack, how they might attack, and how we
+prioritize risks.
 
 ## In Scope
 
-- Protected assets: user accounts, wallets, ledgers (append-only ledger with positive and negative amount entries), payment intents, sandbox mock provider, conversations, messages, uploaded files, API keys, prompts, generated images/videos, Telegram identifiers, session tokens, HMAC fingerprint secrets
-- Threat actors: external attackers, malicious users, compromised agents, supply-chain attackers, insider threats
-- Attack surfaces: authentication, session management, wallet/ledger, payment-intent, file upload, RAG context, prompt injection, tool abuse, channel spoofing (Telegram webhook), API abuse, secret leakage
-- Trust boundaries: user ↔ channel adapter ↔ context assembly ↔ retrieval service ↔ persona/agent ↔ provider; wallet/ledger atomic operations; payment sandbox isolation
-- Threat categorization: STRIDE or similar, with examples per category
-- Risk prioritization: likelihood, impact, existing mitigations, residual risk
+- Protected assets:
+  - User accounts, wallets, ledgers (append-only ledger with positive and
+    negative amount entries)
+  - Payment intents, sandbox mock provider
+  - Conversations, messages, uploaded files
+  - API keys, prompts, generated images/videos
+  - Telegram identifiers, session tokens, HMAC secrets
+- Threat actors:
+  - External attackers, malicious users, compromised agents
+  - Supply-chain attackers, insider threats
+- Attack surfaces:
+  - Authentication, session management, wallet/ledger
+  - Payment-intent, file upload, RAG context
+  - Prompt injection, tool abuse, channel spoofing, API abuse, secret leakage
+- Trust boundaries:
+  - User ↔ channel adapter ↔ context assembly ↔ retrieval ↔ persona/agent
+  - Wallet/ledger atomic operations
+  - Payment sandbox isolation
+- Threat categorization: STRIDE or similar
+- Risk prioritization: likelihood, impact, mitigations, residual risk
 
 ## Out of Scope
 
@@ -38,11 +59,12 @@
 - Threat modeling methodology (STRIDE vs other)
 - Exact asset inventory and data classification mapping
 - Risk acceptance criteria
+- Owner approval required
 
 ## Planned Completion Stage
 
-- Phase 1 - Threat Modeling
+Phase 1 - Threat Modeling
 
-## Status
+## Status Note
 
 Draft - Structure Only. Will be completed later.

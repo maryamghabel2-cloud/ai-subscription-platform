@@ -8,25 +8,51 @@
 
 **Document Owner:** Security Architect / Product
 
-**Purpose:** Define security review of ready-made Agents, repository and source verification, license review, dependency and supply-chain scanning, static and dynamic analysis, prompt injection testing, remediation before approval, version review and revocation.
+**Purpose:** Define security review of ready-made Agents, repository and source
+verification, license review, dependency and supply-chain scanning, static and
+dynamic analysis, prompt injection testing, remediation before approval, version
+review and revocation.
 
-**Note:** This is a structure-only stub. Final review policy will be completed later.
+**Note:** This is a structure-only stub. Final review policy will be completed
+later.
+
+## Purpose
+
+Define how third-party and marketplace agents are reviewed before approval.
 
 ## In Scope
 
-- Security review of ready-made Agents: business agents, Telegram agents, research agents, studio workflows, future marketplace agents
-- Repository and source verification: source code provenance, commit history, publisher authority, geographic/jurisdiction applicability
-- License review: MIT, Apache, proprietary, compatibility, public domain, licensed, purchased with appropriate usage rights, legally authorized
-- Dependency and supply-chain scanning: direct and transitive dependencies, known vulnerabilities, typosquatting, malicious packages
-- Static and dynamic analysis: code quality, secret scanning, injection flaws, permission overreach, data exfiltration
-- Prompt injection testing: direct/indirect injection, jailbreak, tool abuse, RAG poisoning, system-prompt disclosure, citation integrity
-- Remediation before approval: issues must be fixed, re-scanned, expert review, owner approval before publishing
-- Version review and revocation: knowledge_pack_version, knowledge_pack_reviewed_at, knowledge_pack_expires_at, expert_review_required, expert_review_status, versioned and removable sources, revocation on compromise
+- Security review of ready-made Agents:
+  - Business agents, Telegram agents, research agents, studio workflows,
+    future marketplace agents
+- Repository and source verification:
+  - Source code provenance, commit history, publisher authority
+  - Geographic/jurisdiction applicability
+- License review:
+  - MIT, Apache, proprietary, compatibility, public domain, licensed, purchased
+    with appropriate usage rights, legally authorized
+- Dependency and supply-chain scanning:
+  - Direct and transitive dependencies, known vulnerabilities, typosquatting,
+    malicious packages
+- Static and dynamic analysis:
+  - Code quality, secret scanning, injection flaws, permission overreach,
+    data exfiltration
+- Prompt injection testing:
+  - Direct/indirect injection, jailbreak, tool abuse, RAG poisoning,
+    system-prompt disclosure, citation integrity
+- Remediation before approval:
+  - Issues must be fixed, re-scanned, expert review, owner approval before
+    publishing
+- Version review and revocation:
+  - knowledge_pack_version, knowledge_pack_reviewed_at,
+    knowledge_pack_expires_at, expert_review_required, expert_review_status,
+    versioned and removable sources, revocation on compromise
 
 ## Out of Scope
 
-- Final checklist, exact scanning tools, implementation (future PRs)
+- Final checklist and exact scanning tools (future PRs)
 - Marketplace business logic (future Phase 8)
+- Implementation code
 
 ## Related Documents
 
@@ -40,11 +66,12 @@
 - Scanning toolset and CI integration
 - Review SLA and approver roles
 - Revocation criteria and communication
+- Owner approval required
 
 ## Planned Completion Stage
 
-- Phase 2 - Marketplace Prep
+Phase 2 - Marketplace Prep
 
-## Status
+## Status Note
 
 Draft - Structure Only. Will be completed later.
