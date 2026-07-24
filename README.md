@@ -1,4 +1,4 @@
-# Persian AI Workspace - Platform Roadmap (Phase 0)
+# Persian AI Workspace - Persian-first Multimodal AI Workspace (Phase 1 Continuation)
 
 > **New Direction:** This repository is no longer an AI subscription account reseller. The legacy shared-account model is **deprecated** and archived.
 
@@ -27,7 +27,7 @@ We are now building a **phased Persian-first AI platform** for creators, busines
 - Solo founder + **external project-building agents** (coding agents, research agents, design agents, marketing agents, SEO agents) now
 - Some of these may become **internal automated agents** later, connected to APIs with strict approval gates
 
-## Project Structure Now (Phase 0)
+## Project Structure Now (Phase 1 - Auth and Wallet Foundations Implemented, Real Payment Providers Not Active)
 
 This Pull Request changes documentation and GitHub planning files only. The inherited repository still contains legacy application code (backend/ and frontend/ placeholders from earlier phase). This PR does not modify production application code, does not add secrets, and does not deploy.
 
@@ -43,7 +43,8 @@ This Pull Request changes documentation and GitHub planning files only. The inhe
 
 See `docs/roadmap/MASTER_ROADMAP.md`:
 
-- Phase 0: Foundation (current) - docs, Agent OS, GitHub structure, safety gates
+- Phase 0: Foundation (completed, merged e4ad2f1, no longer current) - docs, Agent OS, GitHub structure, safety gates
+- Phase 1: Core MVP (current continuation) - Part 1 Database (users/wallets/ledger), Part 2 Auth (opaque session tokens HttpOnly), Part 3A Wallet foundations implemented (atomic credit/debit, ledger append-only, balance never negative), Real payment providers not active (sandbox mock only, ZarinPal Part 3B future)
 - Phase 1: Core MVP - auth, wallet mock, general chat, prompt enhancer, landing
 - Phase 2: Specialist Personas - evidence-based assistants
 - Phase 3: Image Studio & Product Photography
@@ -203,4 +204,4 @@ MIT - See LICENSE file. This is planning documentation, not production code.
 
 ---
 
-**Status:** Phase 0 - Foundation documentation merged to main on 2026-07-19. Currently preparing Phase 1 Part 1 (Database Schema).
+**Status:** Phase 0 completed (merged e4ad2f1 on 2026-07-19, no longer current). Phase 1 Part 1 Database, Part 2 Auth (opaque session tokens), Part 3A Wallet foundations implemented (wallet table balance>=0, ledger append-only signed, atomic SELECT FOR UPDATE, sandbox mock provider only). Real payment providers are not active (ZarinPal Part 3B, crypto Part 3C future). Product direction: Persian-first multimodal AI Workspace and Professional Creative Studio (see docs/vision/PRODUCT_VISION.md). Latest merges: 6c38d6a product architecture audit, 093af0cb12ff43cad4bbd5a42400c0351bbfc741 architecture finalization v0.1.4-docs-aligned.

@@ -235,7 +235,9 @@ uploaded-file contents, conversation text, or raw AI responses by default.
 
 - Provider id, model id
 
-- Prompt hash (SHA256), response hash (SHA256)
+- content_fingerprint: DISABLED_BY_DEFAULT
+
+- fingerprint_method: APPROVED_KEYED_HMAC_ONLY_IF_REQUIRED
 
 - Token and usage counts
 
@@ -251,6 +253,24 @@ uploaded-file contents, conversation text, or raw AI responses by default.
   not raw stack trace with prompt)
 
 - Rollback reference
+
+**Privacy hardening for fingerprints (new policy):**
+
+- Content fingerprints are disabled by default.
+
+- Technical logs must not store deterministic unkeyed hashes of user
+  messages or AI responses (e.g., unkeyed SHA-256 of prompt/response).
+
+- If a fingerprint is ever required for a separately approved security
+  use case, use HMAC-SHA-256 with a protected, environment-specific,
+  versioned, rotatable secret.
+
+- Fingerprints must not be used for analytics, profiling, or cross-user
+  comparison.
+
+- Raw content remains outside technical logs and only in separate
+  encrypted product-data store when required for user-facing feature
+  per retention settings.
 
 **Raw content may only be retained in a separate encrypted product-data
 store when required for the user-facing feature and according to the
