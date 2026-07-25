@@ -4,7 +4,7 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect / AI Safety
 
@@ -12,7 +12,7 @@
 indirect, jailbreak, tool abuse, data exfiltration, system prompt disclosure,
 architectural defenses, safe multi-modal handling, and testing requirements.
 
-**Note:** Structure-only stub. Final policy will be completed later.
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
 
 ## Purpose
 
@@ -161,4 +161,4 @@ Phase 1 - AI Safety
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved.

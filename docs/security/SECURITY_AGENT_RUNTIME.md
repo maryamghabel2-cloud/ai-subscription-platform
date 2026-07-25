@@ -4,7 +4,7 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect / SRE
 
@@ -12,7 +12,7 @@
 monitoring scope, detection signals, protective action authority tiers,
 guardrails, audit trail, and human escalation.
 
-**Note:** Structure-only. Final policy will be completed later. No production
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No production
 code in this PR.
 
 ## Purpose
@@ -107,6 +107,56 @@ Use CONFIGURED_LIMIT placeholders for thresholds, no invented numbers:
 - All actions are logged in an immutable audit trail
 - Security Agent must fail safe: if uncertain, alert and wait
 
+## Fail-Safe and Degraded-Mode Behavior
+
+Require:
+
+- Low-confidence findings must not trigger irreversible high-impact action
+- When uncertain, alert and wait (fail safe)
+- Automatically applied actions must be proportionate and reversible
+- Detection-system failure must not silently grant access (fail closed for
+  access decisions)
+- Policy-engine failure must fail closed for sensitive actions (deny by default)
+- Telemetry failure must create an operator alert (log pipeline failure,
+  monitoring failure, alert failure)
+- Security Agent must not modify its own permissions (no self-elevation)
+- Security Agent must not disable or rewrite its audit trail (immutable,
+  tamper-resistant, append-only)
+- Security Agent must not suppress its own alerts (no alert suppression,
+  no log deletion)
+- Human override must exist (on-call operator can override Security Agent
+  decision, with audit)
+- Override use must itself be audited (who overrode, when, why, outcome)
+- Emergency containment must have an expiry or explicit review (e.g.,
+  emergency rate limit expires after CONFIGURED_LIMIT, requires review)
+- Degraded mode must be visible to operators (dashboard, alert, status page,
+  no silent degraded mode)
+
+Clarify action authority:
+
+- **Tier 1:** Request blocking, Emergency rate limiting, Alert generation
+  - Automatic and reversible, low risk, no human approval required, but logged
+
+- **Tier 2:** Session suspension, File quarantine, Temporary Agent disablement,
+  Temporary suspension or revocation of a specific high-confidence compromised
+  token or scoped API key, Immediate human notification, Reversible recovery
+  through controlled re-authentication or key reissue
+  - Automatic with human notification, medium risk, reversible, notification
+    required, audit logged, human can reverse
+
+- **Tier 3:** Permanent account disablement, Global provider-key rotation, Broad
+  service shutdown, Permanent Agent revocation, Access to raw sensitive
+  conversation content, Actions with significant cross-tenant or business impact
+  - Requires human approval except for separately documented, owner-approved
+    emergency break-glass policy
+  - Break-glass policy must be documented, owner-approved, audited, with expiry
+    and post-incident review
+
+Do not weaken privacy controls: Security Agent must not have default access to
+raw conversations, must not read raw private conversation content by default,
+must not share conversation content without user consent or separately approved
+audited workflow.
+
 ## Audit Trail
 
 - Every Security Agent action is recorded
@@ -148,4 +198,4 @@ Phase 2 - Security Automation
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved.

@@ -4,14 +4,14 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect
 
 **Purpose:** Define structured threat model with protected assets, threat actors,
 attack surfaces, trust boundaries, threat categorization, and priority risk table.
 
-**Note:** Structure-only. Final threat model will be completed later.
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
 
 ## Purpose
 
@@ -80,7 +80,7 @@ prioritize risks.
 ### Session Tokens
 
 - Opaque session tokens HttpOnly, Secure, SameSite, CSRF non-HttpOnly
-- Refresh rotation, 30min session, 30 days refresh
+- Refresh rotation, CONFIGURED_SESSION_LIFETIME session, CONFIGURED_REFRESH_LIFETIME refresh
 - get_client_ip only trusts X-Forwarded-For if in TRUSTED_PROXIES
 
 ## Threat Actors
@@ -179,4 +179,4 @@ Phase 1 - Threat Modeling
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved.
