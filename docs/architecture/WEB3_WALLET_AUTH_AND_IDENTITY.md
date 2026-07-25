@@ -118,6 +118,27 @@ email and phone authentication.
   approval required, legal and compliance review required, no new chain without
   explicit approval
 
+## Supported Crypto Payment Networks (Phase 1)
+
+The platform will support the following networks for USDT and USDC top-up:
+
+- TRON (TRC20) – most common in Iranian market
+- BSC (BEP20) – significantly lower fees than TRON
+- Polygon – very low fees
+- Base – low fees, Coinbase L2
+- TON – lowest fees, native Telegram integration
+
+USDC will be supported alongside USDT on all listed networks.
+
+Wallet Login (EVM) will cover BSC, Polygon, Base, and Ethereum with a single
+Sign-In implementation.
+
+TON uses TON Connect proof.
+
+Explicit statement: Wallet login is for identity only. It does not grant any
+payment authorization, fund movement, or DeFi permission. Separate explicit user
+consent is required for any on-chain transaction.
+
 ## Separation from Payments
 
 - Wallet login is strictly for identity verification and does not grant any
@@ -195,6 +216,12 @@ email and phone authentication.
 - Recovery for wallet-only accounts is an Open Decision.
 - Users should be strongly encouraged to link at least one recovery method
   (email or phone) if they choose wallet-only login.
+- Wallet-only accounts carry higher recovery risk. Users are strongly encouraged
+  to link at least one traditional recovery method (email or phone).
+  Wallet-only recovery is an Open Decision and will be designed with
+  multi-signature or social recovery options in future phases. Users must be
+  clearly warned during wallet-only signup about permanent loss risk if the
+  wallet is lost or compromised.
 - Recovery method is an Open Decision: e.g., email recovery if linked, phone
   recovery if linked, social recovery, multi-wallet, admin-assisted recovery
   with human approval and audit, no automatic recovery without re-authentication
