@@ -120,11 +120,17 @@ email and phone authentication.
 
 ## Separation from Payments
 
+- Wallet login is strictly for identity verification and does not grant any
+  payment, withdrawal, or DeFi authorization.
+- Connecting a wallet for login does not allow the platform to initiate any
+  on-chain transaction.
 - Wallet login is identity, not payment authorization: connecting a wallet does
-  not allow the platform to move funds, no allowance, no approval for spending
+  not allow the platform to move funds, no allowance, no approval for spending,
+  no withdrawal, no DeFi authorization
 - Connecting a wallet does not allow the platform to move funds: no transfer,
   no approve, no permit, no transaction signing for payment without separate
-  explicit user consent and separate signature
+  explicit user consent and separate signature, no on-chain transaction
+  initiation
 - Payment signatures and login signatures are separate: login uses signed nonce
   challenge with domain binding, payment uses separate transaction signature
   with amount, recipient, chain id, and explicit user confirmation in wallet UI
@@ -143,6 +149,10 @@ email and phone authentication.
 - Public blockchain activity may be linkable: transactions, balances, NFTs,
   token holdings may be visible on public explorers, linkable to address, may
   reveal identity patterns if address reused
+- Clear warning: Public blockchain activity may be linkable even if the user
+  logs in via wallet. Users must be warned that blockchain explorers may link
+  their wallet address to public transactions, balances, NFTs, ENS names, and
+  token holdings, even when using wallet login for identity.
 - Users must be informed that wallet login can reduce platform-collected
   identity data (e.g., less email/phone needed) but may expose blockchain-linked
   identity patterns (e.g., public transactions, ENS name, NFT holdings)
@@ -182,6 +192,9 @@ email and phone authentication.
 
 - A wallet-only user may lose access if the wallet is lost (private key lost,
   seed phrase lost, wallet app uninstalled without backup)
+- Recovery for wallet-only accounts is an Open Decision.
+- Users should be strongly encouraged to link at least one recovery method
+  (email or phone) if they choose wallet-only login.
 - Recovery method is an Open Decision: e.g., email recovery if linked, phone
   recovery if linked, social recovery, multi-wallet, admin-assisted recovery
   with human approval and audit, no automatic recovery without re-authentication

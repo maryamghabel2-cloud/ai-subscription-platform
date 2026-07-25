@@ -218,6 +218,24 @@ and cost controls.
   approved current official government and embassy sources, all tool calls must
   be declared in agent's permissions and tools list, must respect robots.txt
 
+## Search Policy Linkage to Role and Persona Architecture
+
+- Search availability and default state should be controllable via
+  role_model_policy or Persona configuration (e.g., allowed_capabilities,
+  allowed_privacy_classes, allowed_risk_classes, enabled flag, health_status)
+- High-risk Personas (e.g., mental health information assistant, legal
+  information assistant, health information assistant, immigration information
+  assistant) should have Search disabled by default unless explicitly enabled
+  in their Knowledge Base policy (knowledge_base_ids, retrieval_policy,
+  allowed_source_types, expert_review_required)
+- Persona Framework defines mandatory evidence fields, safety framing, and
+  knowledge-pack versioning that must be respected when Search is enabled
+- Search mode defaults per Role and Persona must be reviewed and versioned
+- User preference for Search may be allowed within Persona's allowed safe range
+  only, backend must validate requested search mode is in allowed list
+- Related documents: Role and Persona System, Persona Framework, Persona Registry
+  Schema, Persona QA and Red Teaming
+
 ## Related Documents
 
 - Security Index: [../security/README.md](../security/README.md)
@@ -225,7 +243,9 @@ and cost controls.
 - Agent Security Model: [../security/AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md)
 - Multi-Provider Routing: [MULTI_PROVIDER_MODEL_ROUTING.md](MULTI_PROVIDER_MODEL_ROUTING.md)
 - Pricing and Unit Economics: [PRICING_AND_UNIT_ECONOMICS.md](PRICING_AND_UNIT_ECONOMICS.md)
-- Role and Persona System: [../architecture/ROLE_AND_PERSONA_SYSTEM.md](../architecture/ROLE_AND_PERSONA_SYSTEM.md)
+- Role and Persona System: [ROLE_AND_PERSONA_SYSTEM.md](ROLE_AND_PERSONA_SYSTEM.md)
+- Persona Framework: [../personas/PERSONA_FRAMEWORK.md](../personas/PERSONA_FRAMEWORK.md)
+- Persona Registry Schema: [../personas/PERSONA_REGISTRY_SCHEMA.md](../personas/PERSONA_REGISTRY_SCHEMA.md)
 - Agent Plugin and Execution: [AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md](AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
 - Data Protection: [../security/DATA_PROTECTION_AND_ENCRYPTION.md](../security/DATA_PROTECTION_AND_ENCRYPTION.md)
 

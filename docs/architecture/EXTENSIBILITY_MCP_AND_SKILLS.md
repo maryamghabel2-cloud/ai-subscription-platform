@@ -170,21 +170,77 @@ Controls:
 The platform may expose controlled MCP-compatible endpoints so external tools
 and AI systems can use our capabilities.
 
-Examples:
+### What Capabilities Will Be Exposed Externally?
 
-- Persian knowledge-base search: source-grounded study workspace with citations
-- Specialized internal Skills: SEO Skill, Product Photography Skill, Career
-  Advisor Skill
-- Professional Studio workflows: Image Studio, Video Studio, Product Photography
-  Studio, structured workflows for professional image and video creation
+- Specific Skills: e.g., SEO Skill, Product Photography Prompt Enhancer Skill,
+  Career Advisor structured direct Skill (internal Skills only in early phases,
+  no code execution, no network access, highest trust)
+- Knowledge Bases: e.g., Persian knowledge-base search, source-grounded study
+  workspace with citations, approved official-source Knowledge Base via
+  Retrieval Service
+- Studio Workflows: e.g., Professional Image Studio, Video Studio, Product
+  Photography Studio, structured workflows for professional image and video
+  creation (core revenue products, not simple Roles)
+- Search: e.g., Web Search and Grounded Answers with provenance, URL/source,
+  access time, trust classification, citation where appropriate
 - Study Workspace retrieval: upload PDFs and docs, ask questions with citations,
-  RAG attachment
-- Approved Research Agents: Deep Research Agent, Immigration Research Agent
-  (general information only, not legal advice, uses approved official-source
-  Knowledge Base via Retrieval Service, does not browse autonomously for Persona)
-- Business workflows: FAQ, lead, support draft, content draft
+  RAG attachment, file attachments
+- Approved Research Agents: Deep Research Agent (multi-step research with
+  citations), Immigration Research Agent (general information only, not legal
+  advice, uses approved official-source Knowledge Base via Retrieval Service)
+- Business workflows: FAQ, lead, support draft, content draft (draft-only
+  initially, publish requires approval)
 
-Controls:
+### Authentication and Scope
+
+- External tools must authenticate using scoped API keys or OAuth:
+  - API keys short-lived or rotatable, hashed, scopes, rate limits, revocable
+    without disruption
+  - OAuth with least-privilege scopes, user consent, tokens encrypted at rest
+  - Each API key has defined scopes and rate limits, least privilege, no
+    cross-user access, tenant isolation
+
+### Out of Scope for Early Phases
+
+- State that exposing Agent execution (especially high-risk Agents) through MCP
+  Server is out of scope for early phases:
+  - High-risk Agents: Evidence-Based Mental Health Information Assistant,
+    Immigration Information Assistant, Legal Information Assistant, Health
+    Information Assistant (risk high, requires expert review, disclaimer,
+    escalation, must not claim professional authority)
+  - Business Agents that perform work with tools, browse, retrieve, call APIs,
+    process files, run multi-step workflows, must have permissions, budgets,
+    safety controls, auditability – exposing their execution via MCP Server
+    requires security, privacy, legal, owner review and is out of scope for
+    early phases
+
+### Guardrails for Exposed Capabilities
+
+- Any exposed capability must go through the same Prompt Injection Guard and
+  Output DLP that internal usage goes through:
+  - Prompt Injection Guard: separation of concerns (system instructions in
+    separate immutable never-user-modifiable segment, user content and retrieved
+    content always treated as untrusted), structured tool calls with strict
+    allowlist schema, output guardrails (AI output must never contain raw API
+    keys, secrets, tokens, scanned for data-exfiltration patterns)
+  - Output DLP: AI output scanned for data-exfiltration patterns before delivery,
+    responses containing potential credential leaks blocked and logged without
+    raw content, content_fingerprint DISABLED_BY_DEFAULT
+
+### Raw User Data Clarification
+
+- Clarify that being an MCP Server does not mean giving external parties access
+  to raw user data:
+  - No raw sensitive conversation content by default, only citations and
+    boundaries, disclaimer if needed, no authority claims
+  - No raw sensitive prompts, uploaded file contents, conversation text, raw AI
+    responses by default in technical logs, only metadata
+  - Raw content may only be retained in separate encrypted product-data store
+    when required for user-facing feature per retention settings, not in
+    technical audit logs
+  - Cross-user leakage prohibited, tenant isolation, pseudonymous identifiers
+
+### Controls
 
 - Strict API key or OAuth authentication: API keys short-lived or rotatable,
   hashed, scopes, rate limits, revocable without disruption
@@ -328,9 +384,9 @@ without human review for high-risk.
 - Agent Security Model: [../security/AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md)
 - Third-Party Agent Review: [../security/THIRD_PARTY_AGENT_REVIEW.md](../security/THIRD_PARTY_AGENT_REVIEW.md)
 - Security Agent Runtime: [../security/SECURITY_AGENT_RUNTIME.md](../security/SECURITY_AGENT_RUNTIME.md)
-- Role and Persona System: [../architecture/ROLE_AND_PERSONA_SYSTEM.md](../architecture/ROLE_AND_PERSONA_SYSTEM.md)
-- Agent Plugin and Execution: [../architecture/AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md](../architecture/AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
-- Role Persona Agent Boundaries: [../architecture/ROLE_PERSONA_AGENT_BOUNDARIES.md](../architecture/ROLE_PERSONA_AGENT_BOUNDARIES.md)
+- Role and Persona System: [ROLE_AND_PERSONA_SYSTEM.md](ROLE_AND_PERSONA_SYSTEM.md)
+- Agent Plugin and Execution: [AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md](AGENT_PLUGIN_AND_EXECUTION_SYSTEM.md)
+- Role Persona Agent Boundaries: [ROLE_PERSONA_AGENT_BOUNDARIES.md](ROLE_PERSONA_AGENT_BOUNDARIES.md)
 - Multi-Provider Routing: [MULTI_PROVIDER_MODEL_ROUTING.md](MULTI_PROVIDER_MODEL_ROUTING.md)
 
 ## Open Decisions
