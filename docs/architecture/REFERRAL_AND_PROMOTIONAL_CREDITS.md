@@ -84,7 +84,8 @@ also must not reveal user_id:
   non_cashable flag
 - Example flow:
 
-  1. User A gets referral code random opaque, e.g., `X7K9P2`, shares link
+  1. User A gets referral code random opaque, e.g., RANDOM_OPAQUE_CODE_EXAMPLE,
+     shares link
   2. User B clicks link, signs up, completes onboarding and first chat and
      verified basic authentication
   3. System checks abuse protection: no self-referral, velocity rate limits

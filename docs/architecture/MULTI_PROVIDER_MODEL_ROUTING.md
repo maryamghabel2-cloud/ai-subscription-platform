@@ -126,14 +126,17 @@ examples such as IR-allowed, gpt-4o, claude-3-5-sonnet, gemini-1-5-pro.
   - enabled Model Catalog entry
   - required modality/capability (e.g., vision, tool_support, file_support)
   - user plan and entitlement (free, subscription, wallet)
-  - wallet budget (available balance, not posted ledger balance)
-  - Role or Persona model policy (default_model_policy, allowed_response_modes
-    maps to capability, not direct model id check)
+  - wallet budget (available_spendable_balance, not posted ledger balance alone)
+  - Role or Persona model policy (role_model_policy, allowed_capabilities,
+    allowed_privacy_classes, allowed_risk_classes, allowed_model_ids optional,
+    denied_model_ids optional, required evaluation version)
   - privacy and risk requirements (privacy_classification, high-risk personas
     limited to strict_factual and balanced)
   - region and provider compliance (supported_regions, terms_version,
     privacy_policy_version, legal_review_status, security_review_status)
   - current provider health (health_status healthy)
+  - selected model must still satisfy capability, user entitlement, wallet
+    budget, privacy requirements, provider compliance, provider health
 
 ### auto_best_quality
 

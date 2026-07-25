@@ -117,8 +117,15 @@ bills separately for reasoning may be included, not internal model thinking.
 
 - **Free tier (abuse-protected):**
   - Limited credits per day/week, rate limited, no bulk, no self-referral
-  - Anti-abuse: device/account farming prevention, velocity rate limits,
-    fraud review triggers
+  - Anti-abuse: privacy-preserving account and campaign abuse controls,
+    velocity rate limits, fraud review triggers
+  - Device fingerprinting is disabled by default
+  - VPN or proxy use alone is not a fraud signal
+  - No permanent IP tracking
+  - Referral and promotional abuse controls must follow
+    REFERRAL_AND_PROMOTIONAL_CREDITS.md
+  - Additional tracking signals require Privacy, Security, Legal, and Owner
+    approval
   - Purpose: activation, referral loop, product-led growth
   - Free tier models: auto_free routing mode, lowest cost models, provider-free
     model status versioned and may expire
@@ -251,6 +258,56 @@ Cross-linked from:
 - REFERRAL_AND_PROMOTIONAL_CREDITS.md defines Credit Lots
 - PROFESSIONAL_PROMPT_ENHANCER.md uses Reserve-Settle-Release for enhancer cost
 
+## Define One Consistent Balance Model
+
+Replace ambiguous or conflicting available-balance formulas with:
+
+- **gross_eligible_lot_balance =** sum of remaining amounts in active, eligible
+  Credit Lots
+
+- **active_reserved_amount =** sum of active, unreleased Reservation Allocations
+
+- **available_spendable_balance =** gross_eligible_lot_balance -
+  active_reserved_amount
+
+Clarify:
+
+- A Reservation may allocate its hold across one or more Credit Lots
+- A future ReservationAllocation entity records:
+  - reservation_id
+  - credit_lot_id
+  - reserved_amount
+  - settled_amount
+  - released_amount
+  - status
+- Reservation does not create a posted Ledger debit
+- Settlement creates exactly one final usage debit
+- Settlement consumes the allocated Credit Lots atomically
+- Release removes the hold without creating a Ledger credit
+- Available balance must never become negative
+
+## Define The Financial Source of Truth
+
+State clearly:
+
+- The append-only Ledger is the authoritative source of posted financial
+  transactions
+- Credit Lots are the authoritative allocation layer for source, expiry,
+  allowed scope, non-cashable status, and consumption eligibility
+- Credit Lot remaining amounts must not become an unrelated second balance
+- Ledger posting, Credit Lot consumption, and Reservation settlement must occur
+  atomically in one database transaction
+- Credit Lot remaining amounts must be derivable or reconcilable from issuance
+  and consumption records
+- A future reconciliation process must compare:
+  - posted wallet balance
+  - Ledger totals
+  - Credit Lot totals
+  - active Reservation Allocations
+- Any mismatch must create a financial security alert
+- The required database entities and reconciliation process are not implemented
+  yet and require future migrations and tests
+
 ## Pricing Quote and Settlement
 
 ### User Quote Must Include
@@ -263,7 +320,9 @@ Cross-linked from:
 - Pricing_version: version of Model Catalog pricing used for quote
 - Exchange_rate_snapshot: EXCHANGE_RATE_SNAPSHOT, versioned, timestamped,
   stored as snapshot for audit, source CONFIGURED_CURRENCY_SOURCE
-- Quote expiration: e.g., 5 minutes, CONFIGURED_LIMIT, after expiry quote invalid
+- Quote expiration: quote_expiration: CONFIGURED_QUOTE_EXPIRATION, after expiry
+  quote invalid
+  - Example: CONFIGURED_QUOTE_EXPIRATION with CONFIGURED_LIMIT placeholder
 - Privacy classification: e.g., privacy_preferred, standard, requires policy
   evidence
 - Whether promotional, subscription, or purchased balance will be used: source
@@ -281,16 +340,32 @@ Cross-linked from:
 
 ### Margin Policy Clarification
 
-- Target contribution margin: 70%.
-- Minimum contribution margin for ordinary paid metered operations: 50%.
-- Free-tier, promotional, and subscription operations may have different
-  campaign/cohort economics under an explicitly approved budget (e.g., free tier
-  platform-subsidized budget, promotional campaign budget, subscription
-  entitlement budget).
-- No unapproved negative-margin route may be activated silently. All negative
-  margin or below-minimum-margin routes require product-owner, finance, and
-  owner approval and must be explicitly documented as campaign/cohort economics,
-  not ordinary paid metered operations.
+Owner-approved provisional business target:
+
+- Target contribution margin: 70%
+- Minimum contribution margin for ordinary paid metered operations: 50%
+
+Pending validation:
+
+- actual provider costs
+- all-in variable cost measurement
+- finance review
+- cohort economics
+- periodic owner review
+
+Free-tier, promotional, and subscription operations may have different
+campaign/cohort economics under an explicitly approved budget (e.g., free tier
+platform-subsidized budget, promotional campaign budget, subscription
+entitlement budget).
+
+No unapproved negative-margin route may be activated silently. All negative
+margin or below-minimum-margin routes require product-owner, finance, and
+owner approval and must be explicitly documented as campaign/cohort economics,
+not ordinary paid metered operations.
+
+Do not list the existence of the 70%/50% target itself as an unresolved
+Open Decision. The target is Owner-approved provisional, pending validation
+above.
 
 ## Related Documents
 

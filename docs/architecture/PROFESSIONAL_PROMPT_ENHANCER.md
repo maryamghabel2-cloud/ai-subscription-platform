@@ -166,7 +166,8 @@ Rules:
   document (e.g., enhancer cost = CONFIGURED_LIMIT credits, not 2 credits as
   production-approved)
 - Any mathematical example must be labeled NON_PRODUCTION_MATH_EXAMPLE (e.g.,
-  "Example: original cost 5 credits, enhancer cost 2 credits, total 7 credits –
+  "Example: original cost CONFIGURED_VALUE credits, enhancer cost
+  CONFIGURED_VALUE credits, total CONFIGURED_VALUE credits –
   NON_PRODUCTION_MATH_EXAMPLE, actual amounts are CONFIGURED_LIMIT placeholders")
 
 ## Privacy and Logging
