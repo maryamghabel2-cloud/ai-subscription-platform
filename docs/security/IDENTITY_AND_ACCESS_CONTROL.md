@@ -53,7 +53,7 @@ access is controlled across Web, Mobile, Telegram, and API.
 
 ## Out of Scope
 
-- Final password policy numbers and exact rate limits (CONFIGURED_LIMIT)
+- Final password policy numbers and exact rate limits (CONFIGURED_RATE_LIMIT)
 - Final session lifetimes and MFA rollout stage (future PRs)
 - Implementation code and exact lockout policy (future)
 
@@ -77,8 +77,13 @@ It must require:
   uq_wallets_user_id, uq_ledger_idempotency_key, conversations user_id FK)
 - Protection against horizontal and vertical privilege escalation (e.g., user
   cannot access other user's wallet, cannot escalate to admin)
-- Uniform non-enumerating unauthorized responses (e.g., return 404 or 403
-  without revealing existence, same response for not found and unauthorized)
+- The response strategy must be consistent for each resource class
+- External responses must not reveal whether a cross-tenant resource exists
+- Internal logs may distinguish not-found from forbidden for debugging and
+  security monitoring
+- External responses must not enable resource enumeration
+- The exact HTTP status code mapping (404 versus 403) remains a documented
+  implementation decision per resource class
 - No assumption that UUIDs or unguessable IDs provide authorization (UUID is not
   proof of ownership, must still check ownership)
 - Negative tests for cross-user and cross-tenant access (e.g., test that user A
