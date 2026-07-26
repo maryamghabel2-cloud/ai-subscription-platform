@@ -19,9 +19,10 @@ code in this PR.
 
 ## Purpose
 
-Define how a future continuous Security Agent will monitor platform activity,
-detect threats in real time, take proportionate controlled reversible actions,
-and escalate to human operators.
+Define how a future continuous Security Agent will monitor security-relevant
+telemetry within approved scope, using metadata by default and no raw sensitive
+conversation content by default; detect threats in real time; take proportionate
+controlled actions; and escalate to human operators.
 
 ## In Scope
 
@@ -35,7 +36,8 @@ and escalate to human operators.
 
 ## Mission
 
-- Continuously monitor all platform activity
+- Monitor security-relevant telemetry within approved scope, using metadata by
+  default and no raw sensitive conversation content by default
 - Detect threats in real time
 - Take proportionate, controlled, and reversible protective actions
 - Escalate to human operators when required
@@ -79,24 +81,38 @@ Use CONFIGURED_LIMIT placeholders for thresholds, no invented numbers:
 
 ## Protective Action Authority
 
-### Tier 1 — Automatic and Reversible
+## Tier 1 — Automatic and Reversible
 
-- Apply emergency rate limits
-- Block a specific malicious request
-- Issue a security alert to operators
+- Block a malicious request
+- Apply scoped emergency rate limiting
+- Generate alerts
+- Record a security event
 
-### Tier 2 — Automatic with Human Notification
+## Tier 2 — Automatic Containment with Immediate Human Notification
 
-- Suspend a suspicious user session
-- Quarantine a suspicious uploaded file
-- Temporarily disable a misbehaving agent
+- Suspend a suspicious session
+- Quarantine a suspicious file
+- Pause or temporarily disable a specific Agent execution or version
+- Cancel a suspicious Agent execution
+- Suspend a scoped credential
+- Revoke a specific confirmed-compromised token or scoped API key when immediate
+  risk exists
+- Provide immediate human notification
 
-### Tier 3 — Requires Human Approval
+Suspension is reversible. Revocation is not reversible; access restoration
+requires re-authentication or a replacement credential.
 
-- Revoke a compromised token or API key
-- Permanently disable an agent
-- Escalate a potential data-breach incident
-- Access raw conversation content for investigation
+## Tier 3 — Human Approval Required
+
+- Permanent account disablement
+- Permanent Agent revocation
+- Global provider-key rotation
+- Broad service shutdown
+- Access to raw sensitive conversation content
+- Significant cross-tenant or business-impact actions
+
+Tier 3 requires human approval, except under a separately approved break-glass
+policy. Alert generation and incident escalation never require prior approval.
 
 ## Security Agent Guardrails
 
@@ -133,26 +149,6 @@ Require:
   emergency rate limit expires after CONFIGURED_LIMIT, requires review)
 - Degraded mode must be visible to operators (dashboard, alert, status page,
   no silent degraded mode)
-
-Clarify action authority:
-
-- **Tier 1:** Request blocking, Emergency rate limiting, Alert generation
-  - Automatic and reversible, low risk, no human approval required, but logged
-
-- **Tier 2:** Session suspension, File quarantine, Temporary Agent disablement,
-  Temporary suspension or revocation of a specific high-confidence compromised
-  token or scoped API key, Immediate human notification, Reversible recovery
-  through controlled re-authentication or key reissue
-  - Automatic with human notification, medium risk, reversible, notification
-    required, audit logged, human can reverse
-
-- **Tier 3:** Permanent account disablement, Global provider-key rotation, Broad
-  service shutdown, Permanent Agent revocation, Access to raw sensitive
-  conversation content, Actions with significant cross-tenant or business impact
-  - Requires human approval except for separately documented, owner-approved
-    emergency break-glass policy
-  - Break-glass policy must be documented, owner-approved, audited, with expiry
-    and post-incident review
 
 Do not weaken privacy controls: Security Agent must not have default access to
 raw conversations, must not read raw private conversation content by default,
