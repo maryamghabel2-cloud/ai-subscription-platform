@@ -110,7 +110,7 @@ prioritize risks.
 - Payment provider integration: sandbox mock, real gateways not active, payment
   callback from unexpected source is detection signal
 - Agent tool calls: tool allowlists, permission boundaries, network allowlists,
-  budgets CONFIGURED_LIMIT, human approval gates, secret isolation
+  budgets CONFIGURED_AGENT_MAX_COST_CREDITS, human approval gates, secret isolation
 - RAG and file upload inputs: file type validation, size limits, malware scan,
   provenance tagging, untrusted content quarantine
 - Admin panel: admin access requires approval, audit logging, no secret sharing
@@ -140,7 +140,7 @@ prioritize risks.
   money, publish, contact customers, delete data, bypass geographic/KYC/ToS
 - Supply-chain compromise: malicious dependency, third-party agent, compromised
   CI/CD token, secret leak, mitigation via dependency scanning, SBOM, source
-  verification, re-review on CONFIGURED_LIMIT cadence
+  verification, re-review on CONFIGURED_THRESHOLD cadence
 
 ## Priority Risk Table
 

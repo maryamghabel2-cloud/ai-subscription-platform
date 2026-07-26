@@ -93,14 +93,14 @@ Define security controls for each channel that connects users to the platform.
   provide bot token.
 - Future business customers may connect own bot token via separate reviewed
   integration where token is encrypted at rest.
-- Anti-spam: rate limit CONFIGURED_LIMIT, no bulk broadcast without approval,
+- Anti-spam: rate limit CONFIGURED_CHANNEL_RATE_LIMIT, no bulk broadcast without approval,
   privacy-aware, no secret in logs.
 
 ## Developer API Security
 
-- API keys must be short-lived or rotatable (CONFIGURED_LIMIT lifetime)
+- API keys must be short-lived or rotatable (CONFIGURED_TOKEN_LIFETIME lifetime)
 - API keys must be stored hashed, never in plaintext (key_hash, key_prefix)
-- Each API key must have defined scopes and rate limits (CONFIGURED_LIMIT)
+- Each API key must have defined scopes and rate limits (CONFIGURED_API_RATE_LIMIT)
 - API key usage must be logged for anomaly detection (metadata only, no raw key)
 - API keys must be revocable without service disruption
 - Tenant isolation: API key can only access own user's data, no cross-user

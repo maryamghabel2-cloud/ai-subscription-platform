@@ -72,18 +72,18 @@ controlled actions; and escalate to human operators.
 
 ## Detection Signals
 
-Use CONFIGURED_LIMIT placeholders for thresholds, no invented numbers:
+Use CONFIGURED_DETECTION_THRESHOLD placeholders for thresholds, no invented numbers:
 
-- Authentication failure rate above CONFIGURED_LIMIT
-- Token consumption spike above CONFIGURED_LIMIT
+- Authentication failure rate above CONFIGURED_AUTH_FAILURE_THRESHOLD
+- Token consumption spike above CONFIGURED_TOKEN_USAGE_ANOMALY_THRESHOLD
 - Cross-user data access attempt (IDOR)
 - Known prompt injection pattern detected
 - Credential or API key pattern in AI output
 - Agent tool call outside allowed schema
-- Unusual file upload pattern (type, size, frequency above CONFIGURED_LIMIT)
+- Unusual file upload pattern (type, size, frequency above CONFIGURED_UPLOAD_RATE_THRESHOLD)
 - Payment callback from unexpected source
 - Admin action outside business hours
-- Multiple failed authorization attempts above CONFIGURED_LIMIT
+- Multiple failed authorization attempts above CONFIGURED_AUTH_FAILURE_THRESHOLD
 
 ## Protective Action Authority
 
@@ -155,7 +155,7 @@ Require:
   decision, with audit)
 - Override use must itself be audited (who overrode, when, why, outcome)
 - Emergency containment must have an expiry or explicit review (e.g.,
-  emergency rate limit expires after CONFIGURED_LIMIT, requires review)
+  emergency rate limit expires after CONFIGURED_AGENT_RATE_LIMIT, requires review)
 - Degraded mode must be visible to operators (dashboard, alert, status page,
   no silent degraded mode)
 
@@ -193,7 +193,7 @@ audited workflow.
 
 ## Open Decisions
 
-- Exact detection signals and CONFIGURED_LIMIT thresholds
+- Exact detection signals and CONFIGURED_DETECTION_THRESHOLD thresholds
 - Approval workflow for Tier 2 and Tier 3 actions
 - Reversibility criteria and SLA
 - On-call rotation and escalation paths

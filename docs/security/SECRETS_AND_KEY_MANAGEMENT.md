@@ -120,7 +120,7 @@ Define how secrets are identified, stored, rotated, and revoked without leaking.
 ## Open Decisions
 
 - Secret manager choice (env vs managed secret service like Vault, AWS Secrets)
-- Rotation frequency and emergency procedure and grace period CONFIGURED_LIMIT
+- Rotation frequency CONFIGURED_KEY_ROTATION_PERIOD and emergency procedure and grace period CONFIGURED_SECRET_ROTATION_GRACE_PERIOD
 - Detection tooling and CI integration (gitleaks, GitHub Advanced Security)
 - Owner approval required for all decisions
 

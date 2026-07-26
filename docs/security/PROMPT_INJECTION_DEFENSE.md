@@ -101,7 +101,7 @@ attempts in the Persian-first multimodal AI Workspace.
 
 - Common jailbreak patterns must be detected at the input stage.
 - Detected attempts must be blocked and logged as security events.
-- Rate limiting must apply to flagged users (CONFIGURED_LIMIT).
+- Rate limiting must apply to flagged users (CONFIGURED_JAILBREAK_RATE_LIMIT).
 - Anomaly detection for repeated jailbreak attempts.
 
 ### Content Provenance

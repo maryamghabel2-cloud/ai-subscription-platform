@@ -135,13 +135,13 @@ MERGED FOUNDATIONS, not implemented controls.
 - Replacement credentials must be issued and dependent services recovered
   (issue new secret, update secrets manager, restart dependent services,
   verify recovery, audit log)
-- Grace period CONFIGURED_LIMIT, audit trail
+- Grace period CONFIGURED_SECRET_ROTATION_GRACE_PERIOD, audit trail
 
 ### Agent Sandboxing
 
 - Approved agents run in sandboxed environment, no inheritance of full env
 - Tool allowlists, permission boundaries, network allowlists, budgets
-  CONFIGURED_LIMIT, human approval gates
+  CONFIGURED_AGENT_MAX_COST_CREDITS, human approval gates
 - Agent isolation, secret isolation, no cross-user access
 
 ### Logging and Anomaly Detection
@@ -199,7 +199,7 @@ MERGED FOUNDATIONS, not implemented controls.
   secret requirements, max cost, max execution time, max iterations, human
   approval gates, risk level, review status, rollback version
 - Runtime isolation: sandboxed, no full env, network and tool allowlists
-- Re-review on update and on CONFIGURED_LIMIT cadence
+- Re-review on update and on CONFIGURED_THRESHOLD cadence
 
 ### Admins to the System
 
@@ -223,7 +223,7 @@ MERGED FOUNDATIONS, not implemented controls.
 - Secrets and key management: Phase 1 – env vars, encrypted at rest
   tested, no secrets in docs – planned
 - Agent sandboxing: Phase 1 Agent Security Model, tool allowlists, budgets
-  CONFIGURED_LIMIT, human approval gates – planned
+  CONFIGURED_AGENT_MAX_COST_CREDITS, human approval gates – planned
 - Logging and anomaly detection: Phase 1 Logging, privacy-preserving logs,
   anomaly detection, alerting – planned
 - Incident response: Phase 1 IR – severity, containment, recovery – planned
@@ -231,7 +231,7 @@ MERGED FOUNDATIONS, not implemented controls.
 ### Auth, Wallet, and Chat Security Requirements
 
 - Auth: password hashing bcrypt with pre-hash, opaque session tokens HttpOnly,
-  Secure, SameSite, CSRF, refresh rotation, rate limiting CONFIGURED_LIMIT,
+  Secure, SameSite, CSRF, refresh rotation, rate limiting CONFIGURED_RATE_LIMIT,
   get_client_ip only trusts X-Forwarded-For if in TRUSTED_PROXIES, no
   localStorage for sensitive data
 - Wallet: user can only access own wallet, atomic credit/debit with SELECT FOR
