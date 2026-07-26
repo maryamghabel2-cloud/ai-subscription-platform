@@ -39,10 +39,10 @@ Define how Agents that perform work are secured.
     current official government and embassy sources
   - Respect robots.txt, no scraping violating ToS
 - Budgets:
-  - Per execution max credits CONFIGURED_LIMIT
-  - Per day max cost CONFIGURED_LIMIT
-  - Per user spend limit CONFIGURED_LIMIT
-  - Rate limit CONFIGURED_LIMIT
+  - Per execution max credits CONFIGURED_AGENT_MAX_COST_CREDITS
+  - Per day max cost CONFIGURED_AGENT_MAX_COST_CREDITS
+  - Per user spend limit CONFIGURED_AGENT_MAX_COST_CREDITS
+  - Rate limit CONFIGURED_AGENT_RATE_LIMIT
   - Exact values are Open Decisions requiring product/finance/trust review
 - Human approval gates:
   - Publishing public content, spending money, contacting customers
@@ -63,13 +63,14 @@ Require independently configurable limits for:
 - Maximum execution duration: CONFIGURED_AGENT_MAX_DURATION
 - Maximum iterations: CONFIGURED_AGENT_MAX_ITERATIONS
 - Maximum tool calls: CONFIGURED_AGENT_MAX_TOOL_CALLS
-- Maximum model tokens: CONFIGURED_LIMIT (input/output)
-- Maximum credits/cost: CONFIGURED_LIMIT per run
-- Maximum network requests: CONFIGURED_LIMIT
-- Maximum input and output bytes: CONFIGURED_LIMIT
-- Maximum files processed: CONFIGURED_LIMIT
-- Cancellation deadline: CONFIGURED_LIMIT (time after which cancellation allowed)
-- Hard termination deadline: CONFIGURED_LIMIT (time after which forced termination)
+- Maximum model tokens: CONFIGURED_AGENT_MAX_MODEL_TOKENS (input/output)
+- Maximum credits/cost: CONFIGURED_AGENT_MAX_COST_CREDITS per run
+- Maximum network requests: CONFIGURED_AGENT_MAX_NETWORK_REQUESTS
+- Maximum input bytes: CONFIGURED_AGENT_MAX_INPUT_BYTES
+- Maximum output bytes: CONFIGURED_AGENT_MAX_OUTPUT_BYTES
+- Maximum files processed: CONFIGURED_AGENT_MAX_FILES
+- Cancellation grace period: CONFIGURED_AGENT_CANCELLATION_GRACE_PERIOD
+- Hard termination timeout: CONFIGURED_AGENT_HARD_TERMINATION_TIMEOUT
 
 All limits must use CONFIGURED_* placeholders, not invented numbers.
 
@@ -84,16 +85,21 @@ Require:
 - Cycle detection: state graph cycle detection
 - Non-progress detection: no new information, no progress toward goal
 - Budget exhaustion termination: stop when credits/cost exceeds
-  CONFIGURED_LIMIT
+  CONFIGURED_AGENT_MAX_COST_CREDITS
 - Timeout termination: stop when execution duration exceeds
   CONFIGURED_AGENT_MAX_DURATION
-- Manual cancellation: user or admin can cancel running agent, audit logged
+- Cancellation: an authorized user or operator may request cancellation at any
+  time. One user may not cancel another user's execution without explicit
+  authorization. Graceful shutdown uses CONFIGURED_AGENT_CANCELLATION_GRACE_PERIOD.
+  Forced termination occurs after the grace period or immediately when continued
+  execution creates unacceptable security risk. All cancellation and forced
+  termination actions are audit-logged.
 - Security Agent cancellation authority: Security Agent may cancel suspicious
   agent execution, apply emergency rate limits, quarantine
 - Safe partial-result handling: return partial results if available, no raw
   sensitive content, audit metadata only
 - No automatic unlimited retry loops: retry must have max retries
-  CONFIGURED_LIMIT, backoff, human approval for high-risk retries
+  CONFIGURED_AGENT_MAX_RETRIES, backoff, human approval for high-risk retries
 
 ## Secret and Environment Isolation
 
@@ -131,8 +137,9 @@ Require:
   back to model
 - Rejection of unexpected fields: unknown fields in input/output/tool calls
   must be rejected, not ignored
-- Size and type limits: max input bytes CONFIGURED_LIMIT, max output bytes
-  CONFIGURED_LIMIT, type checks (string, integer, boolean, etc.)
+- Size and type limits: max input bytes CONFIGURED_AGENT_MAX_INPUT_BYTES, max
+  output bytes CONFIGURED_AGENT_MAX_OUTPUT_BYTES, type checks (string, integer,
+  boolean, etc.)
 - No arbitrary command execution from model-generated text: no shell evaluation
   of model output, no eval, no exec, no system call with model-generated args
 - No shell evaluation of model output: model output must never be passed to
