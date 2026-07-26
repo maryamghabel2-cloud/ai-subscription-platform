@@ -4,14 +4,15 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect
 
 **Purpose:** Define structured threat model with protected assets, threat actors,
 attack surfaces, trust boundaries, threat categorization, and priority risk table.
 
-**Note:** Structure-only. Final threat model will be completed later.
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
 
 ## Purpose
 
@@ -80,7 +81,7 @@ prioritize risks.
 ### Session Tokens
 
 - Opaque session tokens HttpOnly, Secure, SameSite, CSRF non-HttpOnly
-- Refresh rotation, 30min session, 30 days refresh
+- Refresh rotation, CONFIGURED_SESSION_LIFETIME session, CONFIGURED_REFRESH_LIFETIME refresh
 - get_client_ip only trusts X-Forwarded-For if in TRUSTED_PROXIES
 
 ## Threat Actors
@@ -109,7 +110,7 @@ prioritize risks.
 - Payment provider integration: sandbox mock, real gateways not active, payment
   callback from unexpected source is detection signal
 - Agent tool calls: tool allowlists, permission boundaries, network allowlists,
-  budgets CONFIGURED_LIMIT, human approval gates, secret isolation
+  budgets CONFIGURED_AGENT_MAX_COST_CREDITS, human approval gates, secret isolation
 - RAG and file upload inputs: file type validation, size limits, malware scan,
   provenance tagging, untrusted content quarantine
 - Admin panel: admin access requires approval, audit logging, no secret sharing
@@ -139,7 +140,7 @@ prioritize risks.
   money, publish, contact customers, delete data, bypass geographic/KYC/ToS
 - Supply-chain compromise: malicious dependency, third-party agent, compromised
   CI/CD token, secret leak, mitigation via dependency scanning, SBOM, source
-  verification, re-review on CONFIGURED_LIMIT cadence
+  verification, re-review on CONFIGURED_THRESHOLD cadence
 
 ## Priority Risk Table
 
@@ -179,4 +180,5 @@ Phase 1 - Threat Modeling
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.
