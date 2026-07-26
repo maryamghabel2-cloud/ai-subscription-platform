@@ -81,11 +81,8 @@ Require:
   system-prompt disclosure, output guardrails)
 - DAST in a controlled staging environment before applicable releases (e.g.,
   OWASP ZAP, Burp Suite, dynamic scanning for Web, API, Mobile, Telegram webhook)
-- Internal security review using CONFIGURED_INTERNAL_TEST_CADENCE (e.g., weekly,
-  bi-weekly, no invented monthly/quarterly without approval, use placeholder)
-- External penetration testing using CONFIGURED_EXTERNAL_PENTEST_CADENCE (e.g.,
-  quarterly, bi-annually, no invented monthly/quarterly without approval, use
-  placeholder)
+- Internal security review using CONFIGURED_INTERNAL_TEST_CADENCE
+- External penetration testing using CONFIGURED_EXTERNAL_PENTEST_CADENCE
 - Re-testing after critical security fixes (e.g., fix for auth bypass, wallet
   tampering, prompt injection, IDOR, secret leak)
 - Re-testing after authentication, authorization, wallet, payment, upload, Agent,
@@ -97,9 +94,8 @@ Require:
   vulnerability fixed within CONFIGURED_REMEDIATION_SLA, high within
   CONFIGURED_REMEDIATION_SLA, medium/low documented with mitigation plan)
 
-Do not invent monthly, quarterly, 90-day, or other numeric cadence. Use
-CONFIGURED_INTERNAL_TEST_CADENCE, CONFIGURED_EXTERNAL_PENTEST_CADENCE,
-CONFIGURED_REMEDIATION_SLA placeholders.
+Use CONFIGURED_INTERNAL_TEST_CADENCE, CONFIGURED_EXTERNAL_PENTEST_CADENCE,
+and CONFIGURED_REMEDIATION_SLA placeholders for cadence and remediation timing.
 
 ## Security Merge Gates
 

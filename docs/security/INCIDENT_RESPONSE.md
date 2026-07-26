@@ -13,8 +13,6 @@ exposure, agent compromise, recovery, and post-incident review.
 
 **Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
 production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
-later.
-
 ## Purpose
 
 Define how we detect, contain, recover from, and learn from security incidents.
@@ -45,9 +43,7 @@ Define how we detect, contain, recover from, and learn from security incidents.
     CONFIGURED_SECRET_ROTATION_GRACE_PERIOD (old secret remains valid for
     CONFIGURED_SECRET_ROTATION_GRACE_PERIOD during planned rotation)
   - Suspected or confirmed compromised credentials must be revoked or disabled
-    immediately (no waiting, immediate revocation, no grace period for compromised)
-  - A compromised credential receives no grace period (compromised credentials are
-    revoked immediately, no overlap, no grace period)
+    immediately; compromised credentials receive no grace period or overlap.
   - Replacement credentials must be issued and dependent services recovered
     (issue new secret, update secrets manager, restart dependent services,
     verify recovery, audit log)

@@ -81,9 +81,7 @@ Define how secrets are identified, stored, rotated, and revoked without leaking.
 - Rotation events must be logged in the audit trail (metadata only, no raw
   secret, action type, timestamp, operator, outcome)
 - Suspected or confirmed compromised credentials must be revoked or disabled
-  immediately (no waiting for grace period, immediate revocation)
-- A compromised credential receives no grace period (compromised credentials
-  are revoked immediately, no overlap, no grace period)
+  immediately; compromised credentials receive no grace period or overlap.
 - Replacement credentials must be issued and dependent services recovered
   (issue new secret, update secrets manager, restart/reload dependent services,
   verify recovery, audit log)
