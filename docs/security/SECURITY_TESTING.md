@@ -13,8 +13,7 @@ access-control tests, IDOR tests, prompt injection test suite, agent red
 teaming, file-upload security tests, and penetration testing.
 
 **Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
-production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. Final
-security testing policy will be completed later, but this PR contains substantive policy, not just a stub.
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. This PR contains substantive policy, not just a stub.
 
 
 ## Purpose
