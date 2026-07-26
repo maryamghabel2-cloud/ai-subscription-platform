@@ -99,11 +99,14 @@ The intake package must include:
   platform, revocable independently)
 - Data classifications accessed (e.g., public, internal, confidential, no
   sensitive personal data)
-- Cost/time/iteration requirements (e.g., max cost CONFIGURED_LIMIT, max
-  execution time CONFIGURED_AGENT_MAX_DURATION, max iterations
+- Cost/time/iteration requirements (e.g., maximum cost
+  CONFIGURED_AGENT_MAX_COST_CREDITS, maximum execution time
+  CONFIGURED_AGENT_MAX_DURATION, maximum iterations
   CONFIGURED_AGENT_MAX_ITERATIONS)
 - Known limitations (e.g., no vision support, no file support, no tool support)
-- Security contact (e.g., security@example.com)
+- Security contact: CONFIGURED_SECURITY_CONTACT; the final operational security
+  contact remains an owner decision and must not be hardcoded as an example
+  address
 - Update and disclosure policy (e.g., how updates are disclosed, security
   advisory process)
 
@@ -163,7 +166,8 @@ Skills and MCP Connectors, with same quarantine and review process.
 - Prompt injection test: can the agent be hijacked via crafted input? Test
   direct and indirect injection, jailbreak, tool abuse, RAG poisoning
 - Tool abuse test: can the agent call unauthorized tools or exceed its budget
-  via crafted input? Test budget enforcement CONFIGURED_LIMIT
+  via crafted input? Test enforcement of CONFIGURED_AGENT_MAX_COST_CREDITS,
+  CONFIGURED_AGENT_MAX_TOOL_CALLS, and CONFIGURED_AGENT_MAX_ITERATIONS
 - Data exfiltration test: can the agent leak user data to external endpoints?
   Test with canary tokens, no real user data
 
@@ -186,7 +190,10 @@ Skills and MCP Connectors, with same quarantine and review process.
     immigration, no arbitrary internet unless approved
   - Secret requirements: none or specific scoped credentials, separate from
     platform, revocable independently
-  - Maximum cost, maximum execution time, maximum iterations (CONFIGURED_LIMIT)
+  - Maximum cost: CONFIGURED_AGENT_MAX_COST_CREDITS
+  - Maximum execution time: CONFIGURED_AGENT_MAX_DURATION
+  - Maximum iterations: CONFIGURED_AGENT_MAX_ITERATIONS
+  - Maximum tool calls: CONFIGURED_AGENT_MAX_TOOL_CALLS
   - Human approval gates: publishing, spending, contacting customers, bulk
     messages, pricing, config, merge, deploy, API keys, persona sensitive edits
   - Risk level: low, medium, high, high-risk requires expert review
@@ -209,12 +216,16 @@ Skills and MCP Connectors, with same quarantine and review process.
 
 ## Re-Review Requirement
 
-- Any update to a third-party agent requires re-review (new version, new
-  dependencies, new permissions, new tools, new network allowlist)
-- Agents must be reviewed again on a CONFIGURED_LIMIT cadence (e.g., CONFIGURED_REVIEW_CADENCE,
-  CONFIGURED_REVIEW_CADENCE) even if no changes, to check for new CVEs and advisories
-- Security advisories against agent dependencies trigger an immediate re-review
-  (critical CVE in dependency, malicious package report)
+New or materially changed versions require re-review. Approved third-party
+components must be re-reviewed after:
+
+- A material code or dependency change
+- A relevant security advisory
+- A permission or tool change
+- A network-allowlist change
+- A provenance, publisher, license, or ownership change
+- A change to accessed data classifications
+- CONFIGURED_REVIEW_CADENCE
 
 ## Related Documents
 
