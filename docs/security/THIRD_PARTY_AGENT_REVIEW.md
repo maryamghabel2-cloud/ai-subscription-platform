@@ -12,7 +12,8 @@
 why review is mandatory, review checklist, approved manifest, runtime isolation,
 and re-review requirements.
 
-**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
 
 ## Purpose
 
@@ -238,4 +239,5 @@ Phase 2 - Marketplace Prep
 
 ## Status Note
 
-Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.

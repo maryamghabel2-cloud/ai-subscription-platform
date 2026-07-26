@@ -12,7 +12,8 @@
 policy. Explain trust boundaries, assume-breach model, and security applied from
 Phase 1 for Web, Mobile, Telegram, API, AI, Agent, Studio, and data.
 
-**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No
 production code in this PR.
 
 ## Purpose
@@ -24,8 +25,11 @@ multimodal AI Workspace.
 
 - Zero Trust principles, Defense in Depth layers, trust boundaries,
   assume-breach model
-- Mapping of Defense in Depth layers to implemented and planned product
+- Mapping of Defense in Depth layers to merged foundations and planned product
   features (Auth, Wallet, Chat, etc.)
+
+Make clear that merged foundations do not prove every documented security control is implemented or verified. Auth and Wallet may only be called
+MERGED FOUNDATIONS, not implemented controls.
 - Web, Mobile, Telegram, API, AI provider, payment provider, internal
   services, third-party agents, admin access
 
@@ -115,9 +119,23 @@ multimodal AI Workspace.
 ### Secrets and Key Management
 
 - No secrets in source code, git history, documentation, logs, or HTTP responses
+- Managed secret storage is the production/staging source of truth (e.g., Vault,
+  AWS Secrets Manager, dedicated secrets manager)
+- Environment variables are only controlled runtime injection (e.g., secrets
+  manager injects env var at runtime, env var is not source of truth)
 - Secrets in dedicated secrets manager, each environment separate secrets
 - Development secrets never used in production
-- Rotation without code deployment, grace period CONFIGURED_LIMIT, audit trail
+- Rotation without code deployment, planned rotation may use bounded overlap:
+  CONFIGURED_SECRET_ROTATION_GRACE_PERIOD (old secret remains valid for
+  CONFIGURED_SECRET_ROTATION_GRACE_PERIOD during planned rotation)
+- Suspected or confirmed compromised credentials must be revoked or disabled
+  immediately (no waiting, immediate revocation, no grace period for compromised)
+- A compromised credential receives no grace period (compromised credentials
+  are revoked immediately, no overlap)
+- Replacement credentials must be issued and dependent services recovered
+  (issue new secret, update secrets manager, restart dependent services,
+  verify recovery, audit log)
+- Grace period CONFIGURED_LIMIT, audit trail
 
 ### Agent Sandboxing
 
@@ -196,18 +214,18 @@ multimodal AI Workspace.
 - Network perimeter + TLS: Web, Mobile, Telegram webhook, API, AI provider,
   payment provider integrations – planned from Phase 1
 - Application Auth/AuthZ: Phase 1 Database (users), Authentication (opaque
-  session tokens), Wallet (own wallet only) – implemented, Auth and Wallet
+  session tokens), Wallet (own wallet only) – MERGED FOUNDATIONS, Auth and Wallet
   foundations implemented, real payment providers not active
 - Input validation/output guardrails: Prompt Enhancer, file upload scanning,
   RAG provenance – Phase 1 and Phase 2
 - Data encryption: Phase 1 Database and Wallet, field-level encryption for
-  API keys hashed – implemented and planned
-- Secrets and key management: Phase 1 – env vars, encrypted at rest, rotation
-  tested, no secrets in docs – implemented and planned
+  API keys hashed – planned
+- Secrets and key management: Phase 1 – env vars, encrypted at rest
+  tested, no secrets in docs – planned
 - Agent sandboxing: Phase 1 Agent Security Model, tool allowlists, budgets
-  CONFIGURED_LIMIT, human approval gates – implemented and planned
+  CONFIGURED_LIMIT, human approval gates – planned
 - Logging and anomaly detection: Phase 1 Logging, privacy-preserving logs,
-  anomaly detection, alerting – implemented and planned
+  anomaly detection, alerting – planned
 - Incident response: Phase 1 IR – severity, containment, recovery – planned
 
 ### Auth, Wallet, and Chat Security Requirements
@@ -251,5 +269,5 @@ Phase 1 - Security Foundations
 
 ## Status Note
 
-Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved. Completed with expert, legal, privacy,
-and product-owner review.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.

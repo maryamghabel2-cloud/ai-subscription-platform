@@ -12,7 +12,9 @@
 keys, payment credentials, Telegram bot tokens, encryption keys, secret storage,
 rotation, leak detection, and third-party agent secrets.
 
-**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No real secrets in this PR.
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No real
+secrets in this PR.
 
 ## Purpose
 
@@ -53,10 +55,16 @@ Define how secrets are identified, stored, rotated, and revoked without leaking.
 
 ## Secret Storage Rules
 
+- Managed secret storage is the production/staging source of truth (e.g., Vault,
+  AWS Secrets Manager, dedicated secrets manager, not env vars, not git history)
+- Environment variables are only controlled runtime injection (e.g., secrets
+  manager injects env var at runtime, env var is not source of truth, not stored
+  in code, not in .env files committed)
 - No secret may be stored in source code, git history, or documentation
 - No secret may appear in logs or HTTP responses or URLs or client-side code
 - Secrets must be stored in a dedicated secrets manager or environment variables
-- Each environment must have separate secrets (development, staging, production)
+  as controlled runtime injection only, each environment must have separate
+  secrets (development, staging, production)
 - Development secrets must never be used in production
 - Secrets must be encrypted at rest, no plaintext sensitive data in client,
   no secrets in localStorage
@@ -65,10 +73,20 @@ Define how secrets are identified, stored, rotated, and revoked without leaking.
 
 - All secrets must be rotatable without requiring a code deployment
 - Rotation must be tested before being required (runbook tested)
-- Old secrets must remain valid for a CONFIGURED_LIMIT grace period during
-  rotation to allow zero-downtime rotation
+- Planned rotation may use a bounded overlap:
+  CONFIGURED_SECRET_ROTATION_GRACE_PERIOD (e.g., old secret remains valid for
+  CONFIGURED_SECRET_ROTATION_GRACE_PERIOD during rotation to allow zero-downtime
+  rotation, new secret issued, dependent services switched, old secret revoked
+  after grace period)
 - Rotation events must be logged in the audit trail (metadata only, no raw
   secret, action type, timestamp, operator, outcome)
+- Suspected or confirmed compromised credentials must be revoked or disabled
+  immediately (no waiting for grace period, immediate revocation)
+- A compromised credential receives no grace period (compromised credentials
+  are revoked immediately, no overlap, no grace period)
+- Replacement credentials must be issued and dependent services recovered
+  (issue new secret, update secrets manager, restart/reload dependent services,
+  verify recovery, audit log)
 
 ## Leak Detection and Response
 
@@ -114,4 +132,5 @@ Phase 1 - Secrets
 
 ## Status Note
 
-Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.

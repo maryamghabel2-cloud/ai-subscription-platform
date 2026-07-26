@@ -14,9 +14,12 @@ explain that security applies from Phase 1 onward.
 
 **Note:** This folder contains proposed architecture documents. Implementation and verification are separate future work.
 
-**Implementation Evidence:** This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. Do not claim production-ready security, zero vulnerabilities, complete protection, no exploitable security holes, compliance certification, or implemented controls without code/test evidence.
+**Implementation Evidence:** This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready.
+Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. Do not claim production-ready
+security, zero vulnerabilities, complete protection, no exploitable security holes, compliance certification, or implemented controls without
+code/test evidence.
 
-Each document will be completed in later PRs with reviewed policies. Do not treat these as final enforcement policies.
+Each document is proposed architecture pending owner approval and implementation. Do not treat as final enforcement policies.
 
 ## Purpose
 
@@ -70,19 +73,19 @@ that security is Phase 1 requirement and mandatory cross-cutting requirement.
 
 | Document | Purpose | Status | Owner | Planned Stage |
 |---|---|---|---|---|
-| [ARCH](SECURITY_ARCHITECTURE.md) | Zero Trust arch | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch | Phase 1 - Foundations |
-| [THREAT](THREAT_MODEL.md) | Assets, actors, surfaces | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch | Phase 1 - Threat Model |
-| [IAC](IDENTITY_AND_ACCESS_CONTROL.md) | Auth, authz, least priv | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch | Phase 1 - Auth |
-| [SECRETS](SECRETS_AND_KEY_MANAGEMENT.md) | Keys, tokens, rotation | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / DevOps | Phase 1 - Secrets |
-| [PROMPT](PROMPT_INJECTION_DEFENSE.md) | Injection, jailbreak, guard | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / AI Safety | Phase 1 - AI Safety |
-| [AGENT](AGENT_SECURITY_MODEL.md) | Sandboxing, tools, perms | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch | Phase 1 - Agent Sec |
-| [3P-REVIEW](THIRD_PARTY_AGENT_REVIEW.md) | Third-party agent review | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / Product | Phase 2 - Marketplace |
-| [SEC-AGENT](SECURITY_AGENT_RUNTIME.md) | Monitoring, response | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / SRE | Phase 2 - Automation |
-| [DATA](DATA_PROTECTION_AND_ENCRYPTION.md) | Encryption, retention | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / Privacy | Phase 1 - Data Prot |
-| [LOGGING](LOGGING_AND_MONITORING.md) | Logs, detection, alerts | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / SRE | Phase 1 - Logging |
-| [INCIDENT](INCIDENT_RESPONSE.md) | Severity, containment | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / Founder | Phase 1 - IR |
-| [TESTING](SECURITY_TESTING.md) | Scanning, SAST/DAST, IDOR | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch / QA | Phase 1 - Testing |
-| [CHANNEL](CHANNEL_SECURITY_TELEGRAM_WEB_MOBILE.md) | Web, mobile, Telegram, API | Proposed Architecture - Pending Owner Approval and Implementation | Sec Arch | Phase 1 - Channel |
+| [ARCH](SECURITY_ARCHITECTURE.md) | Arch | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Found |
+| [THREAT](THREAT_MODEL.md) | Threat | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Threat |
+| [IAC](IDENTITY_AND_ACCESS_CONTROL.md) | IAC | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Auth |
+| [SECRETS](SECRETS_AND_KEY_MANAGEMENT.md) | Secrets | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Secrets |
+| [PROMPT](PROMPT_INJECTION_DEFENSE.md) | Prompt | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-AI |
+| [AGENT](AGENT_SECURITY_MODEL.md) | Agent | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Agent |
+| [3P-REVIEW](THIRD_PARTY_AGENT_REVIEW.md) | Review | Proposed Architecture - Pending Owner Approval and Implementation | SA | P2-Market |
+| [SEC-AGENT](SECURITY_AGENT_RUNTIME.md) | SecAgent | Proposed Architecture - Pending Owner Approval and Implementation | SA | P2-Auto |
+| [DATA](DATA_PROTECTION_AND_ENCRYPTION.md) | Data | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Data |
+| [LOGGING](LOGGING_AND_MONITORING.md) | Logging | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Log |
+| [INCIDENT](INCIDENT_RESPONSE.md) | Incident | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-IR |
+| [TESTING](SECURITY_TESTING.md) | Testing | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Test |
+| [CHANNEL](CHANNEL_SECURITY_TELEGRAM_WEB_MOBILE.md) | Channel | Proposed Architecture - Pending Owner Approval and Implementation | SA | P1-Chan |
 
 ## Related Documents
 
@@ -121,10 +124,10 @@ different status. Do not mark any document Implemented or Verified in this PR.
 
 ## Planned Completion Stage
 
-Phase 1 - Security Foundations (structure now, policies later)
+Phase 1 - Security Foundations
 
 ## Status Note
 
-All files in this folder are **Proposed Architecture - Pending Owner Approval and Implementation**. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved. Completed with
-expert, legal, privacy, and product-owner review. Do not use as enforcement
+All files in this folder are **Proposed Architecture - Pending Owner Approval and Implementation**. Implementation and verification are separate
+future work. Open Decisions remain unresolved until explicitly approved.
 guidance.

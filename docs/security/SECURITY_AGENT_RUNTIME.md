@@ -12,7 +12,9 @@
 monitoring scope, detection signals, protective action authority tiers,
 guardrails, audit trail, and human escalation.
 
-**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No production
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No
+production
 code in this PR.
 
 ## Purpose
@@ -198,4 +200,5 @@ Phase 2 - Security Automation
 
 ## Status Note
 
-Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain unresolved until explicitly approved.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.
