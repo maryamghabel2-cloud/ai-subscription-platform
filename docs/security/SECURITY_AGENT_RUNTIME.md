@@ -39,7 +39,13 @@ controlled actions; and escalate to human operators.
 - Monitor security-relevant telemetry within approved scope, using metadata by
   default and no raw sensitive conversation content by default
 - Detect threats in real time
-- Take proportionate, controlled, and reversible protective actions
+- Protective actions must be proportionate, narrowly scoped, and reversible by
+  default
+- An irreversible action is allowed automatically only where explicitly
+  authorized by the canonical Tier 2 policy for a specific confirmed-compromised
+  credential creating immediate security risk
+- Such irreversible containment requires immediate human notification and
+  issuance of a replacement credential where access must be restored
 - Escalate to human operators when required
 
 ## Monitoring Scope
@@ -131,7 +137,10 @@ Require:
 
 - Low-confidence findings must not trigger irreversible high-impact action
 - When uncertain, alert and wait (fail safe)
-- Automatically applied actions must be proportionate and reversible
+- Automatically applied actions must be proportionate, narrowly scoped, and
+  reversible by default. The only documented automatic irreversible exception is
+  revocation of a specific confirmed-compromised token or scoped API key under
+  Tier 2 when continued validity creates immediate security risk.
 - Detection-system failure must not silently grant access (fail closed for
   access decisions)
 - Policy-engine failure must fail closed for sensitive actions (deny by default)
