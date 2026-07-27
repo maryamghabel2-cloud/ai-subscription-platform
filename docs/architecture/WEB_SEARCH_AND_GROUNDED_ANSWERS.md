@@ -170,9 +170,12 @@ and cost controls.
 - User must be informed when a query is sent to an external search provider
   (e.g., "This query will be sent to web search provider for current
   information. Continue?")
-- Search provider retention and privacy policy must be disclosed when relevant
-  (e.g., provider retains queries for 30 days, or zero retention, or training
-  usage policy, data residency)
+- Search-provider retention and privacy policy must be disclosed, including
+  CONFIGURED_SEARCH_PROVIDER_RETENTION_PERIOD, zero-retention availability,
+  training-usage policy, and data residency.
+- The configured value must be based on current official provider documentation
+  with its effective date and access date.
+- The architecture must not hardcode or assume a provider retention period.
 - Search queries must not contain raw sensitive prompts that include API keys,
   secrets, tokens, or private conversation content beyond what is needed for
   search, must respect content fingerprint policy (fingerprints disabled by
