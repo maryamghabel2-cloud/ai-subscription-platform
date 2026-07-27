@@ -69,12 +69,12 @@ email and phone authentication.
 - Never ask for seed phrase or private key: platform must never ask user for
   seed phrase, private key, mnemonic, or keystore password
 - Use signed nonce challenge: server generates random nonce, one-time use,
-  expires after CONFIGURED_WALLET_SIGNATURE_EXPIRY, client signs nonce with wallet private key
+  expires after CONFIGURED_WALLET_CHALLENGE_EXPIRY, client signs nonce with wallet private key
   off-chain, server verifies signature server-side
 - Bind signature to domain: signed message includes domain (e.g.,
   ai-subscription-platform.com), prevents phishing and replay across domains
 - Include timestamp and expiration: signed message includes issued_at and
-  expiration (e.g., CONFIGURED_NONCE_EXPIRATION), prevents old signatures reuse
+  expiration (e.g., CONFIGURED_WALLET_CHALLENGE_EXPIRY), prevents old signatures reuse
 - Prevent replay attacks: nonce one-time use, stored as used after verification,
   expires after short time, same nonce cannot be reused, same signature cannot
   be reused for different domain or different timestamp
@@ -117,26 +117,46 @@ email and phone authentication.
   approval required, legal and compliance review required, no new chain without
   explicit approval
 
-## Supported Crypto Payment Networks (Phase 1)
+## Candidate Payment Networks and Asset Support (Open Decision)
 
-The platform will support the following networks for USDT and USDC top-up:
+This documentation does not enable, activate, or make a final commitment to
+any crypto payment network or asset.
 
-- TRON (TRC20) – most common in Iranian market
-- BSC (BEP20) – significantly lower fees than TRON
-- Polygon – very low fees
-- Base – low fees, Coinbase L2
-- TON – lowest fees, native Telegram integration
+Candidate networks for future evaluation may include:
 
-USDC will be supported alongside USDT on all listed networks.
+- TRON
+- BNB Smart Chain
+- Polygon PoS
+- Base
+- TON
 
-Wallet Login (EVM) will cover BSC, Polygon, Base, and Ethereum with a single
-Sign-In implementation.
+Candidate status does not mean approved, implemented, enabled, commercially
+available, or legally available. Asset support is network-specific.
 
-TON uses TON Connect proof.
+USDT and USDC must not be assumed to be available, native, issuer-supported,
+or operationally supported on every candidate network. Native issuer-supported
+assets must be distinguished from:
 
-Explicit statement: Wallet login is for identity only. It does not grant any
-payment authorization, fund movement, or DeFi permission. Separate explicit user
-consent is required for any on-chain transaction.
+- bridged assets
+- wrapped assets
+- exchange-issued representations
+- third-party token contracts
+
+A network/asset pair must remain disabled until all of these are verified:
+
+- official issuer or network documentation
+- official token contract or identifier
+- provider and custody compatibility
+- deposit confirmation and reorg policy
+- fee and finality behavior
+- monitoring and incident response
+- sanctions, KYC/AML, legal, privacy, tax, and compliance review
+- effective date and access date of source evidence
+- security and product-owner approval
+
+Wallet-login chain compatibility does not imply payment-network or token
+support. Identity authentication and payment activation are separate decisions,
+implementations, permissions, and approval gates.
 
 ## Separation from Payments
 
@@ -187,8 +207,8 @@ consent is required for any on-chain transaction.
 
 - Nonce must be one-time use: store nonce as used after verification, prevent
   replay, same nonce cannot be used twice, even for same address
-- Nonce must expire: e.g., CONFIGURED_NONCE_EXPIRATION, short-lived, e.g.,
-  CONFIGURED_WALLET_SIGNATURE_EXPIRY, after expiration signature invalid
+- Nonce must expire: CONFIGURED_WALLET_CHALLENGE_EXPIRY; after expiration,
+  the signature is invalid
 - Signature verification must happen server-side: never trust client-side
   verification, always verify server-side with library, check domain, timestamp,
   expiration, nonce, chain id, address
@@ -197,7 +217,7 @@ consent is required for any on-chain transaction.
   prevents phishing and replay across domains
 - Session creation must use existing secure cookie/session architecture:
   opaque session tokens HttpOnly, Secure, SameSite, CSRF, refresh rotation,
-  CONFIGURED_WALLET_SESSION_LIFETIME session, CONFIGURED_WALLET_LINK_RETENTION refresh, get_client_ip only trusts X-Forwarded-For if
+  CONFIGURED_WALLET_SESSION_LIFETIME session, CONFIGURED_WALLET_REFRESH_LIFETIME refresh, get_client_ip only trusts X-Forwarded-For if
   in TRUSTED_PROXIES
 - Wallet link and unlink actions require re-authentication: user must be logged
   in via existing method (email/phone/other wallet) and re-authenticate before
@@ -257,8 +277,13 @@ consent is required for any on-chain transaction.
 
 ## Open Decisions
 
-- Exact nonce format, length, expiration CONFIGURED_NONCE_EXPIRATION, storage
+- Exact nonce format, length, CONFIGURED_WALLET_CHALLENGE_EXPIRY, storage,
   and one-time use enforcement
+- CONFIGURED_WALLET_SESSION_LIFETIME
+- CONFIGURED_WALLET_REFRESH_LIFETIME
+- Final network/asset support matrix
+- Native versus bridged token acceptance policy
+- Required official evidence and review date for each network/asset pair
 - Domain binding exact message format and verification library
 - Chain support phases exact wallets and libraries and rollout
 - Recovery method for wallet-only users (Open Decision, requires security,
@@ -274,5 +299,8 @@ review
 ## Status Note
 
 Proposed Architecture - Pending Owner, Security, Privacy, and Compliance Approval.
-This document is proposed architecture. It does not prove that the described controls, integrations, providers, wallet-login flows, MCP exposure, or search behavior are implemented, tested, deployed, or production-ready. Implementation requires separate code, tests, configuration, owner approval, and security review. No blockchain
-transactions, no platform token, no secrets in this PR.
+This document is proposed architecture. It does not prove that the described
+controls, integrations, providers, wallet-login flows, MCP exposure, or search
+behavior are implemented, tested, deployed, or production-ready. Implementation
+requires separate code, tests, configuration, owner approval, and security
+review. No blockchain transactions, no platform token, no secrets in this PR.
