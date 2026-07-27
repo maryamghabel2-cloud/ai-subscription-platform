@@ -69,8 +69,7 @@ email and phone authentication.
 - Never ask for seed phrase or private key: platform must never ask user for
   seed phrase, private key, mnemonic, or keystore password
 - Use signed nonce challenge: server generates random nonce, one-time use,
-  expires after CONFIGURED_LIMIT (e.g., 5 minutes placeholder replaced with
-  CONFIGURED_NONCE_EXPIRATION), client signs nonce with wallet private key
+  expires after CONFIGURED_WALLET_SIGNATURE_EXPIRY, client signs nonce with wallet private key
   off-chain, server verifies signature server-side
 - Bind signature to domain: signed message includes domain (e.g.,
   ai-subscription-platform.com), prevents phishing and replay across domains
@@ -189,7 +188,7 @@ consent is required for any on-chain transaction.
 - Nonce must be one-time use: store nonce as used after verification, prevent
   replay, same nonce cannot be used twice, even for same address
 - Nonce must expire: e.g., CONFIGURED_NONCE_EXPIRATION, short-lived, e.g.,
-  CONFIGURED_LIMIT minutes, after expiration signature invalid
+  CONFIGURED_WALLET_SIGNATURE_EXPIRY, after expiration signature invalid
 - Signature verification must happen server-side: never trust client-side
   verification, always verify server-side with library, check domain, timestamp,
   expiration, nonce, chain id, address
@@ -198,7 +197,7 @@ consent is required for any on-chain transaction.
   prevents phishing and replay across domains
 - Session creation must use existing secure cookie/session architecture:
   opaque session tokens HttpOnly, Secure, SameSite, CSRF, refresh rotation,
-  30min session, 30 days refresh, get_client_ip only trusts X-Forwarded-For if
+  CONFIGURED_WALLET_SESSION_LIFETIME session, CONFIGURED_WALLET_LINK_RETENTION refresh, get_client_ip only trusts X-Forwarded-For if
   in TRUSTED_PROXIES
 - Wallet link and unlink actions require re-authentication: user must be logged
   in via existing method (email/phone/other wallet) and re-authenticate before

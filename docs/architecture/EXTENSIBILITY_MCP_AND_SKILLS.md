@@ -159,7 +159,7 @@ Controls:
   write requires additional approval
 - Network allowlist: only approved domains, IPs, no arbitrary internet unless
   explicitly allowed and reviewed
-- Rate limits: per user, per connector, per tool, CONFIGURED_LIMIT placeholders
+- Rate limits: per user, per connector, per tool, CONFIGURED_MCP_RATE_LIMIT placeholders
 - Audit logs: all connector calls logged with metadata only by default, no raw
   sensitive content, content_fingerprint DISABLED_BY_DEFAULT
 - Immediate revocation: user can revoke connector token at any time, revocation
@@ -246,7 +246,7 @@ and AI systems can use our capabilities.
   hashed, scopes, rate limits, revocable without disruption
 - Scoped permissions: each API key has defined scopes and rate limits,
   least privilege, no cross-user access
-- Rate limiting: per API key, per user, per endpoint, CONFIGURED_LIMIT
+- Rate limiting: per API key, per user, per endpoint, CONFIGURED_MCP_RATE_LIMIT
 - Wallet/credit checks: check wallet balance, atomic credit/debit, balance never
   negative, ledger append-only, audit metadata
 - Data classification boundaries: no raw sensitive conversation content by
