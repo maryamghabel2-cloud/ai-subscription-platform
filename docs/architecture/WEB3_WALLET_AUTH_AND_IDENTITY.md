@@ -203,7 +203,7 @@ consent is required for any on-chain transaction.
   in via existing method (email/phone/other wallet) and re-authenticate before
   linking or unlinking wallet, prevents account takeover via wallet link
 - Suspicious wallet login attempts must be visible to the Security Agent:
-  authentication failure rate above CONFIGURED_LIMIT, unusual wallet login
+  authentication failure rate above CONFIGURED_WALLET_AUTH_FAILURE_THRESHOLD, unusual wallet login
   pattern, multiple failed verifications, admin action outside business hours,
   cross-user data access attempt, detection signals, audit logging with metadata
   only, no raw sensitive content, content_fingerprint DISABLED_BY_DEFAULT
