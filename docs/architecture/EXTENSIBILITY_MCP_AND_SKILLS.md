@@ -306,8 +306,8 @@ Rules:
 - Publishing an Agent requires security, privacy, and product review:
   source verification, license review, dependency scan, prompt injection test,
   tool abuse test, data exfiltration test, remediation before approval,
-  approved manifest, runtime isolation, re-review on update and on
-  CONFIGURED_LIMIT cadence
+  approved manifest, runtime isolation, re-review after every material update
+  and according to CONFIGURED_EXTENSIBILITY_REVIEW_CADENCE
 
 ## Security Review Pipeline
 
@@ -353,7 +353,8 @@ For imported Skills and MCPs:
 - Revenue share is not active in early phases: no cash payouts, no rev-share
   without legal, tax, KYC, finance, owner approval
 - Early rewards may use platform credits, badges, or visibility: e.g.,
-  promotional credits CONFIGURED_LIMIT, badges, featured listing
+  promotional credits capped by CONFIGURED_MARKETPLACE_PROMOTIONAL_CREDIT_REWARD,
+  badges, featured listing
 - Cash payouts require future legal, tax, KYC, finance, and owner approval:
   no cash payouts without legal review, tax review, KYC, finance and owner
   approval, versioned config
