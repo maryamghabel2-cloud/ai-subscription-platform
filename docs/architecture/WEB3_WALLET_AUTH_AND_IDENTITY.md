@@ -275,5 +275,5 @@ review
 ## Status Note
 
 Proposed Architecture - Pending Owner, Security, Privacy, and Compliance Approval.
-Will be completed later with product, security, and owner review. No blockchain
+This document is proposed architecture. It does not prove that the described controls, integrations, providers, wallet-login flows, MCP exposure, or search behavior are implemented, tested, deployed, or production-ready. Implementation requires separate code, tests, configuration, owner approval, and security review. No blockchain
 transactions, no platform token, no secrets in this PR.
