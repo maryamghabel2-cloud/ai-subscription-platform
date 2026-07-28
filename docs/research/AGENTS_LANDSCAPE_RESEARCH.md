@@ -316,7 +316,62 @@ Recommended acceptance tests include Persian-only, English-only, and mixed-scrip
 prompts; RTL UI snapshots; schema-valid tool arguments; safe handling of ambiguous
 local terms; grounded citations; and human review of consequential drafts.
 
+## Agent Ecosystem Demand Signals (Snapshot 2026-07-28)
+
+Interest signals are qualitative snapshot indicators from visible repository,
+documentation, and community activity. They are not security evidence, market
+validation, or a substitute for path-specific license and intake review.
+
+| Agent or Framework | Category | Interest Signal | License | Security Posture | Persian Fit | Verdict |
+|---|---|---|---|---|---|---|
+| LangGraph | Framework | Widespread workflow interest | MIT | Host must sandbox tools | Evaluate RTL | shortlist-early |
+| LlamaIndex | Framework | Widespread RAG use | MIT | Host controls data access | Strong for citations | shortlist-early |
+| LangChain | Framework | Widespread ecosystem use | MIT | Tool wrappers required | Evaluate RTL | watchlist |
+| AutoGen | Framework | Active multi-agent interest | MIT | No built-in sandbox | Evaluate handoffs | watchlist |
+| CrewAI | Framework | Community workflow interest | MIT | No built-in sandbox | Evaluate roles | later |
+| PydanticAI | Framework | Emerging typed-agent interest | MIT | No built-in sandbox | Schema helps mixed text | shortlist-early |
+| OpenAI Agents SDK | Framework | New/Beta provider interest | Apache-2.0 | Provider review required | Evaluate tool calls | later |
+| smolagents | Framework | Emerging lightweight interest | Apache-2.0 | Sandbox code patterns | Evaluate RTL | later |
+| SWE-agent | Ready-made agent | Research and coding interest | MIT, re-verify | Isolated code sandbox | Limited initial fit | reject |
+| OpenHands | Ready-made agent | Active coding-agent interest | MIT, re-verify | Isolated runner required | Limited initial fit | reject |
+
+### Persian-First Selection Rules
+
+High English-language popularity does not guarantee selection. Prioritize minimal
+token overhead for Persian text, high accuracy in RTL tool-calling, support for
+Iranian localized workflows, and the strongest available sandboxing for autonomous
+agents. Every candidate still needs evidence-based security and product review.
+
 ## 6. Shortlist for Platform Integration
+
+### Initial MVP Ranking
+
+1. **LangGraph patterns**
+   - Rationale: explicit state and checkpoints suit reviewable Persian workflows.
+   - Risk mitigation: platform-owned tools, bounded runs, audit, and human gates.
+   - Integration path: internal library behind the FastAPI backend.
+   - Out of scope in v1: unrestricted multi-agent delegation.
+2. **LlamaIndex retrieval patterns**
+   - Rationale: grounded Persian and bilingual document workflows need citations.
+   - Risk mitigation: tenant-scoped indexes, provenance, DLP, and injection tests.
+   - Integration path: internal library for bounded retrieval flows.
+   - Out of scope in v1: raw document export or cross-tenant retrieval.
+3. **PydanticAI typed-agent patterns**
+   - Rationale: typed contracts reduce ambiguity in mixed Persian/English inputs.
+   - Risk mitigation: strict schemas, server-side authorization, and sandboxed tools.
+   - Integration path: internal Python library evaluation.
+   - Out of scope in v1: autonomous external writes.
+4. **LangChain tool abstractions**
+   - Rationale: broad adapter patterns can accelerate approved Skill wrappers.
+   - Risk mitigation: no direct framework tools; use platform policy wrappers only.
+   - Integration path: internal library evaluation.
+   - Out of scope in v1: arbitrary community tool installation.
+5. **AutoGen handoff patterns**
+   - Rationale: useful comparison for controlled specialist-workflow handoffs.
+   - Risk mitigation: synthetic data, explicit context boundaries, and cancellation.
+   - Integration path: isolated sidecar research environment.
+   - Out of scope in v1: autonomous agent conversations with broad permissions.
+
 
 ### Frameworks to Evaluate First
 
