@@ -39,6 +39,127 @@ Primary sources, accessed 2026-07-28:
 - MCP architecture: https://modelcontextprotocol.io/docs/learn/architecture
 - Existing platform extensibility policy: [EXTENSIBILITY_MCP_AND_SKILLS.md](../architecture/EXTENSIBILITY_MCP_AND_SKILLS.md)
 
+## Skill Terminology and Ecosystem Boundaries
+
+### Product Skill
+
+A Product Skill is a platform-owned, bounded product capability. It has a
+versioned input/output contract, permission and side-effect classification, risk
+class, cost policy, evaluation evidence, owner, and lifecycle state. A Product
+Skill is the platform's approval and runtime unit, regardless of whether its
+implementation later uses a provider tool, an MCP connector, or an imported
+package format.
+
+### Agent Skills Package
+
+An Agent Skills Package is a filesystem-based package following an Agent
+Skills-style format. It typically contains `SKILL.md`, YAML frontmatter,
+instructions, optional scripts, optional references, and optional assets.
+
+Accepting a package format does not mean executing unreviewed scripts. Package
+instructions are content to review, not authority to run code, install dependencies,
+or access user data.
+
+### Provider Tool or Function Calling
+
+A Provider Tool or Function Calling definition is a provider-specific schema that
+allows a model to request an application function. The application remains
+responsible for authorization, validation, execution, and error handling. It is
+not a portable Skill marketplace format, and model output never authorizes the
+action by itself.
+
+### MCP Tool
+
+An MCP Tool is a capability exposed by an MCP Server. It is a protocol-exposed
+capability, not automatically an approved Product Skill. Registry presence is
+discovery evidence only. MCP intake and Skill intake must share source, license,
+sandbox, permission, and security-review controls.
+
+### Agent
+
+An Agent is a multi-step workflow actor that may invoke approved Skills. An Agent
+is not a Skill and requires stronger run, permission, budget, audit, cancellation,
+and human-approval controls.
+
+| Concept | Unit | May contain code | Autonomous planning | Discovery mechanism | Approval required |
+|---|---|---|---|---|---|
+| Product Skill | Platform capability | Platform-controlled | No | Platform catalog | Yes |
+| Agent Skills package | Filesystem package | Optional scripts | No by format alone | Repository or package source | Yes |
+| Provider tool/function | Provider schema | Application handler | No | Provider API configuration | Yes |
+| MCP Tool | Server capability | Server-defined | No by protocol alone | MCP server or registry | Yes |
+| Agent | Multi-step actor | May invoke code/tools | Yes, bounded | Platform catalog | Yes, stronger gates |
+
+## Existing Skill Formats and Official Collections
+
+The following sources are primary publisher sources and are research inputs only.
+Their repositories, examples, or documentation must not be treated as a blanket
+security or commercial-use approval. Access date for every entry: 2026-07-28.
+
+### Agent Skills Open Specification
+
+Publisher: Agent Skills community project. Source:
+https://github.com/agentskills/agentskills
+
+The project describes a portable, filesystem-oriented Skill format centered on a
+`SKILL.md` file and metadata/instructions. Optional package content can include
+scripts, references, and assets. Portability is a format goal, but runtime support
+and safety remain host-specific. License status must be verified at the selected
+path and commit before adoption.
+
+### Anthropic Public Skills Repository
+
+Publisher: Anthropic. Source: https://github.com/anthropics/skills
+
+The public repository provides Skill examples and related materials. Its exact
+format, required files, optional executable content, and license must be checked
+at the chosen directory and revision. Anthropic document Skills such as DOCX,
+PDF, PPTX, and XLSX are source-available references and must not automatically be
+classified as open source or commercially reusable.
+
+### OpenAI Public Skills Repository
+
+Publisher: OpenAI. Source: https://github.com/openai/skills
+
+The public repository is a primary research source for an official publisher's
+Skill collection. Its required files, optional executable content, license, and
+portability must be verified at the exact selected path, version, and commit.
+
+| Ecosystem | Publisher | Format | License status | Executable content | Portability | Platform posture |
+|---|---|---|---|---|---|---|
+| Agent Skills spec | Agent Skills | Package with `SKILL.md` | Verify exact source | Optional scripts | Portable goal | Research only |
+| Anthropic Skills | Anthropic | Skill directories | Verify path | Optional | Host varies | No automatic import |
+| OpenAI Skills | OpenAI | Skill directories | Verify path | Optional | Host varies | No automatic import |
+
+### License Boundary
+
+Do not assume one license applies to every directory in a Skill repository.
+Anthropic example Skills may use Apache-2.0 or another stated license. Anthropic
+document Skills such as DOCX, PDF, PPTX, and XLSX are source-available references
+and must not automatically be classified as open source or commercially reusable.
+Every adopted Skill must be reviewed at the exact path, version, commit, and
+license file. UNKNOWN license means HOLD or REJECT until clarified. Do not claim
+commercial compatibility without exact evidence.
+
+## Skill Package Security Boundary
+
+- Instructions are untrusted content.
+- Bundled scripts are untrusted executable code.
+- References and assets may contain malicious content.
+- No install-time script execution.
+- No automatic dependency installation.
+- No access to production secrets or user data during intake.
+- Script execution only in an approved sandbox.
+- Network denied by default.
+- Immutable version/checksum approval.
+- Re-review after any content, script, dependency, or permission change.
+- Skill description text is not security evidence.
+
+The applicable security controls are documented in
+[THIRD_PARTY_AGENT_REVIEW.md](../security/THIRD_PARTY_AGENT_REVIEW.md),
+[PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md), and
+[AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md). This document
+does not replace those controls.
+
 ## 2. High-Demand Skill Categories
 
 ### SEO and Content Operations
