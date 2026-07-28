@@ -160,6 +160,76 @@ The applicable security controls are documented in
 [AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md). This document
 does not replace those controls.
 
+## Demand Signals and Evaluation Criteria
+
+The platform evaluates Skill demand through multiple signals. GitHub stars, forks,
+directory placement, and social mentions are interest signals only. They are not
+market validation, security evidence, or proof that a Skill should be adopted.
+
+1. **Business Value for the Persian Market:** evaluate whether the capability
+   helps real Persian-language workflows, including Jalali calendar support,
+   local API integration where lawful and available, right-to-left document
+   generation, bilingual documents, and small-business operations.
+2. **Ecosystem Penetration:** identify whether the capability is natively exposed
+   by major tool ecosystems, such as Anthropic tool use, OpenAI function calling,
+   or an official MCP server. Presence remains discovery evidence only.
+3. **Maintenance Recency:** prefer a source with an observable commit, release, or
+   maintainer update within the preceding six months at evaluation time. The exact
+   evidence and access date must be recorded in the intake package.
+4. **Safety and Sandboxing Cost:** distinguish a bounded HTTP API from a Skill
+   requiring a secured Docker or disposable execution environment. Higher runtime
+   privilege, local process access, and network reach increase evaluation cost.
+
+A Skill moves from research to evaluation only when product value, security cost,
+data classification, publisher evidence, license evidence, and operational owner
+are all documented. Demand cannot override a failed security gate.
+
+## Actual Skills Inventory (Snapshot: 2026-07-28)
+
+This inventory uses qualitative demand signals because live counts vary by registry
+and client. Widespread means the capability is repeatedly represented across major
+tool ecosystems or common product workflows; it is not a quantified market claim.
+
+| Canonical Skill | Typical Provider / Source | Demand Signal | Risk Class | Persian Market Relevance | Sandboxing Requirement |
+|---|---|---|---|---|---|
+| Web Browser / Playwright | Browser libraries and MCP servers | Widespread | High | Research and business | Isolated browser, allowlist |
+| Bash / Shell Execution | Developer tools and agent runtimes | Widespread | Critical | Developer support | Disposable sandbox, no host |
+| Python / Code Interpreter | Managed interpreters and runtimes | Widespread | High | Analysis and education | Isolated runtime, restricted mounts |
+| PDF / Document Reader | Parsers and provider tools | Widespread | Low/Medium | Study and business documents | Scanning and tenant isolation |
+| Web Search / Brave Search / Tavily | Search APIs and MCP connectors | Widespread | Low/Medium | Persian and bilingual research | HTTP allowlist, DLP |
+| Calculator / Math | Provider tools and local libraries | Emerging | Low | Education and calculations | No network; validation |
+
+Risk class reflects the integration boundary, not a guarantee about every provider.
+A document reader becomes higher risk when it handles sensitive files, and search
+becomes higher risk when a connector can browse arbitrary internal destinations.
+
+## Proposed Skill Shortlist for MVP
+
+The Phase 1 shortlist is conservative and must remain behind the platform's
+security and persona architecture:
+
+1. **Web Search:** enables grounded answers with citations, source policy,
+   prompt-injection handling, and output filtering.
+2. **Document/PDF Reader:** enables Study Workspace and Chat with Docs using
+   tenant-scoped read paths, content scanning, and no raw export by default.
+3. **Basic Calculator / Math tool:** reduces model arithmetic hallucination through
+   deterministic, bounded calculation without network access.
+
+Explicitly defer these capabilities from MVP:
+
+- **Bash/Shell execution:** defer until an advanced sandbox satisfies a documented
+  verification gate for disposable execution, denied-by-default network access,
+  restricted mounts, and audit controls.
+- **Unrestricted Web Browser:** defer because CAPTCHA, proxy, session, scraping,
+  SSRF, and abuse risks require a separately approved browser-security design.
+
+The shortlist must comply with
+[AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md),
+[PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md), and the
+Role/Persona architecture in [ROLE_AND_PERSONA_SYSTEM.md](../architecture/ROLE_AND_PERSONA_SYSTEM.md).
+A Persona can narrow a Skill's availability, but a Persona does not grant new
+permissions or bypass a platform security gate.
+
 ## 2. High-Demand Skill Categories
 
 ### SEO and Content Operations
