@@ -230,6 +230,68 @@ Role/Persona architecture in [ROLE_AND_PERSONA_SYSTEM.md](../architecture/ROLE_A
 A Persona can narrow a Skill's availability, but a Persona does not grant new
 permissions or bypass a platform security gate.
 
+## MVP Verdict Table and Early Skill Ranking
+
+Snapshot date: 2026-07-28. Dated signals below are qualitative research signals.
+Stars, forks, downloads, and mentions are interest signals only, not security
+evidence. License review remains path-specific and commit-specific.
+
+| Skill / Category | Source | Dated signal | License verified? | Runtime/code risk | User value | Revenue value | MVP verdict |
+|---|---|---|---|---|---|---|---|
+| GitHub/code review | Official GitHub integration patterns | Widespread | Path-specific review required | medium | High | High | shortlist-early |
+| Browser/search | Search APIs and MCP connectors | Widespread | Path-specific review required | medium | High | High | shortlist-early |
+| Notion/docs | Vendor connectors | Widespread | Path-specific review required | high | High | Medium | later |
+| DB/query | Database connectors | Widespread | UNKNOWN | high | High | High | later |
+| Calendar/email | Provider APIs | Widespread | Path-specific review required | high | Medium | Medium | watchlist |
+| Social posting | Platform APIs | Widespread | Path-specific review required | high | Medium | Medium | reject |
+| SEO | Product-owned draft workflow | Emerging | Platform-owned review | low | High | High | shortlist-early |
+| Product photography | Studio prompt workflow | Emerging | Platform-owned review | medium | High | High | shortlist-early |
+| Data analysis | Bounded local analysis | Widespread | Path-specific review required | high | High | High | later |
+| Security audit | Security tools and scanners | Emerging | UNKNOWN | high | Medium | Medium | watchlist |
+| Persian/localization | Product-owned text workflow | Emerging | Platform-owned review | low | High | High | shortlist-early |
+| Wallet/payment read-only | Platform read-only boundary | Niche | Platform-owned review | medium | Medium | Medium | reject |
+
+### Early MVP Skill Ranking
+
+1. **Persian-aware web search and citation assistant**
+   - Why before others: grounded answers and citations support broad research value.
+   - Risk gate before enabling: source allowlist, prompt-injection defense, DLP,
+     and configured cost controls.
+   - Integration mode: internal product skill.
+   - Out of scope in v1: arbitrary browser control and authenticated browsing.
+2. **Product photography prompt enhancer**
+   - Why before others: supports common product-listing workflows without external
+     publishing authority.
+   - Risk gate before enabling: consent, image safety review, and draft-only output.
+   - Integration mode: internal product skill.
+   - Out of scope in v1: deceptive edits and automatic marketplace posting.
+3. **SEO and landing-page content brief skill**
+   - Why before others: high business value with reviewable draft output.
+   - Risk gate before enabling: no direct CMS write scope and citation checks where
+     external research is used.
+   - Integration mode: internal product skill.
+   - Out of scope in v1: automatic publishing or ranking guarantees.
+4. **GitHub/code review read-only assistant**
+   - Why before others: useful developer workflow with a bounded, read-first scope.
+   - Risk gate before enabling: scoped OAuth, repository allowlist, tenant checks,
+     and no write, merge, or deployment capability.
+   - Integration mode: external MCP connector.
+   - Out of scope in v1: pull-request writes, merges, workflow dispatch, or secrets.
+5. **Document summarization and extraction skill**
+   - Why before others: supports Study Workspace and business document workflows.
+   - Risk gate before enabling: tenant isolation, file scanning, and no raw export
+     by default.
+   - Integration mode: internal product skill.
+   - Out of scope in v1: unrestricted document sharing or cross-tenant retrieval.
+
+### Persian-First Selection Rule
+
+Popularity in English-language ecosystems is not sufficient. Prioritize Persian
+quality, RTL output, Iranian business workflows, privacy risk, wallet/ledger
+read-only use, and revenue fit. Defer social posting, payment write actions,
+arbitrary browser control, and arbitrary script execution until stronger approval
+gates exist.
+
 ## 2. High-Demand Skill Categories
 
 ### SEO and Content Operations
