@@ -181,6 +181,7 @@ Sources:
 | OpenHands | Software development agent | MIT, re-verify | active project ecosystem | shell, network, code changes | research sandbox only |
 | OpenDevin name/history | Predecessor naming context | UNKNOWN | project naming changed | stale assumptions | do not select by name |
 | GPT Engineer | Code generation workflow | MIT, re-verify | visible open-source project | generated code and filesystem risk | watchlist only |
+| Aider | Repository-aware coding assistant | Apache-2.0, re-verify | active developer-tool interest | repo writes and credential risk | watchlist only |
 | BabyAGI | Task-loop prototype concepts | MIT, re-verify | historical visibility | unbounded loop and stale patterns | reject as runtime base |
 | Research agents | Search/synthesis workflows | Varies | broad category | misinformation and injection | evaluate patterns, not brands |
 | Browser agents | Web interaction workflows | Varies | broad category | SSRF, action, session theft | later only |
@@ -222,6 +223,22 @@ internal developer workflows, but a generated patch is untrusted output and must
 be tested, reviewed, scanned, and approved through normal repository controls.
 
 Source: https://github.com/AntonOsika/gpt-engineer
+
+### Aider
+
+Aider is a repository-aware coding assistant that works with a local codebase and
+can propose or apply changes. Its public repository identifies Apache-2.0; verify
+the exact selected version and dependency set during intake. It is high-value for
+developer workflows, but risky because repository writes, shell-adjacent tooling,
+credential exposure, and unreviewed generated changes can affect code and secrets.
+
+Persian relevance is primarily for Persian-speaking developers working with mixed
+Persian/English requirements, comments, and documentation. It does not remove the
+need for RTL review or secure code review. Recommended posture: **watchlist**;
+evaluate only in a disposable sandbox with no production credentials, no direct
+merge or deploy authority, and human review of every change.
+
+Source: https://github.com/Aider-AI/aider
 
 ### BabyAGI
 
