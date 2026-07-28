@@ -45,14 +45,28 @@ reflects expected platform-team integration effort. License entries are based on
 public repository metadata or official documentation at the access date; use
 UNKNOWN where that could not be safely confirmed from the research source.
 
-| Framework | Primary use | License | Maturity signal | Learning curve | Platform assessment |
-|---|---|---|---|---|---|
-| LangChain | LLM application composition and tools | MIT | broad ecosystem | Medium | evaluate utility layer only |
-| LangGraph | Stateful agent/workflow orchestration | MIT | widely documented graph model | Medium/High | shortlist for bounded workflows |
-| AutoGen | Multi-agent conversation framework | MIT | Microsoft-origin ecosystem | Medium | watchlist for controlled patterns |
-| CrewAI | Role-oriented multi-agent workflows | MIT | active community visibility | Low/Medium | sandbox evaluation only |
-| LlamaIndex | Data and retrieval workflows | MIT | mature RAG ecosystem | Medium | shortlist for grounded workflows |
-| Auto-GPT platform | Task execution concepts | MIT, verify exact edition | visible project | Medium/High | research only; high autonomy risk |
+### Terminology Boundary
+
+| Concept | Meaning | Platform implication |
+|---|---|---|
+| Agent Framework | SDK used to build agent workflows | Requires platform-owned tools and controls |
+| Ready-made Autonomous Agent | End-user product or repository such as SWE-agent | Treat as untrusted third-party runtime |
+| Agent Orchestrator | Component managing multiple agent handoffs | Needs explicit delegation and audit boundaries |
+
+An Agent Framework is not automatically a ready-made autonomous Agent, and an
+Agent Orchestrator does not grant agents additional permissions.
+
+| Framework | License | Maturity | Key strength | Persian potential | Sandbox posture | FastAPI fit |
+|---|---|---|---|---|---|---|
+| LangChain / LangGraph | MIT | High | Tools and stateful orchestration | Host/UI must handle RTL | No built-in sandbox | High with policy wrapper |
+| Microsoft AutoGen | MIT | High | Multi-agent and handoff patterns | Prompt and UI evaluation required | No built-in sandbox | Medium/High |
+| CrewAI | MIT | Moderate | Role-oriented workflows | Prompt and UI evaluation required | No built-in sandbox | Medium |
+| LlamaIndex | MIT | High | Retrieval and data workflows | Citation and RTL evaluation required | No built-in sandbox | High for grounded flows |
+| PydanticAI | MIT | Emerging | Type-safe agent contracts | Schema handling helps mixed scripts | No built-in sandbox | High for Python/FastAPI |
+| OpenAI Agents SDK | Apache-2.0 | New/Beta | Tool use and handoffs | Provider and RTL evaluation required | No built-in sandbox | Medium; provider review |
+| Hugging Face smolagents | Apache-2.0 | New | Lightweight agents | RTL evaluation required | No sandbox | Sandbox first |
+| Microsoft Agent Framework | MIT | Emerging | Agent framework | Prompt/UI evaluation | No sandbox | UNKNOWN review |
+| Auto-GPT platform | Mixed; license note | Visible | Task concepts | Evaluation required | No sandbox | Research only |
 
 ### LangChain and LangGraph
 
@@ -116,12 +130,38 @@ Sources:
 - https://github.com/run-llama/llama_index
 - https://docs.llamaindex.ai/
 
-### Auto-GPT
+### PydanticAI, OpenAI Agents SDK, smolagents, and Microsoft Agent Framework
 
-Auto-GPT is a prominent autonomous-agent project and product family. Its
-visibility demonstrates demand for delegated multi-step tasks, while also
-illustrating why broad autonomy needs strong boundaries and review. The exact
-license, project edition, and deployment component must be verified at intake.
+PydanticAI is a Python agent framework focused on type-safe models, dependencies,
+and structured results. Its typed contracts are attractive for a FastAPI backend,
+but type safety does not provide sandboxing, authorization, or credential
+isolation. Persian evaluation still needs mixed-script and RTL acceptance tests.
+
+OpenAI Agents SDK is a newer provider SDK for agent workflows, tools, and handoffs.
+Its Apache-2.0 license and current maturity must be re-verified at the selected
+version. It requires provider-specific review and does not supply a platform
+sandbox by itself.
+
+Hugging Face smolagents emphasizes lightweight tool-using agents. It is useful for
+researching small agent loops, but code-executing patterns require an approved
+sandbox. Microsoft Agent Framework is emerging and requires exact source, license,
+API maturity, and FastAPI compatibility review before any evaluation.
+
+Sources:
+
+- https://github.com/pydantic/pydantic-ai
+- https://github.com/openai/openai-agents-python
+- https://github.com/huggingface/smolagents
+- https://github.com/microsoft/agent-framework
+
+### Auto-GPT License Boundary
+
+Auto-GPT is a prominent autonomous-agent project and product family. Its visibility
+demonstrates interest in delegated multi-step tasks, not suitability for broad
+autonomy. `autogpt_platform/` is PolyForm Shield, which is source available and
+creates a commercial risk. Only older or classic parts are MIT; do not treat the
+repository as uniformly MIT. The exact path, edition, dependency set, and license
+file must be reviewed during intake.
 
 Potential fit: no direct adoption recommendation. Use it as a research reference
 for task decomposition, observability, and failure-mode analysis.
