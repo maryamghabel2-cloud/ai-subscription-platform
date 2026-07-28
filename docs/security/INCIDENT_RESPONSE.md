@@ -4,16 +4,15 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect / Founder
 
 **Purpose:** Define incident severity, containment, credential compromise, data
 exposure, agent compromise, recovery, and post-incident review.
 
-**Note:** Structure-only stub. Final incident response policy will be completed
-later.
-
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
 ## Purpose
 
 Define how we detect, contain, recover from, and learn from security incidents.
@@ -36,7 +35,20 @@ Define how we detect, contain, recover from, and learn from security incidents.
   - Provider API keys, Telegram bot tokens encrypted at rest, HMAC fingerprint
     secret, session tokens, API keys hashed, rotation, revocation, user
     notification if needed, audit trail
-  - Old secrets remain valid for CONFIGURED_LIMIT grace period during rotation
+  - Managed secret storage is the production/staging source of truth (e.g., Vault,
+    dedicated secrets manager)
+  - Environment variables are only controlled runtime injection (e.g., secrets
+    manager injects env var at runtime, not source of truth)
+  - Planned rotation may use a bounded overlap:
+    CONFIGURED_SECRET_ROTATION_GRACE_PERIOD (old secret remains valid for
+    CONFIGURED_SECRET_ROTATION_GRACE_PERIOD during planned rotation)
+  - Suspected or confirmed compromised credentials must be revoked or disabled
+    immediately; compromised credentials receive no grace period or overlap.
+  - Replacement credentials must be issued and dependent services recovered
+    (issue new secret, update secrets manager, restart dependent services,
+    verify recovery, audit log)
+  - Old secrets remain valid for CONFIGURED_SECRET_ROTATION_GRACE_PERIOD grace
+    period during planned rotation only, not for compromised credentials
 - Data exposure:
   - Conversations, messages, uploaded files, wallets, ledgers, payment intents,
     API keys – detection, containment, user notification, regulatory
@@ -80,4 +92,5 @@ Phase 1 - IR
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.

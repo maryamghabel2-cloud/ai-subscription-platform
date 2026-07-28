@@ -4,7 +4,7 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect / Product
 
@@ -12,7 +12,8 @@
 why review is mandatory, review checklist, approved manifest, runtime isolation,
 and re-review requirements.
 
-**Note:** Structure-only. Final policy will be completed later.
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence.
 
 ## Purpose
 
@@ -39,6 +40,102 @@ prevent data exfiltration, abuse, and supply-chain compromise.
 - Supply-chain attacks via agent dependencies are a real threat: dependency
   confusion, typosquatting, malicious packages with known CVEs, prompt injection
   in dependencies
+
+## Intake and Initial Triage Workflow
+
+Define lifecycle states:
+
+- **Submitted:** Agent submitted via Skill Builder or external import, private
+  draft, no public visibility, versioned
+
+- **Intake Validation:** Validate intake package completeness, required fields,
+  no secrets in package, no hardcoding of Role names, no claiming professional
+  authority
+
+- **Quarantined:** Candidate is quarantined until approved, no access to real
+  user data, no access to production credentials, isolated sandbox only
+
+- **License and Provenance Review:** License verified as compatible with
+  commercial use, author/publisher identity confirmed, provenance verified
+
+- **Security Review:** Dependency and supply-chain scan, static and dynamic
+  analysis, prompt injection test, tool abuse test, data exfiltration test
+
+- **Remediation Required:** Critical and high-severity findings must be
+  remediated before approval, medium findings must have mitigation plan
+
+- **Sandbox Evaluation:** Dynamic analysis in isolated sandbox environment, no
+  network by default, then allowlisted network, no access to real user data
+
+- **Human Approval:** Human approval gates for publishing, spending, contacting
+  customers, pricing, config, merge, deploy, API keys, persona sensitive edits,
+  high-risk requires expert review
+
+- **Approved:** Published only after approval, versioned, with review status,
+  rollback version, audit trail
+
+- **Suspended / Revoked / Rejected:** Approval may be revoked immediately if
+  compromise detected, new CVE in dependencies, malicious behavior, or policy
+  violation
+
+The intake package must include:
+
+- Repository or official source (e.g., GitHub URL, official partner source)
+- Immutable commit or release identifier (e.g., commit SHA, tag, release version)
+- Author/publisher identity (e.g., GitHub profile, PGP signature, publisher
+  authority, geographic/jurisdiction)
+- License (e.g., MIT, Apache, proprietary, public domain, licensed, purchased
+  with appropriate usage rights, legally authorized)
+- Commercial-use compatibility (e.g., compatible with commercial use)
+- Checksums/signatures when available (e.g., SHA256, Sigstore, Cosign)
+- Runtime and language (e.g., Python, Node, Docker, WASM)
+- Dependency lockfiles (e.g., package-lock.json, poetry.lock, yarn.lock)
+- SBOM when available (SPDX or CycloneDX)
+- Required tools (e.g., web_search, file_reader, image_generation_api)
+- Read/write permissions (e.g., own data only, no cross-user, draft-only)
+- Network destinations (e.g., approved official government and embassy sources,
+  no arbitrary internet)
+- Secret requirements (e.g., none or specific scoped credentials, separate from
+  platform, revocable independently)
+- Data classifications accessed (e.g., public, internal, confidential, no
+  sensitive personal data)
+- Cost/time/iteration requirements (e.g., maximum cost
+  CONFIGURED_AGENT_MAX_COST_CREDITS, maximum execution time
+  CONFIGURED_AGENT_MAX_DURATION, maximum iterations
+  CONFIGURED_AGENT_MAX_ITERATIONS)
+- Known limitations (e.g., no vision support, no file support, no tool support)
+- Security contact: CONFIGURED_SECURITY_CONTACT; the final operational security
+  contact remains an owner decision and must not be hardcoded as an example
+  address
+- Update and disclosure policy (e.g., how updates are disclosed, security
+  advisory process)
+
+Intake rules:
+
+- No code execution during initial intake (static analysis only, no dynamic
+  execution until quarantined sandbox)
+- No access to real user data (test with synthetic data, canary tokens, no real
+  user data)
+- No access to production credentials (no provider API keys, no Telegram bot
+  tokens, no HMAC secrets, no DATABASE_URL)
+- Unknown license means HOLD or REJECT (cannot approve with unknown license)
+- Unverifiable publisher/provenance means HOLD or REJECT (cannot approve if
+  author identity or provenance cannot be verified)
+- Repository popularity or star count is not security evidence (stars, forks,
+  downloads are not security evidence)
+- A README claim is not security evidence (README saying secure is not evidence)
+- Every candidate starts untrusted (default-deny, must pass all checks)
+- Every candidate is quarantined until approved (no public visibility, no
+  production access until approved)
+- Approval applies only to a specific reviewed version/checksum (e.g., commit
+  SHA, tag, checksum, not to future versions)
+- New versions require re-review (any update requires re-review, even minor)
+- Approval may be revoked immediately (if compromise, new CVE, malicious behavior)
+
+This workflow must later be reusable by the Skills/Agents/MCP
+landscape-research process: the intake package and lifecycle states are designed
+to be reused by internal Skills, Verified External Skills, and User-Provided
+Skills and MCP Connectors, with same quarantine and review process.
 
 ## Review Checklist Before Any Third-Party Agent Is Approved
 
@@ -69,7 +166,8 @@ prevent data exfiltration, abuse, and supply-chain compromise.
 - Prompt injection test: can the agent be hijacked via crafted input? Test
   direct and indirect injection, jailbreak, tool abuse, RAG poisoning
 - Tool abuse test: can the agent call unauthorized tools or exceed its budget
-  via crafted input? Test budget enforcement CONFIGURED_LIMIT
+  via crafted input? Test enforcement of CONFIGURED_AGENT_MAX_COST_CREDITS,
+  CONFIGURED_AGENT_MAX_TOOL_CALLS, and CONFIGURED_AGENT_MAX_ITERATIONS
 - Data exfiltration test: can the agent leak user data to external endpoints?
   Test with canary tokens, no real user data
 
@@ -92,7 +190,10 @@ prevent data exfiltration, abuse, and supply-chain compromise.
     immigration, no arbitrary internet unless approved
   - Secret requirements: none or specific scoped credentials, separate from
     platform, revocable independently
-  - Maximum cost, maximum execution time, maximum iterations (CONFIGURED_LIMIT)
+  - Maximum cost: CONFIGURED_AGENT_MAX_COST_CREDITS
+  - Maximum execution time: CONFIGURED_AGENT_MAX_DURATION
+  - Maximum iterations: CONFIGURED_AGENT_MAX_ITERATIONS
+  - Maximum tool calls: CONFIGURED_AGENT_MAX_TOOL_CALLS
   - Human approval gates: publishing, spending, contacting customers, bulk
     messages, pricing, config, merge, deploy, API keys, persona sensitive edits
   - Risk level: low, medium, high, high-risk requires expert review
@@ -115,12 +216,16 @@ prevent data exfiltration, abuse, and supply-chain compromise.
 
 ## Re-Review Requirement
 
-- Any update to a third-party agent requires re-review (new version, new
-  dependencies, new permissions, new tools, new network allowlist)
-- Agents must be reviewed again on a CONFIGURED_LIMIT cadence (e.g., 90 days,
-  180 days) even if no changes, to check for new CVEs and advisories
-- Security advisories against agent dependencies trigger an immediate re-review
-  (critical CVE in dependency, malicious package report)
+New or materially changed versions require re-review. Approved third-party
+components must be re-reviewed after:
+
+- A material code or dependency change
+- A relevant security advisory
+- A permission or tool change
+- A network-allowlist change
+- A provenance, publisher, license, or ownership change
+- A change to accessed data classifications
+- CONFIGURED_REVIEW_CADENCE
 
 ## Related Documents
 
@@ -145,4 +250,5 @@ Phase 2 - Marketplace Prep
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.

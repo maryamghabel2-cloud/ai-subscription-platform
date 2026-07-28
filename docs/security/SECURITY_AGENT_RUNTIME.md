@@ -4,7 +4,7 @@
 
 **Date:** 2026-07-24
 
-**Status:** Draft - Structure Only
+**Status:** Proposed Architecture - Pending Owner Approval and Implementation
 
 **Document Owner:** Security Architect / SRE
 
@@ -12,14 +12,17 @@
 monitoring scope, detection signals, protective action authority tiers,
 guardrails, audit trail, and human escalation.
 
-**Note:** Structure-only. Final policy will be completed later. No production
+**Note:** Implementation Evidence: This documentation PR does not prove that the described controls are implemented, tested, deployed, or
+production-ready. Code, automated tests, deployment evidence, and security verification remain the authoritative implementation evidence. No
+production
 code in this PR.
 
 ## Purpose
 
-Define how a future continuous Security Agent will monitor platform activity,
-detect threats in real time, take proportionate controlled reversible actions,
-and escalate to human operators.
+Define how a future continuous Security Agent will monitor security-relevant
+telemetry within approved scope, using metadata by default and no raw sensitive
+conversation content by default; detect threats in real time; take proportionate
+controlled actions; and escalate to human operators.
 
 ## In Scope
 
@@ -33,9 +36,16 @@ and escalate to human operators.
 
 ## Mission
 
-- Continuously monitor all platform activity
+- Monitor security-relevant telemetry within approved scope, using metadata by
+  default and no raw sensitive conversation content by default
 - Detect threats in real time
-- Take proportionate, controlled, and reversible protective actions
+- Protective actions must be proportionate, narrowly scoped, and reversible by
+  default
+- An irreversible action is allowed automatically only where explicitly
+  authorized by the canonical Tier 2 policy for a specific confirmed-compromised
+  credential creating immediate security risk
+- Such irreversible containment requires immediate human notification and
+  issuance of a replacement credential where access must be restored
 - Escalate to human operators when required
 
 ## Monitoring Scope
@@ -62,39 +72,53 @@ and escalate to human operators.
 
 ## Detection Signals
 
-Use CONFIGURED_LIMIT placeholders for thresholds, no invented numbers:
+Use CONFIGURED_DETECTION_THRESHOLD placeholders for thresholds, no invented numbers:
 
-- Authentication failure rate above CONFIGURED_LIMIT
-- Token consumption spike above CONFIGURED_LIMIT
+- Authentication failure rate above CONFIGURED_AUTH_FAILURE_THRESHOLD
+- Token consumption spike above CONFIGURED_TOKEN_USAGE_ANOMALY_THRESHOLD
 - Cross-user data access attempt (IDOR)
 - Known prompt injection pattern detected
 - Credential or API key pattern in AI output
 - Agent tool call outside allowed schema
-- Unusual file upload pattern (type, size, frequency above CONFIGURED_LIMIT)
+- Unusual file upload pattern (type, size, frequency above CONFIGURED_UPLOAD_RATE_THRESHOLD)
 - Payment callback from unexpected source
 - Admin action outside business hours
-- Multiple failed authorization attempts above CONFIGURED_LIMIT
+- Multiple failed authorization attempts above CONFIGURED_AUTH_FAILURE_THRESHOLD
 
 ## Protective Action Authority
 
-### Tier 1 — Automatic and Reversible
+## Tier 1 — Automatic and Reversible
 
-- Apply emergency rate limits
-- Block a specific malicious request
-- Issue a security alert to operators
+- Block a malicious request
+- Apply scoped emergency rate limiting
+- Generate alerts
+- Record a security event
 
-### Tier 2 — Automatic with Human Notification
+## Tier 2 — Automatic Containment with Immediate Human Notification
 
-- Suspend a suspicious user session
-- Quarantine a suspicious uploaded file
-- Temporarily disable a misbehaving agent
+- Suspend a suspicious session
+- Quarantine a suspicious file
+- Pause or temporarily disable a specific Agent execution or version
+- Cancel a suspicious Agent execution
+- Suspend a scoped credential
+- Revoke a specific confirmed-compromised token or scoped API key when immediate
+  risk exists
+- Provide immediate human notification
 
-### Tier 3 — Requires Human Approval
+Suspension is reversible. Revocation is not reversible; access restoration
+requires re-authentication or a replacement credential.
 
-- Revoke a compromised token or API key
-- Permanently disable an agent
-- Escalate a potential data-breach incident
-- Access raw conversation content for investigation
+## Tier 3 — Human Approval Required
+
+- Permanent account disablement
+- Permanent Agent revocation
+- Global provider-key rotation
+- Broad service shutdown
+- Access to raw sensitive conversation content
+- Significant cross-tenant or business-impact actions
+
+Tier 3 requires human approval, except under a separately approved break-glass
+policy. Alert generation and incident escalation never require prior approval.
 
 ## Security Agent Guardrails
 
@@ -106,6 +130,39 @@ Use CONFIGURED_LIMIT placeholders for thresholds, no invented numbers:
 - Tier 3 actions require human approval
 - All actions are logged in an immutable audit trail
 - Security Agent must fail safe: if uncertain, alert and wait
+
+## Fail-Safe and Degraded-Mode Behavior
+
+Require:
+
+- Low-confidence findings must not trigger irreversible high-impact action
+- When uncertain, alert and wait (fail safe)
+- Automatically applied actions must be proportionate, narrowly scoped, and
+  reversible by default. The only documented automatic irreversible exception is
+  revocation of a specific confirmed-compromised token or scoped API key under
+  Tier 2 when continued validity creates immediate security risk.
+- Detection-system failure must not silently grant access (fail closed for
+  access decisions)
+- Policy-engine failure must fail closed for sensitive actions (deny by default)
+- Telemetry failure must create an operator alert (log pipeline failure,
+  monitoring failure, alert failure)
+- Security Agent must not modify its own permissions (no self-elevation)
+- Security Agent must not disable or rewrite its audit trail (immutable,
+  tamper-resistant, append-only)
+- Security Agent must not suppress its own alerts (no alert suppression,
+  no log deletion)
+- Human override must exist (on-call operator can override Security Agent
+  decision, with audit)
+- Override use must itself be audited (who overrode, when, why, outcome)
+- Emergency containment must have an expiry or explicit review (e.g.,
+  emergency rate limit expires after CONFIGURED_AGENT_RATE_LIMIT, requires review)
+- Degraded mode must be visible to operators (dashboard, alert, status page,
+  no silent degraded mode)
+
+Do not weaken privacy controls: Security Agent must not have default access to
+raw conversations, must not read raw private conversation content by default,
+must not share conversation content without user consent or separately approved
+audited workflow.
 
 ## Audit Trail
 
@@ -136,7 +193,7 @@ Use CONFIGURED_LIMIT placeholders for thresholds, no invented numbers:
 
 ## Open Decisions
 
-- Exact detection signals and CONFIGURED_LIMIT thresholds
+- Exact detection signals and CONFIGURED_DETECTION_THRESHOLD thresholds
 - Approval workflow for Tier 2 and Tier 3 actions
 - Reversibility criteria and SLA
 - On-call rotation and escalation paths
@@ -148,4 +205,5 @@ Phase 2 - Security Automation
 
 ## Status Note
 
-Draft - Structure Only. Will be completed later.
+Proposed Architecture - Pending Owner Approval and Implementation. Implementation and verification are separate future work. Open Decisions remain
+unresolved until explicitly approved.
