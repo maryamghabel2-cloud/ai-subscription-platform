@@ -17,8 +17,7 @@ Accepted, and implementation PRs still require security and product review.
 
 ## 2. Revised Product Positioning
 
-The platform is not only an AI workspace. It is proposed as a **Persian AI
-Business Automation + Creator Commerce Platform**: a workspace where individuals,
+The platform is not only an AI workspace. It is proposed as a **Persian AI Business Automation + Creator Commerce Platform**: a workspace where individuals,
 creators, service providers, and businesses can use bounded AI tools, buy or sell
 approved services, and later automate approved workflows.
 
@@ -266,7 +265,7 @@ separate acceptance, privacy, security, and product approval.
 - Localized payment, tax, and legal requirements.
 - Creator dispute, refund, and content moderation policy.
 
-## Related Documents
+### Related Documents
 
 - Technical v1 decisions: [MCP_SKILLS_AGENTS_V1_DECISIONS.md](MCP_SKILLS_AGENTS_V1_DECISIONS.md)
 - Skills research: [SKILLS_LANDSCAPE_RESEARCH.md](../research/SKILLS_LANDSCAPE_RESEARCH.md)
