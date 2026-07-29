@@ -38,6 +38,14 @@ and general-file attachments. External publishing is not part of this foundation
 Every asset, version, job, and delivery package is bound to a tenant and owner.
 No asset reference authorizes cross-tenant access.
 
+| Outcome | Primary user | Asset inputs | Job outputs | Human approval point |
+|---|---|---|---|---|
+| Reels/Shorts Auto Editor | Creator | Raw video/audio | Reviewable edits | Before publishing |
+| Product Photography Studio | Business | Product images | Photo variants | Before commercial use |
+| Product-to-Video Ad Generator | Business | Product assets | Video drafts | Before publication |
+| UGC Creator Delivery | Creator/business | Creator media | Delivery package | Brand approval |
+| Chat Attachments | Workspace user | Files/media | Safe previews | Before sharing |
+
 ## 4. Asset Types
 
 Supported types may include image, video, audio, PDF, text document, general
@@ -51,6 +59,12 @@ accepted, rejected, processing, available, archived, deletion_pending, and
 deleted. Deletion of a source asset must account for derived variants, backups,
 provider copies, and delivery packages.
 
+- Each lifecycle transition must be audit logged as metadata.
+- Rejected assets must not enter processing.
+- Quarantined assets require a Security/Trust workflow.
+- Deletion includes derived variants and delivery packages.
+- Deletion may be delayed by backup expiry or legal hold.
+
 ## 6. Secure Upload Pipeline
 
 Require authenticated upload sessions; tenant/user ownership binding; short-lived
@@ -60,7 +74,11 @@ media-parser hardening; quarantine before processing; metadata and EXIF handling
 and rejection reasons that do not leak scanner details.
 
 No public bucket access is allowed. Raw asset content must not appear in technical
-logs.
+logs. Upload-session idempotency is required. Client-side preflight metadata is
+untrusted; server-side verification is authoritative. Generate private bucket/object
+paths server-side and limit each signed URL to one object/action. Scanner timeout
+handling uses CONFIGURED_SCAN_TIMEOUT. Suspicious upload events route Security Agent
+metadata without raw asset content.
 
 ## 7. Semantic File and Duration Limits
 
@@ -86,6 +104,13 @@ cancellation_requested, cancelled, and quarantined.
 
 Jobs require idempotency, progress reporting, cancellation, timeout, retry policy,
 safe partial results, failure-reason classification, and no unlimited retries.
+
+- Job state changes are append-only events.
+- Retry policy is bounded by CONFIGURED_MEDIA_JOB_MAX_RETRIES.
+- Timeout uses CONFIGURED_MEDIA_JOB_TIMEOUT.
+- Cancellation actor must be recorded.
+- Partial output must be marked as partial.
+- Failed provider execution must not charge unfairly.
 
 ## 9. Reels and Shorts Processing Boundary
 
@@ -117,6 +142,12 @@ and consent/license evidence.
 Marketplace payment and escrow are not implemented here. Creator content must not
 be used outside agreed rights. AI enhancement must preserve creator and brand
 consent records.
+
+- Creator identity verification remains an Open Decision.
+- Usage rights attach to each delivery package.
+- Revisions preserve prior versions.
+- Brand approval and creator consent are separate records.
+- Human creator marketplace payment and escrow remain out of scope here.
 
 ## 12. Storage and Encryption
 
@@ -166,7 +197,10 @@ impersonation/likeness-consent controls, and prompt-injection handling for
 transcripts and metadata.
 
 Jurisdiction-specific handling is an Open Decision requiring legal and Trust &
-Safety review; this document does not invent legal procedures.
+Safety review; this document does not invent legal procedures. Controls also include
+upload abuse and repeated rejection signals, transcript/subtitle prompt injection,
+face/likeness misuse escalation, creator impersonation review, and audit evidence
+for Trust & Safety review.
 
 ## 18. Proposed Implementation PR Sequence
 
@@ -210,7 +244,7 @@ Each future PR requires tests and rollback plans.
 - transcript language-detection policy
 - asset classification escalation workflow
 
-## Related Documents
+### Related Documents
 
 - [DATA_CLASSIFICATION_AND_RETENTION.md](DATA_CLASSIFICATION_AND_RETENTION.md)
 - [PROVIDER_ABSTRACTION_STRATEGY.md](PROVIDER_ABSTRACTION_STRATEGY.md)
