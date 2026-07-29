@@ -4,16 +4,20 @@
 
 **Date:** 2026-07-28
 
-**Status:** Proposed Commercial Decision Record - Pending Owner Approval
+**Status:** Accepted Commercial Decision Record - Owner Approved
+
+**Owner Approval Date:** 2026-07-29
 
 **Document Owner:** Product / Commercial / Security
 
 ## 1. Purpose and Status
 
 This record turns market and platform research into commercial planning choices.
-It does not approve implementation, provider activation, customer outreach, or
-external automation. Owner approval is required before any decision becomes
-Accepted, and implementation PRs still require security and product review.
+Owner approval accepts the product and commercial direction. It does not claim
+implementation, deployment, legal clearance, provider activation, or production
+readiness. Every implementation PR still requires its own technical, security,
+privacy, legal, product, and financial review where applicable. Open Decisions
+remain unresolved until separately approved.
 
 ## 2. Revised Product Positioning
 
@@ -93,20 +97,21 @@ business rules and approvals.
 
 ## 8. Automation Philosophy and Autonomy Levels
 
-Autonomy is a policy ladder, not a marketing feature:
+Risk classification and autonomy level are separate concepts. A low-risk
+capability is not automatically entitled to L4 or L5.
 
-- **L1:** assistive generation; produces a draft with no external side effect.
-- **L2:** structured recommendation; prepares a proposed action for review.
-- **L3:** bounded execution; performs an approved reversible action in a narrow
-  scope with audit metadata.
-- **L4:** approval-gated automation; may act only after explicit human approval
-  for each consequential action or approved batch.
-- **L5:** autonomous operation; not available in v1 and requires future owner,
-  security, legal, and product decisions.
+| Level | Name | Description | Example |
+|---|---|---|---|
+| L1 | Read | Read, retrieve, classify, and analyze without external write effects | Read order status |
+| L2 | Draft | Create a draft, recommendation, preview, or proposed action | Draft an Instagram caption |
+| L3 | Approval Write | Perform a specific write action only after explicit human approval | Publish an approved post |
+| L4 | Bounded Autonomy | Perform pre-approved actions inside strict policy, scope, budget, and audit boundaries | Answer approved FAQs |
+| L5 | High Autonomy | Operate across broader workflows after separate proof, approval, and governance | Future only |
 
-L1 and L2 are the commercial starting point. L3 needs robust authorization,
-rollback, audit, and cancellation controls. L4 is limited to documented workflows.
-L5 is not a current product commitment.
+L1 and L2 are the default MVP levels. L3 is permitted for explicitly approved
+external actions. L4 requires deterministic policy rules, revocation, audit,
+cancellation, budget limits, and escalation. L5 is not automatically approved by
+this decision record.
 
 ## 9. Ready-Made Agent Adoption Policy
 
@@ -211,21 +216,44 @@ separately approved, bounded workflow with appropriate user approval.
 
 ## 16. Recommended First Commercial Product
 
-The first commercial product is **Persian Content and Commerce Studio**. It bundles
-L1 and L2 content creation, product visual briefs, listing drafts, Persian SEO
-briefs, document assistance, and creator handoff. It prioritizes visible value and
-reviewable outputs over autonomous external action.
+The first commercial product is **Persian Content and Commerce Studio**.
 
-Initial success measures should be owner-approved engagement, conversion, repeat
-use, delivery quality, and support burden indicators, without inventing targets in
-this record.
+Canonical initial product portfolio:
+
+1. Reels and Shorts Auto Editor
+2. Instagram Caption and Hashtag Generator
+3. Product Photography Studio
+4. Product-to-Video Ad Generator
+5. UGC Creator Marketplace
+6. Product Listing and Persian SEO Generator
+
+The Reels/Shorts Editor accepts user-provided raw media and produces reviewable,
+platform-ready edited output. Internal media transformation may run automatically
+as an isolated job. Publishing to Instagram, Telegram, or another external
+destination is a separate L3 action requiring approval.
+
+AI-generated output and human creator fulfillment may be combined. The UGC Creator
+Marketplace is a core commercial capability, not a minor optional feature. Exact
+providers, pricing, file limits, export quality, music licensing, creator
+verification, escrow, and commission remain Open Decisions.
 
 ## 17. Recommended Second Commercial Product
 
-The second commercial product is **Persian Business Agent Pack**. It follows only
-after the first product validates permissions, audit, credits, and review flows.
-It begins with L2 and selected L3 workflow assistance for support, catalog, office,
-and business operations, not autonomous customer contact or payment actions.
+The second commercial product is **Persian Business Agent Pack**.
+
+Initial suites:
+
+1. Customer Support Agent
+2. Sales and Lead Management Agent
+3. E-commerce Content and Catalog Agent
+4. Website and Persian SEO Agent
+5. Document and Administration Agent
+
+Initial customer-facing deployment starts at L1/L2. Selected messaging, publishing,
+CRM, or catalog writes may advance to L3 after explicit approval workflows exist.
+L4 is allowed only for proven, repetitive, narrow workflows. Curated ready-made
+Agents may be adopted through certification, isolation, localization, evaluation,
+and Policy Gateway controls.
 
 ## 18. Implementation Sequencing
 
@@ -242,16 +270,16 @@ separate acceptance, privacy, security, and product approval.
 
 ## 19. Owner Approval Checklist
 
-- [ ] Revised product positioning accepted.
-- [ ] Priority market order accepted.
-- [ ] Three-layer platform model accepted.
-- [ ] L1–L5 autonomy model accepted.
-- [ ] Ready-made Agent certification policy accepted.
-- [ ] Persian Content and Commerce Studio accepted as first product.
-- [ ] Persian Business Agent Pack accepted as second product.
-- [ ] Revenue model direction accepted.
-- [ ] Deferred and forbidden capability boundaries accepted.
-- [ ] Implementation sequencing accepted.
+- [x] Revised product positioning accepted.
+- [x] Priority market direction accepted.
+- [x] Three-layer platform model accepted.
+- [x] Canonical L1-L5 autonomy model accepted.
+- [x] Ready-made Agent certification policy accepted.
+- [x] Persian Content and Commerce Studio accepted as first product.
+- [x] Persian Business Agent Pack accepted as second product.
+- [x] Revenue-model direction accepted.
+- [x] Deferred/forbidden capability distinction accepted.
+- [x] Implementation sequencing accepted.
 
 ## 20. Open Decisions
 
