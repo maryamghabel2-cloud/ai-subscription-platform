@@ -1,3 +1,9 @@
+> **Note:** This document predates the accepted commercial direction.
+> For current memory, retention, and user-control architecture, see
+> [MEMORY_RETENTION_AND_USER_CONTROLS.md](MEMORY_RETENTION_AND_USER_CONTROLS.md).
+> This document remains for historical reference until the roadmap
+> rebaseline consolidates retention policy.
+
 # DATA CLASSIFICATION AND RETENTION - Phase 0 Governance
 
 **Date:** 2026-07-20
