@@ -23,6 +23,15 @@
 
 - Does not define creator marketplace fulfillment, prompt marketplace monetization, agent marketplace runtime, payment, or escrow.
 
+| Workflow | Input | Output | Primary buyer | First autonomy level |
+|---|---|---|---|---|
+| Reels and Shorts Auto Editor | raw video/audio | reviewable short-form variants | creators, shops | L2 draft |
+| Product Photography Studio | product images | professional product-photo variants | e-commerce sellers | L2 draft |
+| Product-to-Video Ad Generator | product images/URL/description | ad video drafts | shops, marketers | L2 draft |
+
+Internal generation/editing is L1/L2. External publishing is L3 Approval Write.
+Scheduled auto-publishing is not enabled in v1.
+
 
 ## 3. Shared Studio Workflow Model
 
@@ -46,6 +55,22 @@
 
 - Studio Project, Creative Brief, Variant Set, Render Job, Review Stage, Approval Action, and Delivery Package are shared concepts.
 
+
+### Provider Abstraction Boundary
+
+- Use provider-neutral media adapters.
+- Declare capabilities per operation.
+- Record privacy classification and training/retention policy.
+- Do not silently fall back in a way that weakens privacy or raises cost.
+- Do not select a provider in this document.
+
+### Job Lifecycle Boundary
+
+- Reuse media job foundation states.
+- Support multi-step studio progress, cancellation, and partial outputs.
+- Bound retries with CONFIGURED_STUDIO_JOB_TIMEOUT,
+  CONFIGURED_STUDIO_MAX_VARIANTS, and CONFIGURED_STUDIO_MAX_DURATION.
+- Do not use concrete numeric values.
 
 ## 4. Reels and Shorts Auto Editor
 
@@ -226,6 +251,17 @@
 
 - Trust & Safety review dependency; no legal-policy hardcoding.
 
+
+## Persian-First and RTL Requirements
+
+- Require Persian caption quality for Reels/Shorts.
+- Use RTL-safe text layout in images and video overlays.
+- Support Persian fonts for captions and ad copy.
+- Handle mixed Persian/English text.
+- Support Persian ad-copy tone variants such as formal and casual.
+- Persian voiceover quality remains a provider Open Decision.
+- Do not render reversed or broken Persian characters in media.
+- Maintain an evaluation set for Persian caption and ad-copy quality.
 
 ## 14. Proposed Implementation PR Sequence
 
