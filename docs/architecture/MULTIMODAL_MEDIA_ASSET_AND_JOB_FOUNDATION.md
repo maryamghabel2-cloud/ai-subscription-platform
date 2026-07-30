@@ -22,6 +22,14 @@ to professional product-photo variants, product assets to product-ad video draft
 UGC creator upload/review/revision/delivery, and chat image, audio, video, PDF,
 and general-file attachments. External publishing is not part of this foundation.
 
+| Outcome | Primary user | Asset inputs | Job outputs | Human approval point |
+|---|---|---|---|---|
+| Reels/Shorts Auto Editor | Creator | Raw video/audio | Reviewable edits | Before publishing |
+| Product Photography Studio | Business | Product images | Photo variants | Before commercial use |
+| Product-to-Video Ad Generator | Business | Product assets | Video drafts | Before publication |
+| UGC Creator Delivery | Creator/business | Creator media | Delivery package | Brand approval |
+| Chat Attachments | Workspace user | Files/media | Safe previews | Before sharing |
+
 ## 3. Canonical Domain Concepts
 
 - **Media Asset:** tenant-owned source or generated binary/content object.
@@ -37,14 +45,6 @@ and general-file attachments. External publishing is not part of this foundation
 
 Every asset, version, job, and delivery package is bound to a tenant and owner.
 No asset reference authorizes cross-tenant access.
-
-| Outcome | Primary user | Asset inputs | Job outputs | Human approval point |
-|---|---|---|---|---|
-| Reels/Shorts Auto Editor | Creator | Raw video/audio | Reviewable edits | Before publishing |
-| Product Photography Studio | Business | Product images | Photo variants | Before commercial use |
-| Product-to-Video Ad Generator | Business | Product assets | Video drafts | Before publication |
-| UGC Creator Delivery | Creator/business | Creator media | Delivery package | Brand approval |
-| Chat Attachments | Workspace user | Files/media | Safe previews | Before sharing |
 
 ## 4. Asset Types
 
