@@ -203,6 +203,35 @@ messages, and local business context support including Iranian business workflow
 - cross-tenant isolation model
 - Enterprise private Agent hosting
 
+
+### Operational Notes
+
+- Approval requests include scope, side effect, cost class, and expiry.
+- Approval denial is a policy outcome and remains auditable.
+- Sandbox cleanup removes scratch data after terminal run state.
+- Tool allowlists are resolved before a run begins and at each call.
+- Manifest updates create a new reviewed version.
+- Publisher suspension blocks new installs.
+- Workspace administrators may impose stricter autonomy ceilings.
+- Quarantine blocks new runs while preserving audit evidence.
+- Evaluation harnesses use synthetic data by default.
+- Certification evidence is version-specific.
+- Model output cannot override a blocked gateway decision.
+- Tool output is treated as untrusted input on re-entry.
+- Budget exhaustion terminates a run safely.
+- Cancellation is available to authorized users and operators.
+- Partial outputs are clearly labeled.
+- Incident response can disable an agent version without granting raw content access.
+- Enterprise private agents require separate hosting decisions.
+- Localization changes can require re-evaluation.
+- Security review status is visible before install.
+- Marketplace discovery is not an authorization grant.
+- External protocol connections remain independently mediated.
+- Revenue records do not grant execution permissions.
+- Rights disputes do not bypass sandbox or policy controls.
+- Human support workflows remain separate from agent runtime authority.
+- Documentation does not select a sandbox, framework, or provider.
+
 ### Marketplace Boundary
 
 Catalog discovery is not runtime permission. Installing a listing binds only the
