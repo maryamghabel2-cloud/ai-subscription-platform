@@ -133,9 +133,75 @@ recorded as metadata.
 Tool results are sanitized before return to agent code. Prompt-injection defenses
 and DLP apply to tool input/output. Agent code never receives direct provider keys.
 
-> **Document continues in the next commit with: Human Approval Gates,**
-> **Audit and Monitoring, Revocation, Rights and Revenue, Agent SDK,**
-> **Persian Requirements, Implementation Sequence, and Open Decisions.**
+
+## 10. Human Approval Gates
+
+- Configurable approval gates apply per Agent.
+- High-risk actions require approval.
+- Actions above CONFIGURED_AGENT_APPROVAL_COST_THRESHOLD require approval.
+- External messaging and publishing require approval.
+- Approval may be per-run or per-workflow.
+- Approval records actor and timestamp.
+- Alerts and escalation never require prior approval.
+- L1/L2 are default; L3 requires explicit approval; L4 needs bounded policy; L5 is not marketplace-granted.
+
+## 11. Audit, Logging, and Monitoring
+
+Every Agent action has an immutable audit trail. Logs are metadata only and omit
+raw sensitive content. Security Agent monitors unusual tool use, cost spikes, and
+loop patterns. See [SECURITY_AGENT_RUNTIME.md](../security/SECURITY_AGENT_RUNTIME.md).
+
+## 12. Revocation, Rollback, and Quarantine
+
+Vulnerable Agent versions are immediately revoked. Rollback uses a previous
+approved version. Suspicious runs may be quarantined, and workspaces can disable
+an Agent. Revocation/quarantine events are audited. Confirmed-compromised Agent
+credentials receive no grace period; see [SECRETS_AND_KEY_MANAGEMENT.md](../security/SECRETS_AND_KEY_MANAGEMENT.md).
+
+## 13. Rights, License, and Revenue Model
+
+Each listing declares its license. Future models may include developer revenue
+share, subscription, or pay-per-run pricing, usage reserve-settle-refund hooks, and
+refund/dispute policy. Exact rates remain Open Decisions.
+
+## 14. Agent SDK Requirements
+
+SDK support includes manifest declaration helpers, typed tools, approval primitives,
+sandbox-safe execution, audit helpers, Persian/RTL output, error/cancellation, and
+version/dependency declaration. It must not allow arbitrary network/filesystem
+access, secret exfiltration, cross-tenant access, or self-granted escalation.
+
+## 15. Persian-First and Localization Requirements
+
+Require Persian response quality, RTL handling, Persian tool descriptions and error
+messages, and local business context support including Iranian business workflows.
+
+## 16. Proposed Implementation PR Sequence
+
+1. Agent manifest schema and validation.
+2. Sandbox profile and execution environment.
+3. Policy Gateway and tool allowlist enforcement.
+4. Human approval gate primitives.
+5. Audit and monitoring integration.
+6. Revocation, quarantine, and rollback.
+7. Marketplace catalog and search.
+8. Installation and permission approval flow.
+9. Agent SDK first version.
+10. Revenue and billing hooks.
+11. Frontend marketplace later.
+
+## 17. Open Decisions
+
+- sandbox technology choice
+- Policy Gateway implementation approach
+- Agent SDK languages
+- commission and pricing model
+- developer verification/KYC
+- supply-chain security tooling
+- maximum execution time per Agent
+- cost limit enforcement model
+- cross-tenant isolation model
+- Enterprise private Agent hosting
 
 ### Marketplace Boundary
 
