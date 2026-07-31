@@ -203,7 +203,31 @@
 - Creator studio credit policy remains Open Decision.
 
 
-## 14. Persian-First Marketplace Requirements
+## 14. Autonomy Levels and Human Approval
+
+| Action | Level | Notes |
+|---|---|---|
+| Browse creator profiles and portfolios | L1 | Read-only |
+| Read published briefs | L1 | Read-only |
+| AI brief enhancement suggestion | L2 | Draft, buyer must accept |
+| AI match/creator recommendation | L2 | Draft, buyer must select |
+| AI QA notes on delivery | L2 | Advisory, human decides |
+| Publish a brief | L3 | Explicit buyer approval |
+| Accept an order (as creator) | L3 | Explicit creator approval |
+| Submit delivery | L3 | Explicit creator action |
+| Approve delivery / request revision | L3 | Explicit buyer approval |
+| Release funds (future) | L3 | Requires payment/legal approval |
+| Auto-hiring without buyer/creator consent | Forbidden in v1 | — |
+| Auto-payout without approval | Forbidden in v1 | — |
+| Cross-brand content reuse without rights | Forbidden | — |
+
+L4 (Bounded Autonomy) may later apply to narrow, low-risk actions such as automatic
+FAQ replies inside creator support workflows, only after separate approval. L5
+(High Autonomy) is not permitted for money movement, hiring, publishing, or rights
+decisions in v1. Every L3+ action is recorded in the audit trail as metadata only,
+without raw private message content.
+
+## 15. Persian-First Marketplace Requirements
 
 - Persian industry brief templates
 
@@ -216,7 +240,7 @@
 - Iranian business workflow fit and Instagram-first targets
 
 
-## 15. Proposed Implementation PR Sequence
+## 16. Proposed Implementation PR Sequence
 
 - 1. creator profile and category models
 
@@ -241,7 +265,7 @@
 - 11. frontend marketplace UI later
 
 
-## 16. Open Decisions
+## 17. Open Decisions
 
 - commission rate
 
