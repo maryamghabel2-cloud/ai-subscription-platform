@@ -17,21 +17,21 @@
 
 ## 2. Scope Boundary vs Agent Marketplace
 
-- | Aspect | Prompt Marketplace (this doc) | Agent Marketplace (5D) |
+| Aspect | Prompt Marketplace (this doc) | Agent Marketplace (5D) |
 
-- |---|---|---|
+|---|---|---|
 
-- | Autonomy | non-autonomous | autonomous / multi-step |
+| Autonomy | non-autonomous | autonomous / multi-step |
 
-- | Planning | none | yes |
+| Planning | none | yes |
 
-- | Tool use | at most one bounded call | multiple calls |
+| Tool use | at most one bounded call | multiple calls |
 
-- | Approval model | user runs manually | Agent runs steps under policy |
+| Approval model | user runs manually | Agent runs steps under policy |
 
-- | Risk profile | lower | higher |
+| Risk profile | lower | higher |
 
-- | Review | injection + content review | full agent review |
+| Review | injection + content review | full agent review |
 
 - Skills may invoke one bounded platform tool, but the user initiates execution. Skills must not autonomously chain tools or plan.
 
@@ -204,25 +204,25 @@
 
 ## 11. Autonomy Levels and Execution Boundary
 
-- | Action | Level | Notes |
+| Action | Level | Notes |
 
-- |---|---|---|
+|---|---|---|
 
-- | Browse listings | L1 | Read-only |
+| Browse listings | L1 | Read-only |
 
-- | Preview sample output | L1 | Read-only |
+| Preview sample output | L1 | Read-only |
 
-- | Install to workspace | L3 | Explicit user approval |
+| Install to workspace | L3 | Explicit user approval |
 
-- | Run prompt template | L2 | Draft output |
+| Run prompt template | L2 | Draft output |
 
-- | One bounded tool call | L2 or L3 | Side-effect class decides |
+| One bounded tool call | L2 or L3 | Side-effect class decides |
 
-- | Auto chain or scheduling | Not allowed | Belongs to Agents |
+| Auto chain or scheduling | Not allowed | Belongs to Agents |
 
-- | Account settings | Forbidden | — |
+| Account settings | Forbidden | — |
 
-- | Money or external message | Forbidden here | Requires L3 elsewhere |
+| Money or external message | Forbidden here | Requires L3 elsewhere |
 
 - Skills must not plan chains, run without user click, or bypass Safety, Injection Defense, or DLP.
 
@@ -252,7 +252,7 @@
 
 - pin-to-version option
 
-- automatic security updates
+- security quarantine, suspension, or revocation response
 
 - deprecation window
 
@@ -323,6 +323,74 @@
 
 - 14. frontend later
 
+
+
+### Workflow Template Boundary
+
+A Workflow Template in this Store is declarative, predefined, human-initiated,
+non-planning, non-autonomous, bounded to approved Product Skills, unable to create
+hidden loops or unlimited retries, unable to invoke arbitrary external networks,
+and unable to perform external side effects without separate L3 approval. A
+template requiring autonomous planning, dynamic multi-tool chaining, background
+scheduling, self-directed retries, or multi-step authority belongs to the Agent
+Marketplace, not this Store.
+
+### Executable Package Boundary
+
+Prompt templates contain no executable scripts. Product Skill listings reference
+platform-approved capabilities rather than shipping arbitrary executable code.
+Bundled scripts, binaries, install hooks, arbitrary dependencies, and automatic
+package installation are out of scope for Store v1. Future executable Agent Skills
+packages require exact-version license review, provenance/checksum verification,
+dependency and supply-chain review, sandbox evaluation, permission review, and
+human approval. See [THIRD_PARTY_AGENT_REVIEW.md](../security/THIRD_PARTY_AGENT_REVIEW.md)
+and [AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md).
+
+### Listing Lifecycle
+
+Listing states are draft, submitted, automated_review, manual_review,
+changes_requested, approved, published, suspended, deprecated, and delisted. Only
+approved listings may be published. Suspended or delisted listings cannot be newly
+installed; existing installs may be disabled for immediate security risk. Suspension
+or delisting reason is audit metadata, and appeals do not automatically restore
+publication.
+
+### Manifest Requirements
+
+Every Product Skill listing includes listing_id, skill_id, version, author_id,
+publisher_type, asset_type, category, language, input_schema, output_schema,
+model_compatibility, required_capabilities, required_data_classes, permission_scope,
+side_effect_class, autonomy_ceiling, bounded_tool_reference, network_access_policy,
+cost_class, estimate_supported, risk_class, content_class, safety_profile,
+license_identifier, license_evidence_path, provenance_source, immutable_checksum,
+security_review_status, review_version, minimum_platform_version, dependencies,
+localization_notes, and change_log.
+
+A listing references at most one approved bounded platform Tool in v1.
+network_access_policy defaults to denied. A listing cannot increase its own
+permissions. Permission and cost changes require explicit workspace re-approval.
+Manifest data is machine-readable and human-reviewable.
+
+### Installation and Update Policy
+
+Before install, the buyer/workspace admin sees permissions, side-effect class,
+autonomy ceiling, bounded Tool reference, data classes, network policy, cost class,
+license, publisher identity, reviewed version, and checksum. Explicit approval is
+required. Buyers may pin to a reviewed version. Content or permission changes do
+not silently activate. Permission, cost, license, network, Tool, and data-access
+changes require re-approval. Security response may quarantine, suspend, or revoke
+a vulnerable version without silently replacing behavior with materially different
+content. Rollback to the previous approved version is supported. Install and update
+history is auditable.
+
+### Related Documents
+
+- [SKILLS_LANDSCAPE_RESEARCH.md](../research/SKILLS_LANDSCAPE_RESEARCH.md)
+- [MCP_SKILLS_AGENTS_V1_DECISIONS.md](../product/MCP_SKILLS_AGENTS_V1_DECISIONS.md)
+- [EXTENSIBILITY_MCP_AND_SKILLS.md](EXTENSIBILITY_MCP_AND_SKILLS.md)
+- [THIRD_PARTY_AGENT_REVIEW.md](../security/THIRD_PARTY_AGENT_REVIEW.md)
+- [AGENT_SECURITY_MODEL.md](../security/AGENT_SECURITY_MODEL.md)
+- [PROMPT_INJECTION_DEFENSE.md](../security/PROMPT_INJECTION_DEFENSE.md)
 
 ## 17. Open Decisions
 
