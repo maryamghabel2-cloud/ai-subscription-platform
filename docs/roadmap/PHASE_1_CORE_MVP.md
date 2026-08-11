@@ -1,7 +1,7 @@
 # Phase 1 — Core Product MVP
 
-**Date:** 2026-08-11  
-**Status:** In Progress  
+**Date:** 2026-08-11
+**Status:** In Progress
 **Canonical Roadmap:** [MASTER_ROADMAP.md](MASTER_ROADMAP.md)
 
 ## Purpose
