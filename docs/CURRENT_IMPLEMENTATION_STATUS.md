@@ -15,4 +15,10 @@
 | Prompt Enhancer | Planned | No capability router found | None | No product surface | First paid Skill |
 | Instagram Caption Generator | Planned | No studio API found | None | No product surface | First Studio MVP |
 
+## Validation Notes
+
+No backend, frontend, or test command was executed in this documentation PR.
+Test paths listed above are evidence locations, not passing-test claims. Runtime
+validation remains required before a status can become Verified.
+
 Implemented means source artifacts exist; it does not mean verified in this PR.
