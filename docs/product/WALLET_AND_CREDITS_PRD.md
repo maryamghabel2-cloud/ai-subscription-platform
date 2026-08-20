@@ -104,4 +104,140 @@ ledger editing.
 Ledger history is append-only; historical entries are never mutated or deleted.
 Corrective entries are an Open Decision: Owner decision required before D2.
 
---- Sections 11-19 will be added in D1.1b-Part2 ---
+
+## 11. UI States
+
+| State | When it appears | Required UI behavior | User action |
+|---|---|---|---|
+| Loading balance | Session opens | Show non-sensitive loading indicator | Wait or refresh |
+| Balance loaded | Balance returns | Show available and reserved state | Open wallet |
+| Empty history | No entries | Explain no activity yet | Start top-up |
+| History loaded | Entries return | Show recent-first rows | Filter or paginate |
+| Top-up form | User selects add credits | Show sandbox notice | Submit intent |
+| Top-up pending | Intent created | Prevent duplicate confirmation | Confirm mock result |
+| Top-up succeeded | Mock success | Refresh balance and receipt | View receipt |
+| Top-up failed | Mock failure | Explain no credits added | Start new intent |
+| No filter results | Filter excludes entries | Show clear empty state | Clear filter |
+| Low balance | Approved policy detects low balance | Show warning | Open wallet |
+| Insufficient balance | Billable request rejected | Link to wallet | Add sandbox credits |
+| Network failure | API unavailable | Preserve last known display label | Retry |
+| Duplicate confirmation | Replay detected | Show original outcome | Return to wallet |
+
+## 12. Non-Functional Requirements
+
+- WALLET-NFR-001: Navigation and dashboard display the same authoritative balance after refresh.
+- WALLET-NFR-002: Wallet queries enforce tenant isolation.
+- WALLET-NFR-003: RTL layout preserves readable credit values and labels.
+- WALLET-NFR-004: Mobile layout keeps balance and recovery actions reachable.
+- WALLET-NFR-005: Keyboard and screen-reader controls expose filters and receipts.
+- WALLET-NFR-006: Duplicate confirmations are idempotent.
+- WALLET-NFR-007: Telemetry contains metadata only.
+- WALLET-NFR-008: Authentication uses HttpOnly cookie sessions; browser token storage is prohibited.
+- WALLET-NFR-009: Ledger history is read-only for users and administrators.
+- WALLET-NFR-010: Real payment provider activation is excluded from Phase 1.
+
+## 13. Sequence Diagrams
+
+```mermaid
+sequenceDiagram
+participant U as User
+participant UI as Web UI
+participant API as Payment API
+participant M as Mock Payment Provider
+participant W as Wallet Service
+participant L as Ledger
+U->>UI: Start sandbox top-up
+UI->>API: Create intent
+API->>W: Create pending transaction
+UI->>M: Confirm mock payment
+alt success
+M->>API: success
+API->>W: Credit once
+W->>L: Append credit
+else failure
+M->>API: failure
+API->>W: Mark failed, no credit
+else duplicate
+M->>API: replay
+API-->>UI: Original outcome
+end
+```
+
+```mermaid
+sequenceDiagram
+participant F as Feature API
+participant W as Wallet Service
+participant L as Ledger
+participant P as Provider Gateway
+F->>W: Estimate and reserve
+W->>L: Append reservation
+F->>P: Execute request
+alt success
+P-->>F: output
+F->>W: Settle
+W->>L: Append debit
+else failure or timeout
+P-->>F: failure
+F->>W: Release
+W->>L: Append release
+end
+```
+
+## 14. Edge Cases and Abuse Controls
+
+Handle duplicate confirmations, concurrent top-ups, settlement after applicable
+expiration policy, double-spend attempts, cross-tenant access, unauthenticated
+wallet access, refresh races, large-history pagination, manual ledger edit attempts,
+and attempts to activate real payment in Phase 1.
+
+## 15. Analytics Events
+
+| Event name | Trigger | Minimal properties | Privacy note |
+|---|---|---|---|
+| wallet_dashboard_opened | Dashboard view | tenant, state | no content |
+| wallet_balance_viewed | Balance visible | balance state | no raw ledger |
+| wallet_transaction_history_loaded | History response | page, count | metadata only |
+| wallet_filter_applied | Filter change | filter type | metadata only |
+| topup_intent_created | Intent request | intent state | no payment detail |
+| topup_mock_confirmed | Mock response | outcome | metadata only |
+| topup_succeeded | Credit applied | transaction ID | metadata only |
+| topup_failed | Failure recorded | error class | metadata only |
+| credits_reserved | Feature hold | feature | metadata only |
+| credits_settled | Usage debit | feature | metadata only |
+| credits_released | Hold release | reason class | metadata only |
+| credits_insufficient_shown | Preflight reject | feature | metadata only |
+| wallet_receipt_viewed | Receipt click | transaction ID | metadata only |
+
+## 16. Acceptance Criteria
+
+- WALLET-AC-001: Given login, when navigation loads, then current balance is visible.
+- WALLET-AC-002: Given history, when dashboard opens, then entries are recent-first.
+- WALLET-AC-003: Given a date filter, when applied, then only matching entries display.
+- WALLET-AC-004: Given a sandbox top-up, when intent starts, then a pending transaction displays.
+- WALLET-AC-005: Given mock success, when confirmed, then balance credits exactly once.
+- WALLET-AC-006: Given mock failure, when confirmed, then balance does not increase.
+- WALLET-AC-007: Given duplicate confirmation, when replayed, then no second credit exists.
+- WALLET-AC-008: Given billable usage, when settled, then a visible ledger entry exists.
+- WALLET-AC-009: Given released reservation, when release completes, then spendable credits restore.
+- WALLET-AC-010: Given history read, when viewed, then balance does not change.
+- WALLET-AC-011: Given another tenant wallet ID, when requested, then access is denied.
+- WALLET-AC-012: Given insufficient credits, when action starts, then wallet recovery link displays.
+- WALLET-AC-013: Given a receipt, when viewed, then ledger data remains immutable.
+- WALLET-AC-014: Given Phase 1, when top-up runs, then no real payment provider is active.
+
+## 17. MVP Exit Criteria
+
+Sandbox top-up, history, reserve/settle/release, tenant isolation, auditable
+read-only ledger, and no double-credit/double-charge are proven by future tests.
+
+## 18. Dependencies and Risks
+
+Wallet/ledger foundations and mock intents exist but require end-to-end validation.
+Frontend remains legacy. Pricing, credit packages, reservation expiration, and
+receipt retention are undecided.
+
+## 19. Open Decisions
+
+Credit packages/prices, low-balance threshold, reservation expiration, receipt
+retention, reserved-balance display, and corrective ledger entry governance:
+Owner decision required before D2 Technical Contracts approval.
