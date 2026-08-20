@@ -1,7 +1,7 @@
 # Prompt Enhancer PRD
 
 ## 1. Document Control
-**Status:** Draft
+**Status:** Draft (pending owner review)
 **Phase:** Phase 1 — In Progress
 **Owner:** Product
 **Approval state:** Review required
