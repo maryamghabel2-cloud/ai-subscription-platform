@@ -29,11 +29,31 @@ Chat estimate considers input, retained/summarized context, output budget, model
 multiplier, cached tokens, and reasoning tokens. Tier thresholds are deferred to
 D2. Estimate is shown before execution and is the maximum user charge.
 
+### Prompt Enhancer Policy
+
+- Price per enhancement: 2 credits.
+- Maximum raw prompt length: 2,000 characters.
+- History retention: 90 days.
+- Favorites are deferred from required Phase 1 MVP scope and may be added only
+  by separate approval as a low-risk optional item.
+
+### Caption Generator Policy
+
+- Initial generation: 5 credits; regeneration: 5 credits as a new billable request.
+- Default hashtag count: 10; minimum: 3; maximum: 30.
+- Maximum description length: 1,000 characters.
+- History retention: 90 days.
+- Instagram platform-fit reference threshold: 2,200 characters.
+- Other platform-fit thresholds are deferred to D2.
+
 ## 9. Credit Reservation and Settlement Policy
 Reserve quote before provider call; settle actual successful charge; release unused
 reservation; never settle above approved quote. Phase 1 absorbs unexpected cost
 variance and records metadata. Failure, timeout, and cancellation release the full
 reservation; canceled output may remain labeled canceled. Copy/history are free.
+
+- Initial request timeout target: 60 seconds. D2 defines connection,
+  first-token, idle-stream, and total timeout budgets.
 
 ## 10. Token Optimization Policy
 Use deterministic Token Budget Manager, not an autonomous optimizer. It estimates,
