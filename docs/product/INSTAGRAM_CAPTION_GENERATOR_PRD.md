@@ -82,6 +82,10 @@ and bulk CSV import.
 14. ICG-FR-014: Successful outputs persist tenant-scoped history for reopen.
 15. ICG-FR-015: Unsafe content produces an actionable policy state and releases any hold.
 16. ICG-FR-016: All history and requests enforce tenant isolation.
+17. ICG-FR-017: On successful provider completion, settle the reservation exactly once and display final charged credits.
+18. ICG-FR-018: On provider failure or timeout, release the reservation and create no settled usage charge.
+19. ICG-FR-019: When output conflicts with selected platform norms, show a non-blocking platform-fit warning.
+20. ICG-FR-020: Duplicate submissions and idempotent retries create no duplicate provider execution, settlement, or charge.
 
 
 
@@ -92,7 +96,7 @@ and bulk CSV import.
 | Empty form | Initial load | Show input guidance | Enter description |
 | Form ready | Required fields valid | Enable estimate | Generate |
 | Estimating | Inputs submitted | Show credit estimate | Confirm |
-| Generating | Credits reserved | Show progress | Cancel |
+| Generating | Credits reserved | Show progress | View generation progress |
 | Variations displayed | Success | Separate captions and hashtags | Copy or regenerate |
 | Copied caption | Copy clicked | Confirm copied | Paste elsewhere |
 | Copied hashtags | Tags copied | Confirm copied | Paste elsewhere |
@@ -141,6 +145,10 @@ API->>H: Persist history
 API->>W: Settle credits
 API-->>UI: Captions and hashtags
 U->>UI: Regenerate
+UI->>API: New estimate
+API-->>UI: Show estimate
+U->>UI: Confirm new request
+UI->>API: New reservation and generation
 end
 end
 ```
@@ -187,19 +195,47 @@ platform switch after generation, and session expiry.
 - ICG-AC-013: Given history, when reopened, then only tenant output is visible.
 - ICG-AC-014: Given mixed Persian/English output, when rendered, then RTL layout remains readable.
 
+- ICG-AC-015: Given selected tone, length, language mode, and platform, when generation starts, then all selections are included in the request.
+- ICG-AC-016: Given configured platform norms are exceeded, when output displays, then a non-blocking warning is visible.
+- ICG-AC-017: Given provider success, when settlement runs, then it settles exactly once.
+- ICG-AC-018: Given duplicate submission, when replayed, then no duplicate generation or charge occurs.
+- ICG-AC-019: Given regenerate, when confirmed, then a new estimate and billing lifecycle are visible.
+
 ## 15. MVP Exit Criteria
 
-Future implementation proves generation, credit lifecycle, RTL, safety, tenant
-isolation, and error flows through tests.
+- [ ] Three variations return by default.
+- [ ] Up to five variations can be requested.
+- [ ] Caption and hashtags are separately copyable.
+- [ ] Character count is visible.
+- [ ] Tone, length, language, and platform affect the request.
+- [ ] Platform-fit warning works.
+- [ ] Estimate, reservation, settlement, and release are visible.
+- [ ] Generation history is tenant-scoped.
+- [ ] Unsafe and insufficient-credit states are handled.
+- [ ] No image upload or vision analysis is active.
+- [ ] No real payment provider is active.
+- [ ] Required D2/C0 tests pass before implementation is complete.
 
 ## 16. Dependencies and Risks
 
-Wallet reserve/settle, provider gateway, history persistence, and frontend
-replacement are dependencies. Risks include Persian quality, claims safety, and
-credit reconciliation.
+- Provider gateway implementation or verification is pending.
+- Wallet billing contract is pending D2.
+- Legacy frontend replacement is required.
+- Persian output quality requires evaluation.
+- Unsafe or misleading marketing claims require policy handling.
+- Platform constraint maintenance requires ownership.
+- Credit reconciliation requires test coverage.
+- History retention remains uncertain.
 
 ## 17. Open Decisions
 
-Credit price per generation/regenerate, default hashtag count, history retention,
-maximum description length, provider/model selection, and prohibited-category
-ownership: Owner decision required before D2 Technical Contracts approval.
+- Credit price per initial generation. Owner decision required before D2 Technical Contracts approval.
+- Credit price per regeneration. Owner decision required before D2 Technical Contracts approval.
+- Default hashtag count. Owner decision required before D2 Technical Contracts approval.
+- Minimum hashtag count. Owner decision required before D2 Technical Contracts approval.
+- Maximum hashtag count. Owner decision required before D2 Technical Contracts approval.
+- History retention duration. Owner decision required before D2 Technical Contracts approval.
+- Maximum description length. Owner decision required before D2 Technical Contracts approval.
+- Provider/model selection. Owner decision required before D2 Technical Contracts approval.
+- Prohibited-category policy owner. Owner decision required before D2 Technical Contracts approval.
+- Platform-fit warning thresholds. Owner decision required before D2 Technical Contracts approval.
