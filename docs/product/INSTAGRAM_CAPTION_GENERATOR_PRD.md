@@ -1,102 +1,87 @@
 # Instagram Caption Generator PRD
 
-**Status:** Draft — Phase 1 In Progress
+## 1. Document Control
 
-## 1. Overview and Business Goal
-Instagram Caption Generator is a Phase 1 product specification for Persian-first, credit-transparent user value.
+**Status:** Draft (Part 1 of 2)
+**Phase:** Phase 1 — In Progress
+**Owner:** Product
+**Last updated:** 2026-08-20
+**Related:** [Chat](GENERAL_CHAT_PRD.md), [Wallet](WALLET_AND_CREDITS_PRD.md), [Prompt Enhancer](PROMPT_ENHANCER_PRD.md), [Phase 1](../roadmap/PHASE_1_CORE_MVP.md)
+**Implementation state:** Pending implementation.
 
-## 2. Target Users and Personas
-Persian-speaking individual users, business users, and workspace administrators use this responsive RTL feature.
+## 2. Product Overview and Business Goal
 
-## 3. User Problems and Jobs to Be Done
-Users need clear, safe, credit-aware workflows instead of opaque generic AI tools.
+Instagram Caption Generator is the first Studio tool in Persian Content and
+Commerce Studio. It creates reviewable captions and hashtags for Persian creators
+and shops, using credits per generation. It provides a monetizable bridge from
+chat/Prompt Enhancer into commercial Studio workflows.
 
-## 4. User Stories
-- As a user, I want product description so that I can complete the Instagram Caption Generator workflow safely (US-1).
-- As a user, I want target audience so that I can complete the Instagram Caption Generator workflow safely (US-2).
-- As a user, I want tone selection so that I can complete the Instagram Caption Generator workflow safely (US-3).
-- As a user, I want length selection so that I can complete the Instagram Caption Generator workflow safely (US-4).
-- As a user, I want platform selection so that I can complete the Instagram Caption Generator workflow safely (US-5).
-- As a user, I want language mode so that I can complete the Instagram Caption Generator workflow safely (US-6).
-- As a user, I want hashtag count so that I can complete the Instagram Caption Generator workflow safely (US-7).
-- As a user, I want three variations so that I can complete the Instagram Caption Generator workflow safely (US-8).
-- As a user, I want copy caption so that I can complete the Instagram Caption Generator workflow safely (US-9).
-- As a user, I want regenerate history so that I can complete the Instagram Caption Generator workflow safely (US-10).
+## 3. Target Users
 
-## 5. In Scope (Phase 1 MVP)
-- product description
-- target audience
-- tone selection
-- length selection
-- platform selection
-- language mode
-- hashtag count
-- three variations
-- copy caption
-- regenerate history
+- Instagram shop owner: needs fast product copy for frequent listings.
+- Content creator: needs tone-consistent captions for audience engagement.
+- Social media manager: needs variants for distinct client brands.
+- Local small-business owner: needs Persian marketing copy without specialist skill.
 
-## 6. Out of Scope (Phase 1)
-- Real payment activation, autonomous external actions, marketplace selling, and multi-step agent planning.
+## 4. User Problems and Jobs to Be Done
 
-## 7. Functional Requirements
-1. The system must support product description with authenticated tenant ownership, explicit state, and metadata audit output.
-2. The system must support target audience with authenticated tenant ownership, explicit state, and metadata audit output.
-3. The system must support tone selection with authenticated tenant ownership, explicit state, and metadata audit output.
-4. The system must support length selection with authenticated tenant ownership, explicit state, and metadata audit output.
-5. The system must support platform selection with authenticated tenant ownership, explicit state, and metadata audit output.
-6. The system must support language mode with authenticated tenant ownership, explicit state, and metadata audit output.
-7. The system must support hashtag count with authenticated tenant ownership, explicit state, and metadata audit output.
-8. The system must support three variations with authenticated tenant ownership, explicit state, and metadata audit output.
-9. The system must support copy caption with authenticated tenant ownership, explicit state, and metadata audit output.
-10. The system must support regenerate history with authenticated tenant ownership, explicit state, and metadata audit output.
+- Turn a rough product description into publishable Persian social copy.
+- Match a caption to a brand tone without rewriting it manually.
+- Create mixed Persian/English hashtags suitable for selected channels.
+- Compare multiple options before choosing a caption.
+- Know credit impact before generating paid content.
 
-## 8. Non-Functional Requirements
-- RTL and Persian quality.
-- Accessibility basics and mobile responsiveness.
-- CONFIGURED_FEATURE_RESPONSE_TARGET reliability target.
-- Privacy-minimized telemetry.
-- Credit transparency before billable action.
-- Secure HttpOnly cookie session only.
+## 5. User Stories
 
-## 9. Key User Flows and States
-```mermaid
-flowchart LR
-A[User action] --> B[Validate session and credits]
-B --> C[Feature processing]
-C --> D[Visible result]
-B --> E[Error or insufficient credits]
-```
-Loading, empty, network-failure, insufficient-credit, and error states are explicit.
+- As a shop owner, I want to describe a product so that I can generate relevant copy.
+- As a creator, I want to select tone so that captions match my public voice.
+- As a manager, I want length selection so that copy fits campaign format.
+- As a marketer, I want platform selection so that wording fits the destination.
+- As a bilingual user, I want language mode so that copy matches my audience.
+- As a user, I want hashtag count selection so that I control tag density.
+- As a user, I want three variations so that I can compare creative approaches.
+- As a user, I want copy buttons so that I can reuse caption and tags separately.
+- As a returning user, I want history so that I can revisit prior work.
+- As a credit-conscious user, I want an estimate so that I can decide to generate.
+- As a user with low credits, I want a clear block so that I can open the wallet.
+- As a user, I want unsafe description handling so that disallowed content is not generated.
 
-## 10. Edge Cases and Abuse Prevention
-Rate limit, tenant isolation, prompt injection defense, idempotency, and content policy checks apply.
+## 6. Phase 1 Scope
 
-## 11. Analytics and Telemetry Events
-- instagram_caption_generator_product_description_succeeded
-- instagram_caption_generator_target_audience_succeeded
-- instagram_caption_generator_tone_selection_succeeded
-- instagram_caption_generator_length_selection_succeeded
-- feature_failed
-- insufficient_credits
-- security_policy_blocked
+- Text product/topic description and optional text audience description.
+- Optional text-only image context; image upload and vision analysis are out of scope.
+- Tones: professional, casual, funny, promotional, luxury, educational.
+- Lengths: short, medium, long.
+- Targets: Instagram, Telegram, LinkedIn, Twitter/X.
+- Language modes: Persian, English, mixed.
+- Hashtag count selection, three variations by default, up to five by user choice.
+- Separate caption/hashtag output, character count, platform-fit warning, copy,
+  regenerate, history, credit estimate/reserve/settle/release, RTL/error states.
 
-## 12. Acceptance Criteria
-- [ ] AC-1: product description completes with a binary observable result.
-- [ ] AC-2: target audience completes with a binary observable result.
-- [ ] AC-3: tone selection completes with a binary observable result.
-- [ ] AC-4: length selection completes with a binary observable result.
-- [ ] AC-5: platform selection completes with a binary observable result.
-- [ ] AC-6: language mode completes with a binary observable result.
-- [ ] AC-7: hashtag count completes with a binary observable result.
-- [ ] AC-8: three variations completes with a binary observable result.
+## 7. Out of Scope
 
-## 13. MVP Exit Criteria
-Feature tests, RTL review, credit behavior, and security review pass in a future implementation PR.
+Image upload, vision analysis, automatic posting, scheduling, multi-account
+management, published-post analytics, competitor analysis, real payment activation,
+and bulk CSV import.
 
-## 14. Dependencies and Risks
-Provider abstraction, wallet reserve/settle, frontend replacement, and policy enforcement are dependencies.
+## 8. Functional Requirements
 
-## 15. Open Questions
-- Exact credit pricing.
-- Provider selection.
-- Retention policy.
+1. ICG-FR-001: Authenticated submit accepts description and rejects empty, too-short, or policy-invalid text.
+2. ICG-FR-002: Tone selection persists in generation request and returned metadata.
+3. ICG-FR-003: Length selection constrains requested caption intent.
+4. ICG-FR-004: Platform selection applies destination-specific output constraints.
+5. ICG-FR-005: Language mode is sent with the request and displayed with results.
+6. ICG-FR-006: Hashtag count selection controls requested hashtag output.
+7. ICG-FR-007: API returns credit estimate before provider execution.
+8. ICG-FR-008: Insufficient credits block provider execution before generation.
+9. ICG-FR-009: Valid generation reserves credits before provider dispatch.
+10. ICG-FR-010: Default generation returns three distinct variations; user may request up to five.
+11. ICG-FR-011: Each result separates caption text, hashtags, and character count.
+12. ICG-FR-012: Copy caption or hashtags performs no credit charge.
+13. ICG-FR-013: Regeneration creates a new billable request with visible estimate.
+14. ICG-FR-014: Successful outputs persist tenant-scoped history for reopen.
+15. ICG-FR-015: Unsafe content produces an actionable policy state and releases any hold.
+16. ICG-FR-016: All history and requests enforce tenant isolation.
+
+## Document Status: Part 1 of 2 Complete
+Sections 1-8 are written. Sections 9 (UI States) through 17 (Open Decisions) will be completed in Part 2. This document is not yet complete or ready for implementation review.
