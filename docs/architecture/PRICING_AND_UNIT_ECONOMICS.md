@@ -407,3 +407,34 @@ Phase 1 - Pricing and Unit Economics
 Proposed Architecture - Pending Owner, Finance, Security, and Compliance Approval.
 Will be completed later with product, finance, security, and owner review.
 No real payment gateways in this PR.
+
+## ADR-0002 Phase 1 Credit Pricing
+
+User-facing billing unit is credits. Credits are the only Phase 1 billing unit;
+real fiat pricing is deferred. See [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md).
+
+| Feature | Credit Cost | Billing Model |
+|---|---|---|
+| General Chat | 1, 2, or 3 credits | Tiered by Token Budget Manager |
+| Prompt Enhancer | 2 credits | Fixed per enhancement |
+| Caption Generator (initial) | 5 credits | Fixed per generation (3 variations) |
+| Caption Generator (regenerate) | 5 credits | New billable request |
+| Copy / Read History | 0 credits | Free |
+
+## Quote-Before-Execution Policy
+The estimate is shown before execution and accepted quote is maximum charge. The
+platform never settles above quote. Phase 1 absorbs unexpected provider variance
+and records pricing-variance metadata.
+
+## Internal Cost Metering
+Internal tracking uses provider-reported prompt, completion, reasoning, cached
+tokens and cost. OpenRouter usage data is separate from user credits and informs
+future fiat pricing.
+
+## Sandbox Credit Packages
+100 credits, 500 credits, and 2,000 credits are sandbox packages. No fiat price is
+approved in Phase 1.
+
+## Deferred
+Chat tier boundaries, estimation, and cost multipliers are D2. Real currency pricing
+is deferred beyond D2.
