@@ -5,9 +5,11 @@
 **Status:** Draft — Complete PRD, pending owner review
 **Phase:** Phase 1 — In Progress
 **Owner:** Product
-**Last updated:** 2026-08-20
+**Last updated:** 2026-08-21
 **Related:** [Chat](GENERAL_CHAT_PRD.md), [Wallet](WALLET_AND_CREDITS_PRD.md), [Prompt Enhancer](PROMPT_ENHANCER_PRD.md), [Phase 1](../roadmap/PHASE_1_CORE_MVP.md)
 **Implementation state:** Pending implementation.
+
+- [ADR-0002: Phase 1 Owner Decisions](../decisions/0002-phase-1-product-metering-and-infrastructure.md)
 
 ## 2. Product Overview and Business Goal
 
@@ -227,15 +229,19 @@ platform switch after generation, and session expiry.
 - Credit reconciliation requires test coverage.
 - History retention remains uncertain.
 
-## 17. Open Decisions
+## 17. Owner Decisions (Resolved & Deferred)
 
-- Credit price per initial generation. Owner decision required before D2 Technical Contracts approval.
-- Credit price per regeneration. Owner decision required before D2 Technical Contracts approval.
-- Default hashtag count. Owner decision required before D2 Technical Contracts approval.
-- Minimum hashtag count. Owner decision required before D2 Technical Contracts approval.
-- Maximum hashtag count. Owner decision required before D2 Technical Contracts approval.
-- History retention duration. Owner decision required before D2 Technical Contracts approval.
-- Maximum description length. Owner decision required before D2 Technical Contracts approval.
-- Provider/model selection. Owner decision required before D2 Technical Contracts approval.
-- Prohibited-category policy owner. Owner decision required before D2 Technical Contracts approval.
-- Platform-fit warning thresholds. Owner decision required before D2 Technical Contracts approval.
+**Resolved via ADR-0002:**
+- Initial generation price: 5 credits.
+- Regeneration price: 5 credits (new billable request).
+- Hashtag count: Default 10, Minimum 3, Maximum 30.
+- Maximum description length: 1,000 characters.
+- History retention: 90 days.
+- Prohibited product categories: Product Owner approval (detailed policy deferred to D3).
+- Instagram platform-fit threshold: 2,200 characters.
+
+**Deferred to D2 Technical Contracts:**
+- Other platform-fit thresholds (Telegram, LinkedIn, Twitter/X).
+- Token-estimation algorithm logic.
+- Approved primary and fallback model IDs.
+- Provider-routing and fallback rules.

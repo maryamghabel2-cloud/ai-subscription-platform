@@ -4,10 +4,12 @@
 **Status:** Draft (pending owner review)
 **Phase:** Phase 1 — In Progress
 **Owner:** Product
-**Approval state:** Review required
-**Last updated:** 2026-08-20
+**Approval state:** Owner Approved (via ADR-0002)
+**Last updated:** 2026-08-21
 Related: [Chat](GENERAL_CHAT_PRD.md), [Wallet](WALLET_AND_CREDITS_PRD.md), [Phase 1](../roadmap/PHASE_1_CORE_MVP.md), [Status](../CURRENT_IMPLEMENTATION_STATUS.md).
 Implementation state: Pending implementation.
+
+- [ADR-0002: Phase 1 Owner Decisions](../decisions/0002-phase-1-product-metering-and-infrastructure.md)
 
 ## 2. Product Overview and Business Goal
 Prompt Enhancer is the first paid Skill. It improves weak prompts, bridges activation chat and Studio tools, uses credits, is Persian-first, supports English, and hands enhanced prompts to General Chat.
@@ -148,5 +150,15 @@ Future implementation proves style selection, billing lifecycle, safety, RTL, hi
 ## 16. Dependencies and Risks
 Wallet lifecycle, provider gateway, history store, and frontend replacement are dependencies.
 
-## 17. Open Decisions
-Credit price, favorite MVP requirement, history retention, maximum input length, and provider/model selection: Owner decision required before D2 Technical Contracts approval.
+## 17. Owner Decisions (Resolved & Deferred)
+
+**Resolved via ADR-0002:**
+- Credit price per enhancement: 2 credits.
+- Favorites: Deferred from Phase 1 MVP required scope.
+- History retention: 90 days.
+- Maximum input length: 2,000 characters.
+
+**Deferred to D2 Technical Contracts:**
+- Token-estimation algorithm logic.
+- Approved primary and fallback model IDs.
+- Provider-routing and fallback rules.

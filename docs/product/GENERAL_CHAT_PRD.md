@@ -11,6 +11,8 @@
 | Approval state | Review required |
 | Dependencies | Secure cookie auth, wallet/ledger, provider gateway, conversation store |
 
+- [ADR-0002: Phase 1 Owner Decisions](../decisions/0002-phase-1-product-metering-and-infrastructure.md)
+
 ## 2. Overview and Business Goal
 
 General Persian Chat is the activation capability: the first useful interaction for
@@ -205,7 +207,19 @@ Dependencies: provider abstraction, wallet reserve/settle, conversation persiste
 and frontend replacement. Risks: provider availability, settlement correctness,
 Persian quality, and privacy; mitigate through tests and phased rollout.
 
-## 18. Open Decisions
+## 18. Owner Decisions (Resolved & Deferred)
 
-Exact credit price per message, provider/model choice, retention duration, and
-provider timeout value: Owner decision required before D2 Technical Contracts approval.
+**Resolved via ADR-0002:**
+- Credit price: Tiered (1, 2, or 3 credits based on budget manager).
+- Provider/model selection: OpenRouter (USDC) as primary MVP gateway.
+- Conversation retention: 90 days.
+- Canceled partial responses: Released completely; no charge for partial output.
+- Admin visibility: Metadata only (count, credits, status), no conversation content.
+
+**Deferred to D2 Technical Contracts:**
+- Exact token/cost boundaries for Chat tiers 1, 2, and 3.
+- Token-estimation algorithm and model cost multipliers.
+- Approved primary and fallback model IDs.
+- Provider-routing and fallback rules.
+- Connection, first-token, idle-stream, and total timeout budgets (initial target: 60s).
+- Conversation summarization trigger and max summary-token budget.
