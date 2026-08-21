@@ -89,7 +89,15 @@ receipt retention is 12 months. UI shows available and reserved balance. Ledger 
 append-only; corrections use new compensating entries. Real gateways, cards,
 recurring billing, tax invoices, bank integrations are out of Phase 1.
 
-## 15. Deferred Decisions
+### Additional Owner-Approved Product Decisions
+
+- Caption Generator returns 3 variations by default and allows a maximum of 5.
+- Product Owner owns prohibited-category policy approval; detailed policy is deferred to D3.
+- Copying captions and hashtags is free.
+- Copying existing enhancements, reopening enhancement history, and sending an
+  existing enhanced prompt to Chat are free; a new Chat run remains independently billable.
+
+## 15. Deferred to D2 Technical Contracts
 D2: tier boundaries, estimation, multipliers, model IDs, routing/fallback, timeout
 budgets, summarization, quote validity, variance telemetry, non-Instagram norms,
 usage normalization, Iran testing, vendor criteria. Beyond D2: brand/domain, real
