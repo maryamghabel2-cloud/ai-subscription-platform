@@ -3,7 +3,7 @@
 ## Document Control
 
 **Title:** Phase 1 Feature API Contract — General Chat
-**Status:** Draft (Part 1 of 3 — Parts 2 and 3 pending)
+**Status:** Draft — Complete Chat Feature API Contract
 **Phase:** Phase 1 — In Progress
 **Last updated:** 2026-08-21
 **Related:** [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md), [API Contract](API_CONTRACT_V1.md), [Chat PRD](../product/GENERAL_CHAT_PRD.md)
@@ -64,19 +64,59 @@ MVP optional; deletion strategy is deferred to D2.3. If implemented, it is
 tenant-scoped and returns `{"id":"uuid","status":"deleted"}`. Errors:
 not_authenticated, not_found. It is free and never deletes immutable ledger entries.
 
-## Document Status: Part 2 of 3 Complete
+## Section 3: Streaming Response Contract
 
-This document currently contains:
-- Document Control
-- Overview
-- Core Principles
-- Section 1: Conversation Management Endpoints (3 endpoints)
-- Section 2: Message Endpoints (send, cancel, delete)
+Chat uses SSE `text/event-stream`; each event has `event` and JSON `data`.
 
-Pending in Part 3:
-- Streaming Response Contract (SSE event types)
-- Billing Lifecycle Summary table
-- Implementation Status table
-- Open items for D2.2b (Enhancer, Caption, Admin)
+| Event | When emitted | Payload fields | Billing effect |
+|---|---|---|---|
+| estimate | Before reserve | estimated_credits, tier, quote_id | None |
+| reserved | Hold created | reservation_id, quoted_credits, expires_at | available -> reserved |
+| token | Partial output | content | None |
+| done | Settlement complete | message_id, actual_credits, quoted_credits, released_credits | settle/release |
+| error | Failure | code, message, released_credits | Release |
+| canceled | User cancellation | message_id, released_credits | Full release |
 
-Do not treat this contract as complete or implementation-ready until Part 3 is merged into this file.
+Estimate precedes reserved; tokens follow reservation; done follows settlement.
+Error does not charge unless already settled. Canceled partial output is free.
+Clients finalize only on done, error, or canceled.
+
+## Section 4: Billing Lifecycle Summary
+
+| Step | Action | Credit Effect | API/Service Contract |
+|---|---|---|---|
+| Estimate | Calculate tier | None | Internal metering |
+| Reserve | Quote held | available -> reserved | Wallet reserve |
+| Provider stream | Stream output | None | Provider gateway |
+| Success | Final usage | settle actual <= quote; release excess | Wallet settle |
+| Failure/Timeout | Provider fails | release full reservation | Wallet release |
+| User Cancel | Active stream canceled | release; no partial charge | Wallet release |
+| Retry | Idempotent retry | no duplicate charge | Idempotency contract |
+
+Provider cost above quote is absorbed in Phase 1 and creates pricing-variance metadata.
+
+## Section 5: Implementation Status
+
+| Endpoint / Contract | Implementation Status | Notes |
+|---|---|---|
+| Conversation create/list/get | Pending implementation | No verified Chat endpoint in baseline |
+| Send message stream | Pending implementation | Provider integration pending |
+| Cancel message | Pending implementation | Cancel lifecycle pending |
+| Delete conversation | MVP optional / pending D2.3 | Delete strategy deferred |
+| SSE event format | Pending implementation | Defined here |
+| Wallet integration | Backend foundation exists — validation required | API_CONTRACT_V1 reference |
+| Token Budget Manager | Pending implementation | D2.4 tier boundaries |
+
+Tests were not executed in this documentation task.
+
+## Section 6: Open Items for D2.2b
+
+1. Prompt Enhancer API contract
+2. Prompt Enhancer history endpoint
+3. Caption Generator API contract
+4. Caption Generator history endpoint
+5. Admin metadata-only usage endpoint
+6. Shared feature-history response shape
+7. Shared provider-failure error propagation rules
+
+## Document Status: Complete Draft Chat Feature API Contract
