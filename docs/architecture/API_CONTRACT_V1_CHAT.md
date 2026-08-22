@@ -13,7 +13,7 @@
 General Chat is the platform activation capability. It uses tiered billing of 1,
 2, or 3 credits determined by Token Budget Manager. Each message estimates,
 reserves, executes, then settles or releases. Streaming is the default response
-mode and is specified in a later part.
+mode and is defined in Section 3.
 
 ## Core Principles
 
@@ -46,7 +46,7 @@ Send a tenant-owned user message and stream assistant output. Request:
 3. reserve quoted credits; 4. reject insufficient credits before provider call;
 5. execute provider streaming; 6. settle actual credits not exceeding quote on
 success; 7. release on failure/timeout; 8. persist user and assistant messages.
-Response is `text/event-stream`; Part 3 defines events. Final success carries
+Response is `text/event-stream`; Section 3 defines the SSE event contract. Final success carries
 actual_credits and assistant message_id. Errors: not_authenticated,
 conversation_not_found, validation_error, insufficient_credits, rate_limited,
 provider_unavailable, internal_error. Same idempotency key, conversation, and
@@ -99,13 +99,15 @@ Provider cost above quote is absorbed in Phase 1 and creates pricing-variance me
 
 | Endpoint / Contract | Implementation Status | Notes |
 |---|---|---|
-| Conversation create/list/get | Pending implementation | No verified Chat endpoint in baseline |
-| Send message stream | Pending implementation | Provider integration pending |
-| Cancel message | Pending implementation | Cancel lifecycle pending |
-| Delete conversation | MVP optional / pending D2.3 | Delete strategy deferred |
+| POST /api/v1/chat/conversations | Pending implementation | No verified Chat endpoint in current baseline |
+| GET /api/v1/chat/conversations | Pending implementation | No verified Chat endpoint in current baseline |
+| GET /api/v1/chat/conversations/{id} | Pending implementation | No verified Chat endpoint in current baseline |
+| POST /api/v1/chat/conversations/{id}/messages | Pending implementation | Streaming provider integration pending |
+| POST /api/v1/chat/conversations/{id}/messages/{message_id}/cancel | Pending implementation | Cancel lifecycle pending |
+| DELETE /api/v1/chat/conversations/{id} | MVP optional / pending D2.3 | Delete strategy deferred to data model |
 | SSE event format | Pending implementation | Defined here |
-| Wallet integration | Backend foundation exists — validation required | API_CONTRACT_V1 reference |
-| Token Budget Manager | Pending implementation | D2.4 tier boundaries |
+| Wallet integration | Backend foundation exists — validation required | References API_CONTRACT_V1.md |
+| Token Budget Manager | Pending implementation | D2.4 will define exact tier boundaries |
 
 Tests were not executed in this documentation task.
 
