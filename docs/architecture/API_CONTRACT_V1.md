@@ -70,10 +70,10 @@ These endpoints implement ADR-0002 quote/reserve/settle/release policy. Phase 1
 uses sandbox/mock top-up only.
 
 ### GET /api/v1/wallet/balance
-Returns `{"available_credits":95,"reserved_credits":5,"total_credits":100,"low_balance":false}` with `200`. Errors: `not_authenticated`. No billing event; balances remain separate. Implementation: Backend foundation exists — validation required.
+Returns `{"available_credits":95,"reserved_credits":5,"total_credits":100}` with `200`. Errors: `not_authenticated`. No billing event; balances remain separate. Implementation: Backend foundation exists — validation required.
 
 ### GET /api/v1/wallet/transactions
-Query: `page`, `page_size`, `date_from`, `date_to`, `feature`, `direction`, `status`. Returns paginated immutable transactions with id, type, amount_credits, direction, feature, status, created_at, settled_at, description, reference_id. Errors: `not_authenticated`, `invalid_filter`. No billing event.
+Query: `page`, `page_size`, `date_from`, `date_to`, `feature`, `direction`, `status`. Returns paginated immutable transactions with id, type, amount, direction, feature, status, created_at, settled_at, description. Errors: `not_authenticated`, `invalid_filter`. No billing event.
 
 ### GET /api/v1/wallet/transactions/{id}
 Returns one tenant-scoped transaction and nullable receipt_url with `200`. Errors: `not_authenticated`, `not_found`. Reading never changes balance.
@@ -162,12 +162,17 @@ This table is static inspection only; validation required in D2.5/C0.
 
 ## Section 7: Open Contracts for D2.2
 
-1. Chat conversation create/list/open/message streaming endpoints.
-2. Chat cancellation/message state endpoint.
-3. Prompt Enhancer execute and history endpoints.
-4. Caption Generator execute and history endpoints.
-5. Admin metadata-only usage endpoint.
-6. Token Budget Manager metering integration.
+1. POST /api/v1/chat/conversations — create a new conversation
+2. GET /api/v1/chat/conversations — list conversations for authenticated user
+3. GET /api/v1/chat/conversations/{id} — open/reopen a conversation
+4. POST /api/v1/chat/conversations/{id}/messages — send a message and receive streaming response; includes credit estimate, reserve, and settle integration
+5. DELETE or PATCH /api/v1/chat/conversations/{id}/messages/{msg_id} — cancel or mark message canceled
+6. POST /api/v1/enhancer/enhance — submit prompt for enhancement; includes credit billing lifecycle
+7. GET /api/v1/enhancer/history — list enhancement history
+8. POST /api/v1/caption/generate — submit caption generation request; includes credit billing lifecycle
+9. GET /api/v1/caption/history — list caption generation history
+10. GET /api/v1/admin/usage — metadata-only usage for workspace administrators
+11. Token Budget Manager integration contract for metering endpoints
 
 D2.2 defines streaming format, estimate contract, and provider-failure propagation.
 
