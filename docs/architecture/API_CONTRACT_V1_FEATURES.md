@@ -36,14 +36,48 @@ Success `200` returns id, raw_prompt, enhanced_prompt, style, created_at, quoted
 ### POST /api/v1/enhancer/history/{id}/handoff-to-chat
 Request: `{"target_conversation_id":"uuid|null"}`. Returns existing enhancement handoff payload without Chat execution or Enhancer charge. A later Chat run is independently billed. Success `200`: `{"enhancement_id":"uuid","target_conversation_id":"uuid|null","handoff_payload":{"content":"enhanced prompt text"}}`. Errors: `not_authenticated`, `not_found`, `conversation_not_found`. Implementation: Pending implementation.
 
-## Document Status: Part 1 of 3 Complete
+## Section 2: Instagram Caption Generator API
+
+### POST /api/v1/caption/generate
+Request includes description (required, maximum 1,000 characters), tone
+professional/casual/funny/promotional/luxury/educational, length short/medium/long,
+platform instagram/telegram/linkedin/twitter, language_mode persian/english/mixed,
+hashtag_count default 10 within 3–30, variation_count default 3 within 1–5,
+optional text-only image_context, and required idempotency_key. Image upload and
+vision analysis are out of Phase 1 scope.
+
+Validate ownership and inputs; quote/reserve 5 credits; generate; persist request
+and results; settle on success or release on failure/timeout. Success `200` returns
+id, variations containing separate caption/hashtags/character_count/platform_fit,
+request settings, quoted_credits 5, actual_credits 5, created_at. platform_fit is
+based on Instagram 2,200 characters; other thresholds are D2. Errors include
+not_authenticated, validation_error, insufficient_credits, invalid_tone,
+invalid_platform, invalid_length, invalid_language_mode, hashtag_count_out_of_range,
+variation_count_out_of_range, description_too_long, unsafe_content, rate_limited,
+provider_unavailable, internal_error. Same key/payload returns cached result.
+Implementation: Pending implementation.
+
+### POST /api/v1/caption/regenerate
+Request: original_generation_id and required idempotency_key. It loads original
+parameters, shows a new 5-credit quote, reserves, generates, persists linked result,
+and settles or releases. It is a new billable request. Errors include original_not_found
+plus generation errors. Implementation: Pending implementation.
+
+### GET /api/v1/caption/history
+Query page default 1, page_size default 20 maximum 50. Returns paginated tenant
+history: id, description_preview, tone, platform, variation_count, created_at,
+quoted_credits, actual_credits. Billing: free. Implementation: Pending implementation.
+
+### GET /api/v1/caption/history/{id}
+Returns tenant-scoped full generation result, variations, hashtags, character counts,
+platform fit, and original settings. Errors: not_authenticated, not_found. Billing:
+free. Implementation: Pending implementation.
+
+## Document Status: Part 2 of 3 Complete
 
 This document currently contains Document Control, Overview, Shared Feature
-Principles, and Section 1 Prompt Enhancer API.
+Principles, Section 1 Prompt Enhancer API (4 endpoints), and Section 2 Instagram
+Caption Generator API (4 endpoints).
 
-Pending in Part 2: Section 2 Caption Generator API.
-
-Pending in Part 3: Admin Usage API, shared response shapes, provider-failure
-propagation, and implementation status summary.
-
-Do not treat this contract as complete or implementation-ready until Parts 2 and 3 are merged.
+Pending in Part 3: Admin Usage API, shared provider-failure propagation rules,
+implementation status summary, and open items for D2.3+.
