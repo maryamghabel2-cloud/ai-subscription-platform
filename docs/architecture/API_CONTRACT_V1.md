@@ -3,7 +3,7 @@
 ## Document Control
 
 **Title:** Phase 1 API Contract V1
-**Status:** Draft (Part A of 3 — Parts B and C pending)
+**Status:** Draft — Complete Contract (Auth + Wallet)
 **Phase:** Phase 1 — In Progress
 **Last updated:** 2026-08-21
 **Scope when complete:** Auth + Wallet/Credits
@@ -93,17 +93,83 @@ Request `{"reservation_id":"uuid","actual_credits":1}`. Returns settled reservat
 ### POST /api/v1/wallet/release
 Request `{"reservation_id":"uuid","reason":"provider_timeout"}`; allowed reasons include provider_timeout, provider_failure, user_canceled, validation_failure, expired, internal_error. Returns released balance and immutable release entry. Errors: `not_authenticated`, `reservation_not_found`, `already_finalized`, `validation_error`. Replay is idempotent.
 
-## Document Status: Part B of 3 Complete
+## Section 3: Common Error Codes Reference
 
-This document currently contains Document Control, API Design Principles, Standard
-Shapes, Section 1 Authentication API, and Section 2 Wallet and Credits API.
+| Error Code | HTTP Status | Description |
+|---|---|---|
+| not_authenticated | 401 | Request lacks valid session |
+| session_expired | 401 | Re-authentication required |
+| invalid_session | 401 | Session invalid or tampered |
+| invalid_credentials | 401 | Credentials incorrect |
+| forbidden | 403 | Not authorized |
+| not_found | 404 | Resource absent |
+| email_already_registered | 409 | Email exists |
+| already_settled | 409 | Reservation settled |
+| already_processed | 409 | Intent confirmed |
+| already_finalized | 409 | Reservation final |
+| validation_error | 422 | Validation failed |
+| exceeds_quote | 422 | Actual exceeds quote |
+| invalid_package | 422 | Package invalid |
+| idempotency_conflict | 422 | Key/payload conflict |
+| idempotent_replay | 200 | Cached result |
+| insufficient_credits | 402 | Credits unavailable |
+| reservation_not_found | 404 | Reservation absent |
+| intent_not_found | 404 | Intent absent |
+| invalid_token | 400 | Mock token mismatch |
+| account_locked | 401 | Account locked |
+| rate_limited | 429 | Too many requests |
+| invalid_filter | 422 | Filter invalid |
+| internal_error | 500 | Unexpected error |
 
-Pending in Part C:
-- Section 3: Common Error Codes Reference
-- Section 4: Idempotency Rules
-- Section 5: Session and Cookie Contract
-- Section 6: Implementation Status Summary
-- Section 7: Open Contracts for D2.2
+All errors use Standard Shapes Error Response; request_id is logged server-side.
 
-Do not treat this contract as complete or implementation-ready until Part C is
-merged into this file.
+## Section 4: Idempotency Rules
+
+Header is `Idempotency-Key`, UUID v4. Required for topup intent, confirmation,
+and reserve; recommended for settle/release. Same key and effective payload returns
+cached `idempotent_replay`; different payload returns `idempotency_conflict`.
+Keys are scoped to authenticated user and stored at least 24 hours. Reservations,
+top-ups, and settlements cannot apply twice.
+
+## Section 5: Session and Cookie Contract
+
+Cookie is `session_id` or backend-equivalent, HttpOnly true, Secure true, and
+SameSite Strict recommended (Lax only with CSRF protection). Domain is application
+scoped; expiry policy is D2.5. Refresh rotates and invalidates old session. Logout
+clears server-side session cookie. Session tokens must NEVER be stored in
+localStorage, sessionStorage, or IndexedDB, and never returned for client storage.
+State-changing requests use SameSite policy and CSRF token validation when required.
+
+## Section 6: Implementation Status Summary
+
+| Endpoint | Method | Implementation Status | Test Status | Notes |
+|---|---|---|---|---|
+| register | POST | Backend foundation exists — validation required | Test file exists — not executed in this review | auth.py |
+| login | POST | Backend foundation exists — validation required | Test file exists — not executed in this review | auth.py |
+| logout | POST | Backend foundation exists — validation required | Test file exists — not executed in this review | auth.py |
+| refresh | POST | Partially implemented | Test file exists — not executed in this review | rotation validation pending |
+| me | GET | Backend foundation exists — validation required | Test file exists — not executed in this review | auth.py |
+| balance | GET | Backend foundation exists — validation required | Test file exists — not executed in this review | wallet.py |
+| transactions | GET | Backend foundation exists — validation required | Test file exists — not executed in this review | wallet.py |
+| transaction detail | GET | Partially implemented | Test file exists — not executed in this review | receipt contract pending |
+| topup intent | POST | Backend foundation exists — validation required | Test file exists — not executed in this review | payments.py |
+| topup confirm | POST | Backend foundation exists — validation required | Test file exists — not executed in this review | mock provider |
+| reserve | POST | Pending implementation | Test file exists — not executed in this review | D2 contract |
+| settle | POST | Pending implementation | Test file exists — not executed in this review | D2 contract |
+| release | POST | Pending implementation | Test file exists — not executed in this review | D2 contract |
+
+This table is static inspection only; validation required in D2.5/C0.
+
+## Section 7: Open Contracts for D2.2
+
+1. Chat conversation create/list/open/message streaming endpoints.
+2. Chat cancellation/message state endpoint.
+3. Prompt Enhancer execute and history endpoints.
+4. Caption Generator execute and history endpoints.
+5. Admin metadata-only usage endpoint.
+6. Token Budget Manager metering integration.
+
+D2.2 defines streaming format, estimate contract, and provider-failure propagation.
+
+## Document Status: Complete Draft Contract
+Part A, B, and C are present. Implementation readiness still requires D2/C0 review.
