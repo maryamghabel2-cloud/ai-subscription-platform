@@ -73,11 +73,34 @@ Returns tenant-scoped full generation result, variations, hashtags, character co
 platform fit, and original settings. Errors: not_authenticated, not_found. Billing:
 free. Implementation: Pending implementation.
 
-## Document Status: Part 2 of 3 Complete
+## Section 3: Admin Usage API
+
+### Overview
+Workspace administrators can view aggregated usage metadata. They must NOT see
+message content, enhanced prompts, or generated captions. Only counts, credits,
+timestamps, feature type, and status are exposed.
+
+### GET /api/v1/admin/usage
+Query: date_from/date_to optional ISO timestamps; feature chat/enhancer/caption/all;
+page default 1; page_size default 20 maximum 100. Success `200` returns summary
+total_requests, total_credits_used, by_feature request_count/credits_used, period,
+and paginated recent_activity items with id, feature, status, credits_charged,
+created_at. Errors: `not_authenticated`, `forbidden`, `invalid_filter`,
+`validation_error`.
+
+Security requires admin/workspace-owner role and returns no message content, prompt
+text, caption text, or user-generated content. Only counts, credits, status,
+timestamps, and feature type are returned. Content-level admin access is deferred
+for separate privacy review. Billing is free; idempotency is not applicable.
+Implementation: Pending implementation.
+
+## Document Status: Part 3A of 4 Complete
 
 This document currently contains Document Control, Overview, Shared Feature
-Principles, Section 1 Prompt Enhancer API (4 endpoints), and Section 2 Instagram
-Caption Generator API (4 endpoints).
+Principles, Section 1 Prompt Enhancer API (4 endpoints), Section 2 Caption
+Generator API (4 endpoints), and Section 3 Admin Usage API (1 endpoint).
 
-Pending in Part 3: Admin Usage API, shared provider-failure propagation rules,
-implementation status summary, and open items for D2.3+.
+Pending in Part 3B: Shared Provider Failure Propagation Rules, Implementation
+Status Summary, Open Items for D2.3+, and Document Control finalization.
+
+Do not treat this contract as complete until Part 3B is merged.
