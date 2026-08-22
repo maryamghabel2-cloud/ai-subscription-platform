@@ -2,38 +2,36 @@
 
 ## Purpose
 
-This folder contains Phase 1 product requirement documents for the Persian-first
-commercial MVP. They describe intended behavior and do not establish implementation
-status.
+This folder contains Phase 1 Product Requirements Documents. PRDs describe
+intended product behavior and do not prove implementation status.
 
-## Important Status Notice
+## Authorization Notice
 
-These PRDs are product specifications only. They do not authorize implementation
-until reviewed and approved by the owner, and until the D2 Technical Contracts
-milestone is completed.
+These PRDs do not independently authorize implementation. Owner approval, D2
+Technical Contracts completion, prioritized engineering work, and human approval
+before merge are required.
 
 ## PRD Status
-
 | PRD | Purpose | Status | Phase | Link |
 |---|---|---|---|---|
-| General Chat | Platform activation capability | Draft (pending owner review) | Phase 1 | [PRD](GENERAL_CHAT_PRD.md) |
+| General Chat | Activation | Draft (pending owner review) | Phase 1 | [PRD](GENERAL_CHAT_PRD.md) |
 | Prompt Enhancer | First paid Skill | Draft (pending owner review) | Phase 1 | [PRD](PROMPT_ENHANCER_PRD.md) |
-| Instagram Caption Generator | First Studio tool MVP | Draft (pending owner review) | Phase 1 | [PRD](INSTAGRAM_CAPTION_GENERATOR_PRD.md) |
-| Wallet & Credits | Billing and credit transparency layer | Draft (pending owner review) | Phase 1 | [PRD](WALLET_AND_CREDITS_PRD.md) |
+| Caption Generator | First Studio MVP | Draft (pending owner review) | Phase 1 | [PRD](INSTAGRAM_CAPTION_GENERATOR_PRD.md) |
+| Wallet & Credits | Billing layer | Draft (pending owner review) | Phase 1 | [PRD](WALLET_AND_CREDITS_PRD.md) |
 
 ## Recommended Reading Order
 
-1. Wallet & Credits establishes billing foundation.
-2. General Chat establishes activation.
-3. Prompt Enhancer establishes the first paid Skill.
-4. Instagram Caption Generator establishes the first Studio tool.
+1. Wallet & Credits
+2. General Chat
+3. Prompt Enhancer
+4. Instagram Caption Generator
 
 ## Dependencies Between PRDs
 
-All billable features depend on Wallet reserve/settle/release lifecycle. General
-Chat is the activation surface. Prompt Enhancer can hand off to General Chat.
-Caption Generator is the first monetizable Studio tool. All features share credit
-billing and secure HttpOnly cookie authentication.
+All billable features depend on Wallet reserve/settle/release. General Chat is the
+activation surface. Prompt Enhancer can hand off to General Chat. Caption Generator
+is the first Studio tool. All four features use credits and secure HttpOnly-cookie
+authentication.
 
 ## Cross-Cutting Product Principles
 
@@ -45,27 +43,28 @@ billing and secure HttpOnly cookie authentication.
 - Provider-agnostic design.
 - Sandbox/mock payment only in Phase 1.
 
-## Aggregated Open Decisions
-
-### General Chat
-- Per-message credit price, provider/model, retention duration, timeout policy.
-
-### Prompt Enhancer
-- Enhancement price, favorite requirement, history retention, input length.
-
-### Instagram Caption Generator
-- Initial/regenerate price, hashtag defaults and bounds, history retention,
-  description length, provider selection, prohibited-category ownership.
-
-### Wallet & Credits
-- Credit packages, pricing, low-balance threshold, reservation expiration, receipt
-  retention, reserved-balance display, corrective-entry governance.
-
-All listed items require owner decision before D2 Technical Contracts approval.
-
 ## Related Documents
-
+- [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md)
+- [Documentation Index](../README.md)
 - [Master Roadmap](../roadmap/MASTER_ROADMAP.md)
 - [Phase 1 Core MVP](../roadmap/PHASE_1_CORE_MVP.md)
 - [Current Implementation Status](../CURRENT_IMPLEMENTATION_STATUS.md)
-- [Documentation Index](../README.md)
+
+## Decision Status
+| Decision | Resolution | Source |
+|---|---|---|
+| Chat tiers, quote cap, reserve/settle/release, failure/cancel release, free copy/history, retention, timeout, admin metadata | Owner Approved (ADR-0002, 2026-08-20) | [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md) |
+| Prompt Enhancer price, length, history, Favorites deferral | Owner Approved (ADR-0002, 2026-08-20) | [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md) |
+| Caption price, variations, hashtags, length, history, category ownership, Instagram threshold | Owner Approved (ADR-0002, 2026-08-20) | [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md) |
+| Wallet packages, warning, reservation, receipts, balances, immutable ledger, metadata visibility | Owner Approved (ADR-0002, 2026-08-20) | [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md) |
+| Infrastructure, Iran accessibility, OpenRouter primary, MixRoute disabled candidate, sandbox payment | Owner Approved (ADR-0002, 2026-08-20) | [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md) |
+
+## Deferred to D2
+Tier boundaries, estimation, model multipliers and IDs, routing/fallback, timeout
+budgets, summarization, quote validity, variance telemetry, non-Instagram norms,
+usage normalization, Iran testing method, and hosting-vendor criteria. Deferred to
+D2 Technical Contracts.
+
+## Deferred beyond D2
+Brand/domain, real payment gateway, real fiat pricing, subscriptions, and production
+provider funding are deferred beyond D2.

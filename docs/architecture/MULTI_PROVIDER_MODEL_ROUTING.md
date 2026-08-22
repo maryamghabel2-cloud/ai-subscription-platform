@@ -310,3 +310,19 @@ Phase 1 - Provider Abstraction and Routing
 Proposed Architecture - Pending Owner, Finance, Security, and Compliance Approval.
 Will be completed later with product, finance, security, and owner review. No real
 provider API calls in this PR.
+
+## ADR-0002 Phase 1 Provider Gateway
+[ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md) approves OpenRouter as primary MVP gateway. Funding is expected through USDC-compatible flow; no account activation or funding occurs here. MixRoute is disabled-by-default fallback candidate pending D2/C0 compatibility, data handling, privacy, security, regional, model, accounting, timeout, billing, and reliability review.
+
+## Token Budget Manager
+Phase 1 uses deterministic Token Budget Manager, not an autonomous optimizer. It
+estimates usage, routes approved low-cost/stronger models, budgets I/O, trims context,
+summarizes older history after D2 trigger, avoids full history resend, uses caching,
+records estimated/actual cost variance, and blocks insufficient quoted credits.
+Summarization consumes tokens and cannot remove recent or safety-relevant context.
+Pricing remains owner-controlled.
+
+## Model Selection
+No exact model IDs are approved. Model identifiers are configuration, not business
+logic. D2 approves primary/fallback IDs, routing, failure/fallback, summarization
+trigger, and summary budget.

@@ -9,6 +9,8 @@
 | Last updated | 2026-08-20 |
 | Related | [Status](../CURRENT_IMPLEMENTATION_STATUS.md), [Phase 1](../roadmap/PHASE_1_CORE_MVP.md), [Chat](GENERAL_CHAT_PRD.md) |
 
+- [ADR-0002: Phase 1 Owner Decisions](../decisions/0002-phase-1-product-metering-and-infrastructure.md)
+
 ## 2. Product Overview and Business Goal
 
 Wallet is the commercial trust and billing-transparency layer. Credits are the
@@ -236,8 +238,22 @@ Wallet/ledger foundations and mock intents exist but require end-to-end validati
 Frontend remains legacy. Pricing, credit packages, reservation expiration, and
 receipt retention are undecided.
 
-## 19. Open Decisions
+## 19. Owner Decisions (Resolved and Deferred)
 
-Credit packages/prices, low-balance threshold, reservation expiration, receipt
-retention, reserved-balance display, and corrective ledger entry governance:
-Owner decision required before D2 Technical Contracts approval.
+**Resolved via ADR-0002 (2026-08-20):**
+- Sandbox credit packages: 100, 500, and 2,000 credits.
+- Low-balance warning threshold: below 20 available credits.
+- Reservation expiration: 10 minutes.
+- Receipt retention: 12 months.
+- Reserved balance: shown separately from available balance.
+- Ledger: immutable; corrections via new compensating entries only.
+- Admin visibility: billing metadata only; no feature content.
+
+**Deferred to D2 Technical Contracts:**
+- Idempotency and quote-validity duration.
+- Pricing-variance telemetry.
+
+**Deferred beyond D2:**
+- Real fiat prices.
+- Real payment gateway activation.
+- Recurring subscriptions.
