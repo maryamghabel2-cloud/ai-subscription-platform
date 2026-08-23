@@ -56,14 +56,47 @@ FK tenants ON DELETE CASCADE; role VARCHAR(20) default owner; created_at
 TIMESTAMPTZ; UNIQUE(user_id, tenant_id). Phase 1 has one owner membership per user.
 Implementation: Pending implementation.
 
-## Document Status: Part 1 of 4 Complete
+## Section 2: Wallet and Ledger Tables
 
-This document currently contains Document Control, Overview, Data Modeling
-Principles, and Section 1 Core Tables (users, auth_sessions, tenants,
-user_tenant_memberships).
+### Table 1: wallets
+One wallet per tenant, authoritative balances. Columns: id UUID PK; tenant_id UUID
+NOT NULL UNIQUE FK tenants; available_credits INTEGER nonnegative; reserved_credits
+INTEGER nonnegative; total_credits generated as available plus reserved; created_at,
+updated_at TIMESTAMPTZ; version INTEGER for optimistic locking. Balance is
+authoritative; ledger is audit trail. Implementation: Backend foundation exists —
+validation required.
 
-Pending in Part 2: Wallet and Ledger Tables. Pending in Part 3: Feature Tables.
-Pending in Part 4: Indexes, Retention, Migration Strategy, and C0/C1 Open Items.
+### Table 2: ledger_entries
+Immutable append-only credit movements. Columns: id UUID PK; tenant_id UUID FK;
+wallet_id UUID FK; entry_type top_up/reservation/settlement/release/correction;
+direction credit/debit; amount INTEGER positive; feature nullable; reservation_id
+nullable FK; top_up_intent_id nullable FK; status; description; created_at; created_by_request_id.
+NO UPDATE or DELETE operations are permitted. Corrections use compensating entries.
+Implementation: Backend foundation exists — validation required.
 
-Do not treat this data model as complete or implementation-ready until Parts 2, 3,
-and 4 are merged.
+### Table 3: reservations
+Tracks holds. Columns: id UUID PK; tenant_id/wallet_id UUID FKs; feature;
+quoted_credits positive; actual_credits nullable and <= quoted_credits; status
+reserved/settled/released/canceled/expired; expires_at TIMESTAMPTZ; timestamps;
+idempotency_key UUID; request_metadata JSONB. Unique tenant/idempotency_key.
+Expiration is 10 minutes. Implementation: Backend foundation exists — validation required.
+
+### Table 4: top_up_intents
+Sandbox top-up lifecycle. Columns: id UUID PK; tenant_id/wallet_id FKs;
+package_size 100/500/2000; amount_credits; status pending/succeeded/failed/canceled;
+mock_confirmation_token_hash; idempotency_key; created_at; confirmed_at; failed_reason.
+Unique tenant/idempotency_key. Raw confirmation token is never stored. No real
+payment gateway table exists in Phase 1. Implementation: Backend foundation exists — validation required.
+
+### Table 5: receipt_snapshots
+MVP-optional immutable receipt: id UUID PK; tenant_id FK; top_up_intent_id UNIQUE
+FK; amount_credits; package_size; created_at; receipt_data JSONB. Retention: 12
+months. Implementation: Pending implementation.
+
+## Document Status: Part 2 of 4 Complete
+
+This document contains Document Control, Overview, Principles, Section 1 Core
+Tables, and Section 2 Wallet/Ledger Tables.
+
+Pending in Part 3: Feature Tables. Pending in Part 4: Indexes, retention,
+migrations, and C0/C1 items.
