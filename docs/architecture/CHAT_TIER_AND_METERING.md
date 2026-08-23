@@ -2,7 +2,7 @@
 
 ## Document Control
 **Title:** Chat Tier and Token Metering
-**Status:** Draft (Part 1 of 3 — Parts 2 and 3 pending)
+**Status:** Draft — Complete Chat Tier and Token Metering
 **Phase:** Phase 1 — In Progress
 **Last updated:** 2026-08-23
 **Related:** [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md), [API](API_CONTRACT_V1.md), [Chat API](API_CONTRACT_V1_CHAT.md), [Pricing](PRICING_AND_UNIT_ECONOMICS.md), [Chat PRD](../product/GENERAL_CHAT_PRD.md)
@@ -126,8 +126,38 @@ Tier 3 quoted and reserved; provider timeout releases full reservation; charge 0
 Provider internal cost exceeds quoted Tier 3; platform absorbs variance and user
 is charged exactly quoted credits, never more.
 
-## Document Status: Part 2 of 3 Complete
+## Section 8: Pricing Variance Handling
 
-This document contains Document Control, Overview, Sections 1–7, tier assignment,
-and quote/reserve/settle/release rules. Pending in Part 3: variance telemetry,
-summarization trigger, retry/failure semantics, and implementation notes.
+A variance occurs when internal provider cost exceeds quoted/charged credits. Phase
+1 absorbs variance; user charge never exceeds quote. Record request_id, tenant
+pseudonym, feature, quote, settled credits, provider token/cost metadata, model
+class, variance amount, and timestamp. Review frequency is D2.6; pricing changes
+need owner approval and ADR update. Token Budget Manager cannot update thresholds.
+
+## Section 9: Conversation Summarization Trigger Policy
+
+Summarization controls context cost but consumes tokens. Evaluate high recent
+context, total estimate above configured trigger, and minimum messages since prior
+summary. Exact thresholds are D2.5 configuration. Keep recent configured messages,
+system messages, and safety-relevant context. Store summary for later context.
+Summarization cost is internal to triggering request and user is not separately billed.
+
+## Section 10: Retry and Failure Semantics
+
+Failure releases reservation, records provider_failed annotation, returns error, and
+charges nothing. Retry uses a new idempotency key, fresh quote, and fresh hold.
+Same key/content returns active or settled state; released/failed allows new request.
+Cancellation releases full reservation, marks canceled, and does not bill partial
+output. Reservations expire after 10 minutes; late provider result is anomaly and
+never settled.
+
+## Section 11: Implementation Notes for C0/C1
+
+Token Budget Manager estimates Section 2 inputs, assigns Section 5 tier, reserves
+before call, settles/release as required, logs variance, applies summary trigger,
+and enforces idempotency. Thresholds are externalized, versioned, auditable, and
+tested against worked examples. D2.5/D2.6 define timeouts, rate limits, exact
+summary triggers, telemetry pipeline, and high-variance monitoring.
+
+## Final Status
+This is a complete draft of Chat Tier and Token Metering for C0/C1 implementation.
