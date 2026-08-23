@@ -1,7 +1,7 @@
 # Phase 1 Feature API Contract — Enhancer, Caption, and Admin
 
 ## Document Control
-**Status:** Draft (Part 1 of 3 — Parts 2 and 3 pending)
+**Status:** Draft — Complete Feature API Contract
 **Phase:** Phase 1 — In Progress
 **Last updated:** 2026-08-21
 **Scope:** Prompt Enhancer, Caption Generator, Admin Usage.
@@ -94,13 +94,48 @@ timestamps, and feature type are returned. Content-level admin access is deferre
 for separate privacy review. Billing is free; idempotency is not applicable.
 Implementation: Pending implementation.
 
-## Document Status: Part 3A of 4 Complete
+## Section 4: Shared Provider Failure Propagation Rules
 
-This document currently contains Document Control, Overview, Shared Feature
-Principles, Section 1 Prompt Enhancer API (4 endpoints), Section 2 Caption
-Generator API (4 endpoints), and Section 3 Admin Usage API (1 endpoint).
+Provider error or timeout releases reservation via wallet release, returns
+provider_unavailable or provider_timeout, and logs request_id/route/error metadata.
+Exact timeout budgets are D2.5; until then total target is 60 seconds. Enhancer and
+Caption return no partial output on failure and release completely. Retries use a
+new idempotency_key; same-key failed semantics are D2.5. Phase 1 absorbs provider
+cost variance and never charges above accepted quote.
 
-Pending in Part 3B: Shared Provider Failure Propagation Rules, Implementation
-Status Summary, Open Items for D2.3+, and Document Control finalization.
+## Section 5: Implementation Status Summary
 
-Do not treat this contract as complete until Part 3B is merged.
+| Endpoint | Method | Feature | Implementation Status | Notes |
+|---|---|---|---|---|
+| /api/v1/enhancer/enhance | POST | Enhancer | Pending implementation | First paid skill |
+| /api/v1/enhancer/history | GET | Enhancer | Pending implementation | Free action |
+| /api/v1/enhancer/history/{id} | GET | Enhancer | Pending implementation | Free action |
+| /api/v1/enhancer/history/{id}/handoff-to-chat | POST | Enhancer | Pending implementation | Free metadata handoff |
+| /api/v1/caption/generate | POST | Caption | Pending implementation | First Studio tool |
+| /api/v1/caption/regenerate | POST | Caption | Pending implementation | New billable request |
+| /api/v1/caption/history | GET | Caption | Pending implementation | Free action |
+| /api/v1/caption/history/{id} | GET | Caption | Pending implementation | Free action |
+| /api/v1/admin/usage | GET | Admin | Pending implementation | Metadata only |
+
+All feature endpoints are pending implementation. Wallet foundations exist separately
+in API_CONTRACT_V1.md.
+
+## Section 6: Open Items for D2.3 and Later
+
+### D2.3 Data Model
+1. Enhancement history schema.
+2. Caption generation history schema.
+3. Admin usage views.
+4. History retention implementation (90 days).
+
+### D2.4 Chat Tier & Metering
+1. Token Budget Manager cost-estimation mapping.
+
+### D2.5 Timeout & Resilience
+1. Exact timeout budgets per feature.
+2. Retry-after-failure idempotency semantics.
+
+### D2.6 NFR
+1. Rate limits per feature endpoint.
+
+## Document Status: Complete Feature API Contract
