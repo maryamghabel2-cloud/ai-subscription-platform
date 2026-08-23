@@ -54,12 +54,66 @@ stronger provider when policy requires. Exact boundaries are deferred to Part 2.
 Internal cost uses provider token accounting; user charge uses credits. They may
 differ. Phase 1 absorbs cost above quote and records variance for later review.
 
-## Document Status: Part 1 of 3 Complete
-This document contains Document Control, Overview, Metering Principles, Estimate
-Inputs, Tier Model, and Internal Cost vs User Charge.
+## Section 5: Tier Assignment Algorithm
 
-Pending in Part 2: assignment algorithm, quote/reserve/settle/release, idempotency,
-and settlement examples.
+Token Budget Manager assigns a user-facing tier before execution using deterministic
+rules, not machine-learned pricing.
 
-Pending in Part 3: variance, summarization trigger, retry/failure semantics, and
-implementation notes.
+### 5.1 Estimate Score Inputs
+- input_message_size_bucket: low / medium / high
+- recent_context_bucket: low / medium / high
+- summarized_context_bucket: none / small / large
+- output_budget_bucket: low / medium / high
+- model_cost_bucket: low / medium / high
+- reasoning_cost_bucket: none / present
+- safety_overhead_bucket: standard / elevated
+
+### 5.2 Tier Decision Rules
+Tier 1 requires low input, low/medium context, low output, low model cost, and no
+reasoning. Tier 3 applies to high input/context/output/model cost, large summary
+with medium/high output, or reasoning with medium/high context. Tier 2 is all
+other requests. Numeric bucket boundaries are operational configuration, versioned
+and auditable; assignment happens before reservation.
+
+### 5.3 Configuration Surface
+| Config Key | Purpose | Example Value Type |
+|---|---|---|
+| tier_input_low_max | Low input bucket | integer |
+| tier_input_medium_max | Medium input bucket | integer |
+| tier_context_low_max | Low context bucket | integer |
+| tier_output_low_max | Low output bucket | integer |
+| tier_model_cost_map | Model class mapping | JSON |
+| tier_reasoning_enabled_classes | Reasoning classes | array |
+| tier_safety_overhead_mode | Safety mode | enum |
+
+Values are operationally configured, not hardcoded here.
+
+## Section 6: Quote / Reserve / Settle / Release Rules
+
+Quote: compute tier before provider execution; show/accept quote; quote is maximum
+user charge. Reserve: after acceptance reserve quoted credits; failure stops
+provider execution. Settle: on success settle `min(actual_mapped_credits,
+quoted_credits)` and Phase 1 absorbs internal cost variance. Release: failure,
+timeout, or cancellation releases full reservation; success releases unused
+remainder.
+
+Invariants: actual_credits never exceeds quoted_credits; reservation precedes
+settlement; released reservations do not settle; settled reservations do not
+release twice; each transition has immutable ledger entry.
+
+## Section 7: Worked Examples
+
+| Scenario | Estimated Tier | Quoted Credits | Final Outcome | User Charge |
+|---|---|---|---|---|
+| Short question, short context | Tier 1 | 1 | success | 1 |
+| Moderate request/history | Tier 2 | 2 | success | 2 |
+| Large request, long context | Tier 3 | 3 | timeout, release | 0 |
+| Lower actual usage | Tier 3 | 3 | settle 2, release 1 | 2 |
+
+Examples are illustrative; exact thresholds are configured outside this document.
+
+## Document Status: Part 2 of 3 Complete
+
+This document contains Document Control, Overview, Sections 1–7, tier assignment,
+and quote/reserve/settle/release rules. Pending in Part 3: variance telemetry,
+summarization trigger, retry/failure semantics, and implementation notes.
