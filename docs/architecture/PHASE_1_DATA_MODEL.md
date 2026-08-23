@@ -93,10 +93,49 @@ MVP-optional immutable receipt: id UUID PK; tenant_id FK; top_up_intent_id UNIQU
 FK; amount_credits; package_size; created_at; receipt_data JSONB. Retention: 12
 months. Implementation: Pending implementation.
 
-## Document Status: Part 2 of 4 Complete
+## Section 3: Feature Tables
 
-This document contains Document Control, Overview, Principles, Section 1 Core
-Tables, and Section 2 Wallet/Ledger Tables.
+### Table 10: conversations
+Tenant chat container: id UUID PK; tenant_id UUID FK tenants; user_id UUID FK
+users; title; status active/archived/deleted; created_at/updated_at/last_message_at
+TIMESTAMPTZ; message_count; deleted_at. Soft delete applies; ledger entries remain.
+Implementation: Pending implementation.
 
-Pending in Part 3: Feature Tables. Pending in Part 4: Indexes, retention,
-migrations, and C0/C1 items.
+### Table 11: chat_messages
+Message records: id UUID PK; conversation_id UUID FK conversations; tenant_id UUID
+FK tenants; role; content nullable; status; reservation_id UUID FK reservations;
+quoted_credits; actual_credits; tier; idempotency_key; timestamps; provider_metadata
+JSONB. Unique tenant/idempotency_key when present. Content can be null for failed
+or canceled output. Retention is 90 days. Implementation: Pending implementation.
+
+### Table 12: enhancer_history
+Enhancement records: id UUID PK; tenant_id/user_id UUID FKs; raw_prompt;
+enhanced_prompt nullable; style; status; reservation_id UUID FK reservations;
+quoted_credits default 2; actual_credits; idempotency_key; timestamps;
+provider_metadata JSONB. Unique tenant/idempotency_key. Retention 90 days.
+Implementation: Pending implementation.
+
+### Table 13: caption_generation_history
+Caption records: id UUID PK; tenant_id/user_id UUID FKs; original_generation_id
+self FK; regeneration_number; description; tone; length; platform; language_mode;
+hashtag_count CHECK 3–30; variation_count CHECK 1–5; text-only image_context;
+variations JSONB; status; reservation_id UUID FK reservations; quoted_credits
+default 5; actual_credits; idempotency_key; timestamps; provider_metadata JSONB.
+Unique tenant/idempotency_key. Regeneration links original generation and is new
+billable request. Image upload/vision is out of scope. Retention 90 days.
+Implementation: Pending implementation.
+
+### Feature Table Invariants
+
+- Every feature table has tenant_id for row-level tenant isolation.
+- reservation_id links usage to immutable ledger.
+- Feature deletion never removes ledger entries.
+- Retention is 90 days from feature activity.
+- provider_metadata is observability only; ledger is billing source of truth.
+
+## Document Status: Part 3 of 4 Complete
+
+This document contains Document Control, Overview, Principles, Core Tables,
+Wallet/Ledger Tables, and Feature Tables.
+
+Pending in Part 4: Indexes, Retention Policy, Migration Strategy, and C0/C1 items.
