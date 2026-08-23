@@ -85,29 +85,31 @@ Idempotency: recommended, no billing side effect. Implementation: Pending implem
 ## Section 2: Instagram Caption Generator API
 
 ### POST /api/v1/caption/generate
-Request includes description (required, maximum 1,000 characters), tone
-professional/casual/funny/promotional/luxury/educational, length short/medium/long,
-platform instagram/telegram/linkedin/twitter, language_mode persian/english/mixed,
-hashtag_count default 10 within 3–30, variation_count default 3 within 1–5,
-optional text-only image_context, and required idempotency_key. Image upload and
-vision analysis are out of Phase 1 scope.
-
-Validate ownership and inputs; quote/reserve 5 credits; generate; persist request
-and results; settle on success or release on failure/timeout. Success `200` returns
-id, variations containing separate caption/hashtags/character_count/platform_fit,
-request settings, quoted_credits 5, actual_credits 5, created_at. platform_fit is
-based on Instagram 2,200 characters; other thresholds are D2. Errors include
-not_authenticated, validation_error, insufficient_credits, invalid_tone,
+Request:
+```json
+{"description":"string (required, max 1000 chars)","tone":"professional | casual | funny | promotional | luxury | educational","length":"short | medium | long","platform":"instagram | telegram | linkedin | twitter","language_mode":"persian | english | mixed","hashtag_count":10,"variation_count":3,"image_context":"string (optional, text-only)","idempotency_key":"uuid"}
+```
+Validate inputs, quote 5 credits, reserve, execute, persist, settle on success,
+and release on failure. Success `200`:
+```json
+{"id":"uuid","variations":[{"caption":"string","hashtags":["string"],"character_count":0,"platform_fit":true,"platform_fit_warning":"string | null"}],"tone":"professional","length":"medium","platform":"instagram","language_mode":"persian","hashtag_count":10,"variation_count":3,"quoted_credits":5,"actual_credits":5,"created_at":"iso8601"}
+```
+Errors: not_authenticated, validation_error, insufficient_credits, invalid_tone,
 invalid_platform, invalid_length, invalid_language_mode, hashtag_count_out_of_range,
 variation_count_out_of_range, description_too_long, unsafe_content, rate_limited,
-provider_unavailable, internal_error. Same key/payload returns cached result.
-Implementation: Pending implementation.
+provider_unavailable, internal_error. Billing: fixed 5 credits, reserve/settle/release;
+copy is free. Idempotency: required. Implementation: Pending.
 
 ### POST /api/v1/caption/regenerate
-Request: original_generation_id and required idempotency_key. It loads original
-parameters, shows a new 5-credit quote, reserves, generates, persists linked result,
-and settles or releases. It is a new billable request. Errors include original_not_found
-plus generation errors. Implementation: Pending implementation.
+Request:
+```json
+{"original_generation_id":"uuid","idempotency_key":"uuid"}
+```
+Lookup original parameters; this is a new 5-credit billable request; reserve,
+execute, persist linked result, then settle or release. Success `200` uses generate
+shape plus `original_generation_id` and `regeneration_number`. Errors: generate
+errors plus original_not_found. Billing: new 5-credit quote each time, not free.
+Idempotency: required. Implementation: Pending.
 
 ### GET /api/v1/caption/history
 Query page default 1, page_size default 20 maximum 50. Returns paginated tenant
