@@ -2,7 +2,7 @@
 
 ## Document Control
 **Title:** Phase 1 Data Model
-**Status:** Draft (Part 1 of 4 — Parts 2, 3, 4 pending)
+**Status:** Draft — Complete Phase 1 Data Model
 **Phase:** Phase 1 — In Progress
 **Last updated:** 2026-08-22
 **Related:** [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md), [API Contract](API_CONTRACT_V1.md), [Chat Contract](API_CONTRACT_V1_CHAT.md), [Features Contract](API_CONTRACT_V1_FEATURES.md)
@@ -133,9 +133,45 @@ Implementation: Pending implementation.
 - Retention is 90 days from feature activity.
 - provider_metadata is observability only; ledger is billing source of truth.
 
-## Document Status: Part 3 of 4 Complete
+## Section 4: Indexes and Query Patterns
 
-This document contains Document Control, Overview, Principles, Core Tables,
-Wallet/Ledger Tables, and Feature Tables.
+Core indexes: users(email); auth_sessions(token_hash), auth_sessions(user_id,
+expires_at); wallets(tenant_id); ledger_entries(tenant_id, created_at DESC),
+ledger_entries(wallet_id, created_at); reservations(tenant_id, idempotency_key),
+reservations(expires_at); conversations(tenant_id, updated_at DESC),
+conversations(user_id); chat_messages(conversation_id, created_at),
+chat_messages(tenant_id); enhancer_history(tenant_id, created_at DESC),
+enhancer_history(idempotency_key); caption_generation_history(tenant_id,
+created_at DESC), caption_generation_history(idempotency_key).
 
-Pending in Part 4: Indexes, Retention Policy, Migration Strategy, and C0/C1 items.
+PostgreSQL partial index supports pending ledger entries; BRIN supports time
+archiving. Tenant-scoped composite indexes and JSONB GIN indexes are used where
+query evidence supports them. Migration files define final index names/order.
+
+## Section 5: Retention Policy Implementation
+
+Feature histories soft-delete after 90 days and hard-delete after an additional
+30-day grace period. Ledger entries and receipts retain at least 12 months and
+remain immutable. Expired/revoked sessions older than 30 days are cleaned.
+
+A database function `cleanup_expired_data()` runs daily via approved scheduler.
+Retention uses retention_expires_at trigger/computed policy, summary-only audit
+records, and application queries respecting deletion state.
+
+## Section 6: Migration Strategy
+
+Alembic manages schema changes. Migrations are forward-only in production,
+idempotent where possible, and manually reviewed. Initial order: core tables,
+wallet/ledger, feature tables, indexes/retention triggers, cleanup scheduling.
+Tables have timestamps where appropriate; autogenerate is scaffolding only.
+
+## Section 7: Open Items for C0 / C1
+
+C0 validates foreign keys, immutable ledger, tenant isolation, retention cleanup,
+nonnegative balances, and idempotency. C1 implements cleanup, message_count trigger,
+JSONB validation, partial indexes, and billing admin audit. Future phases add
+multi-user roles, Enhancer favorites, real payment, and advanced RAG/agent models.
+
+## Final Status
+This document is a complete draft of the Phase 1 Data Model and authoritative
+source for Alembic migrations in C0/C1 implementation.
