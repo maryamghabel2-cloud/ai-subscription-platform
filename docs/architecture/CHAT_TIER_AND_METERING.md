@@ -103,14 +103,28 @@ release twice; each transition has immutable ledger entry.
 
 ## Section 7: Worked Examples
 
-| Scenario | Estimated Tier | Quoted Credits | Final Outcome | User Charge |
-|---|---|---|---|---|
-| Short question, short context | Tier 1 | 1 | success | 1 |
-| Moderate request/history | Tier 2 | 2 | success | 2 |
-| Large request, long context | Tier 3 | 3 | timeout, release | 0 |
-| Lower actual usage | Tier 3 | 3 | settle 2, release 1 | 2 |
+### Example 1: Simple request — Tier 1 quoted and settled
+Short question and short context. Quote and reserve 1 credit; success settles 1.
 
-Examples are illustrative; exact thresholds are configured outside this document.
+### Example 2: Medium request, Tier 2 quoted, Tier 1 settled
+- User sends a moderate message with some conversation context.
+- Estimate is above Tier 1 threshold and below Tier 2 threshold.
+- Quote and reserve: 2 credits.
+- Provider succeeds; cached context reduces actual token usage.
+- Settlement: 1 credit (`actual_credits = 1`).
+- Released: 1 credit restored to available balance.
+- Outcome: user pays 1 credit although 2 were quoted; actual credits are lower
+  than quoted credits and excess is returned.
+
+### Example 3: Complex request — Tier 3 quoted and settled
+Long context and high output budget. Quote/reserve 3; success settles 3.
+
+### Example 4: Provider failure
+Tier 3 quoted and reserved; provider timeout releases full reservation; charge 0.
+
+### Example 5: Actual cost exceeds quote
+Provider internal cost exceeds quoted Tier 3; platform absorbs variance and user
+is charged exactly quoted credits, never more.
 
 ## Document Status: Part 2 of 3 Complete
 
