@@ -24,17 +24,63 @@ reserve/settle/release from API_CONTRACT_V1.md.
 
 ## Section 1: Prompt Enhancer API
 
-### POST /api/v1/enhancer/enhance
-Request: `{"raw_prompt":"string","style":"creative|professional|technical|marketing|concise","idempotency_key":"uuid","send_to_chat":false}`. Validate session, non-empty prompt within 2,000 characters, and style; quote/reserve 2 credits; execute; persist raw/enhanced prompt and style; settle on success or release on failure. `send_to_chat` returns handoff metadata only. Success `200`: `{"id":"uuid","raw_prompt":"string","enhanced_prompt":"string","style":"creative","quoted_credits":2,"actual_credits":2,"created_at":"iso8601","send_to_chat_available":true}`. Errors: `not_authenticated`, `validation_error`, `insufficient_credits`, `invalid_style`, `rate_limited`, `provider_unavailable`, `internal_error`. Same key/payload has no duplicate result. Implementation: Pending implementation.
+### Endpoint 1: Submit Prompt Enhancement
+**POST /api/v1/enhancer/enhance**
 
-### GET /api/v1/enhancer/history
-Query: page default 1, page_size default 20 maximum 50. Success `200` paginated items include id, style, raw_prompt_preview, created_at, quoted_credits, actual_credits. Error: `not_authenticated`. Billing: free. Implementation: Pending implementation.
+Description: Enhance a raw prompt using an approved style. Request:
+```json
+{"raw_prompt":"string","style":"creative | professional | technical | marketing | concise","idempotency_key":"uuid","send_to_chat":false}
+```
+Behavior: validate authenticated tenant, non-empty raw_prompt no longer than 2,000
+characters, and style; quote/reserve 2 credits; execute provider; persist raw and
+enhanced prompt, style, quote, actual credits, timestamps; settle on success or
+release on provider failure/timeout. `send_to_chat` returns handoff metadata only.
+Success `200`:
+```json
+{"id":"uuid","raw_prompt":"string","enhanced_prompt":"string","style":"creative","quoted_credits":2,"actual_credits":2,"created_at":"iso8601","send_to_chat_available":true}
+```
+Errors: `not_authenticated`, `validation_error`, `insufficient_credits`,
+`invalid_style`, `rate_limited`, `provider_unavailable`, `provider_timeout`,
+`internal_error`. Billing: fixed 2-credit quote; never charge above quote.
+Idempotency: required; same key/payload creates no duplicate reservation/result;
+different payload follows API_CONTRACT_V1 idempotency_conflict. Implementation:
+Pending implementation.
 
-### GET /api/v1/enhancer/history/{id}
-Success `200` returns id, raw_prompt, enhanced_prompt, style, created_at, quoted_credits, actual_credits. Errors: `not_authenticated`, `not_found`. Billing: free. Implementation: Pending implementation.
+### Endpoint 2: Get Enhancement History
+**GET /api/v1/enhancer/history**
 
-### POST /api/v1/enhancer/history/{id}/handoff-to-chat
-Request: `{"target_conversation_id":"uuid|null"}`. Returns existing enhancement handoff payload without Chat execution or Enhancer charge. A later Chat run is independently billed. Success `200`: `{"enhancement_id":"uuid","target_conversation_id":"uuid|null","handoff_payload":{"content":"enhanced prompt text"}}`. Errors: `not_authenticated`, `not_found`, `conversation_not_found`. Implementation: Pending implementation.
+Query: page, page_size. Success `200`:
+```json
+{"items":[{"id":"uuid","style":"creative","raw_prompt_preview":"string","created_at":"iso8601","quoted_credits":2,"actual_credits":2}],"total":0,"page":1,"page_size":20,"has_next":false}
+```
+Errors: `not_authenticated`. Billing: free. Idempotency: not applicable.
+Implementation: Pending implementation.
+
+### Endpoint 3: Get Single Enhancement Result
+**GET /api/v1/enhancer/history/{id}**
+
+Success `200`:
+```json
+{"id":"uuid","raw_prompt":"string","enhanced_prompt":"string","style":"creative","created_at":"iso8601","quoted_credits":2,"actual_credits":2}
+```
+Errors: `not_authenticated`, `not_found`. Billing: free. Idempotency: not
+applicable. Implementation: Pending implementation.
+
+### Endpoint 4: Send Existing Enhancement to Chat
+**POST /api/v1/enhancer/history/{id}/handoff-to-chat**
+
+Request:
+```json
+{"target_conversation_id":"uuid | null"}
+```
+Success `200`:
+```json
+{"enhancement_id":"uuid","target_conversation_id":"uuid | null","handoff_payload":{"content":"enhanced prompt text"}}
+```
+Errors: `not_authenticated`, `not_found`, `conversation_not_found`. Billing:
+free; this endpoint does not execute Chat or charge Enhancer credits. A later Chat
+message execution is separately billable under API_CONTRACT_V1_CHAT.md.
+Idempotency: recommended, no billing side effect. Implementation: Pending implementation.
 
 ## Section 2: Instagram Caption Generator API
 
