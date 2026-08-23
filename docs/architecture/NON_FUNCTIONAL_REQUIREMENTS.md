@@ -1,7 +1,7 @@
 # Non-Functional Requirements
 
 ## Document Control
-**Status:** Draft (Part 1A of 3 — Parts 1B and 2 pending)
+**Status:** Draft — Complete Non-Functional Requirements
 **Phase:** Phase 1 — In Progress
 **Last updated:** 2026-08-23
 **Related:** [ADR-0002](../decisions/0002-phase-1-product-metering-and-infrastructure.md), [API](API_CONTRACT_V1.md), [Chat](API_CONTRACT_V1_CHAT.md), [Features](API_CONTRACT_V1_FEATURES.md), [Metering](CHAT_TIER_AND_METERING.md), [Resilience](TIMEOUT_AND_RESILIENCE.md)
@@ -76,6 +76,56 @@ Phase 1 targets pragmatic WCAG AA alignment where feasible.
 
 Material Persian readability defects are release blockers.
 
-## Document Status: Part 1B of 3 Complete
-This document contains Sections 1–5. Pending: Security/Privacy, Observability,
-Reliability, C0/C1, and final status.
+## Section 6: Security and Privacy Requirements
+| NFR ID | Requirement | Target / Rule | Applies To | Notes |
+|---|---|---|---|---|
+| NFR-SEC-001 | HttpOnly Secure cookies | Mandatory | Auth | No browser token storage |
+| NFR-SEC-002 | Password hashes | Mandatory | Users | bcrypt/argon2 |
+| NFR-SEC-003 | HTTPS | Mandatory | APIs | No production HTTP |
+| NFR-SEC-004 | CSRF defense | Mandatory | Mutations | SameSite/token |
+| NFR-SEC-005 | Tenant isolation | Mandatory | Data | No cross tenant |
+| NFR-SEC-006 | Admin metadata only | Mandatory | Admin | No content |
+| NFR-SEC-007 | Secrets protected | Mandatory | Runtime | No repo/logs |
+| NFR-SEC-008 | Rate limits | Mandatory | Sensitive APIs | Resilience |
+| NFR-SEC-009 | Input validation | Mandatory | Features | Type/length |
+| NFR-SEC-010 | Injection defense | Mandatory | Features | Policy |
+| NFR-SEC-011 | Immutable ledger | Mandatory | Wallet | Compensate only |
+| NFR-SEC-012 | PII minimization | Mandatory | Telemetry | No full content |
+
+## Section 7: Observability and Monitoring Requirements
+| NFR ID | Requirement | Target / Rule | Applies To | Notes |
+|---|---|---|---|---|
+| NFR-OBS-001 | request_id | Mandatory | APIs | Error shape |
+| NFR-OBS-002 | Structured logs | Mandatory | Backend | JSON preferred |
+| NFR-OBS-003 | Billing metrics | Mandatory | Wallet | Lifecycle |
+| NFR-OBS-004 | Provider metrics | Mandatory | Gateway | Route latency |
+| NFR-OBS-005 | Circuit metrics | Mandatory | Resilience | State changes |
+| NFR-OBS-006 | Variance events | Mandatory | Metering | Cost review |
+| NFR-OBS-007 | Job metrics | Mandatory | Jobs | Counts/errors |
+| NFR-OBS-008 | Settle alerts | Mandatory | Wallet | Money risk |
+| NFR-OBS-009 | Expiry alerts | Mandatory | Sweeper | Stuck paths |
+| NFR-OBS-010 | No content logs | Mandatory | Logs | Privacy |
+
+## Section 8: Reliability and Operational Readiness
+| NFR ID | Requirement | Target / Rule | Applies To | Notes |
+|---|---|---|---|---|
+| NFR-REL-001 | Liveness/readiness separate | Mandatory | Deploy | Health |
+| NFR-REL-002 | DB readiness | Mandatory | Deploy | Fail closed |
+| NFR-REL-003 | Failure release | Mandatory | Features | No stranded credits |
+| NFR-REL-004 | Expiry sweeper | Every minute | Jobs | 10-minute safety |
+| NFR-REL-005 | Retention job | Daily | Jobs | 90-day policy |
+| NFR-REL-006 | Alembic reviewed | Mandatory | Schema | Versioned |
+| NFR-REL-007 | External config | Mandatory | Runtime | No hardcoded values |
+| NFR-REL-008 | Clear degraded errors | Mandatory | APIs | Fail fast |
+| NFR-REL-009 | Backup/restore | Mandatory | Ops | Test once |
+| NFR-REL-010 | Iran access test | Mandatory | Production | No VPN target |
+
+## Section 9: Open Items for C0/C1
+C0 proves latency, pre-reservation limits/circuit behavior, no failure charge,
+idempotency, tenant isolation, no browser tokens, RTL, admin metadata, expiry.
+C1 delivers configuration, logs/metrics, background jobs, probes, accessibility,
+backup runbook, and Iran-access evidence. Beyond MVP: certification, active-active,
+APM selection, real-payment NFRs.
+
+## Final Status
+This is a complete draft of Phase 1 NFRs for C0/C1.
