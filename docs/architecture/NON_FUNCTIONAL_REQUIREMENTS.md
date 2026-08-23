@@ -37,11 +37,45 @@ latency is partly external; internal latency remains observable.
 
 Exact production-scale targets may change after usage telemetry.
 
-## Document Status: Part 1A of 3 Complete
+## Section 3: UX and Responsiveness Requirements
+| NFR ID | Requirement | Target / Rule | Applies To | Notes |
+|---|---|---|---|---|
+| NFR-UX-001 | Credit estimate visible | Mandatory | Billable features | Trust |
+| NFR-UX-002 | Available credits visible | Mandatory | Header/wallet | Awareness |
+| NFR-UX-003 | Loading feedback | <= 300 ms | Interactive UI | Responsiveness |
+| NFR-UX-004 | Readable billable error | Mandatory | Features | No silent failure |
+| NFR-UX-005 | Insufficient link | Mandatory | Billable features | Wallet recovery |
+| NFR-UX-006 | Copy feedback | <= 300 ms | Copy actions | Toast/inline |
+| NFR-UX-007 | Chat state distinct | Mandatory | Chat | Generating/done/failed |
+| NFR-UX-008 | Regenerate billed | Mandatory | Caption | Spend clarity |
 
-This document contains Document Control, Overview, Performance Requirements, and
-Capacity and Concurrency.
+Billing visibility and failure states are release readiness requirements.
 
-Pending in Part 1B: UX/Responsiveness, Accessibility, RTL/Persian quality.
-Pending in Part 2: Security/Privacy, Observability, Reliability, C0/C1 items,
-and final status.
+## Section 4: Accessibility Requirements
+| NFR ID | Requirement | Target / Rule | Applies To | Notes |
+|---|---|---|---|---|
+| NFR-A11Y-001 | Keyboard navigation | Mandatory | UI | No mouse-only action |
+| NFR-A11Y-002 | Focus states | Mandatory | UI | Visible focus |
+| NFR-A11Y-003 | Form labels | Mandatory | Forms | Screen readers |
+| NFR-A11Y-004 | Heading hierarchy | Mandatory | Tools | Semantic order |
+| NFR-A11Y-005 | Accessible errors | Mandatory | Async flows | Live status |
+| NFR-A11Y-006 | Accessible names | Mandatory | Copy/wallet | Clear control |
+| NFR-A11Y-007 | Non-color status | Mandatory | Status UI | Icon/text |
+
+Phase 1 targets pragmatic WCAG AA alignment where feasible.
+
+## Section 5: RTL and Persian Language Quality
+| NFR ID | Requirement | Target / Rule | Applies To | Notes |
+|---|---|---|---|---|
+| NFR-RTL-001 | RTL layout | Mandatory | Global UI | No broken alignment |
+| NFR-RTL-002 | Mixed scripts | Mandatory | Core features | Bilingual |
+| NFR-RTL-003 | Readable numerals/punctuation | Mandatory | Text screens | No mirroring |
+| NFR-RTL-004 | Persian output readability | Mandatory | Generated output | QA |
+| NFR-RTL-005 | Copyable hashtags | Mandatory | Caption | No corruption |
+| NFR-RTL-006 | No LTR assumptions | Mandatory | Core surfaces | Buttons/tables |
+
+Material Persian readability defects are release blockers.
+
+## Document Status: Part 1B of 3 Complete
+This document contains Sections 1–5. Pending: Security/Privacy, Observability,
+Reliability, C0/C1, and final status.
